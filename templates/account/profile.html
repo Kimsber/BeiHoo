@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}個人資料 - BeiHoo{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0"><i class="bi bi-person-circle"></i> 個人資料</h3>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-sm-4 fw-bold">使用者名稱：</div>
+                    <div class="col-sm-8">{{ user.username }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4 fw-bold">姓名：</div>
+                    <div class="col-sm-8">{{ user.get_full_name|default:"未設定" }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4 fw-bold">電子郵件：</div>
+                    <div class="col-sm-8">{{ user.email|default:"未設定" }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4 fw-bold">電話：</div>
+                    <div class="col-sm-8">{{ user.phone_number|default:"未設定" }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4 fw-bold">生日：</div>
+                    <div class="col-sm-8">{{ user.date_of_birth|default:"未設定" }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4 fw-bold">角色：</div>
+                    <div class="col-sm-8">
+                        <span class="badge bg-info">{{ user.get_role_display }}</span>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4 fw-bold">註冊時間：</div>
+                    <div class="col-sm-8">{{ user.created_at|date:"Y-m-d H:i" }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

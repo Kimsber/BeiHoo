@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}首頁 - BeiHoo{% endblock %}
+
+{% block content %}
+<div class="text-center py-5">
+    <h1 class="display-4 mb-4">
+        <i class="bi bi-hospital"></i> 歡迎來到 BeiHoo 復健機器人平台
+    </h1>
+    
+    {% if user.is_authenticated %}
+        <div class="alert alert-success" role="alert">
+            <h4 class="alert-heading">您好，{{ user.get_full_name|default:user.username }}！</h4>
+            <p>您的身份是：<strong>{{ user.get_role_display }}</strong></p>
+            <hr>
+            <p class="mb-0">這是基於 FHIR 標準的電子病歷系統，專為復健機器人設計。</p>
+        </div>
+        
+        <div class="row mt-5">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="bi bi-person"></i> 個人資料</h5>
+                        <p class="card-text">查看和管理您的個人資料</p>
+                        <a href="{% url 'profile' %}" class="btn btn-primary">前往</a>
+                    </div>
+                </div>
+            </div>
+            
+            {% if user.is_staff %}
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="bi bi-gear"></i> 系統管理</h5>
+                        <p class="card-text">管理系統設定和使用者</p>
+                        <a href="/admin/" class="btn btn-danger">前往</a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    {% else %}
+        <p class="lead">請登入或註冊以使用系統功能</p>
+        <div class="mt-4">
+            <a href="{% url 'login' %}" class="btn btn-primary btn-lg me-2">
+                <i class="bi bi-box-arrow-in-right"></i> 登入
+            </a>
+            <a href="{% url 'register' %}" class="btn btn-success btn-lg">
+                <i class="bi bi-person-plus"></i> 註冊
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

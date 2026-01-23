@@ -1,0 +1,73 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block dashboard_content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="alert alert-info">
+            <h4 class="alert-heading">
+                <i class="bi bi-person-circle"></i> 歡迎回來，{{ patient.get_full_name|default:patient.username }}！
+            </h4>
+            <p class="mb-0">這是您的健康管理儀表板</p>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="bi bi-calendar-check display-1 text-primary"></i>
+                <h5 class="mt-3">我的預約</h5>
+                <p class="text-muted">查看和管理您的預約</p>
+                <a href="#" class="btn btn-primary">查看預約</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="bi bi-activity display-1 text-success"></i>
+                <h5 class="mt-3">復健進度</h5>
+                <p class="text-muted">追蹤您的復健進度</p>
+                <a href="#" class="btn btn-success">查看進度</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="bi bi-file-medical display-1 text-info"></i>
+                <h5 class="mt-3">健康記錄</h5>
+                <p class="text-muted">查看您的健康資料</p>
+                <a href="#" class="btn btn-info">查看記錄</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-calendar-week"></i> 即將到來的預約</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">目前沒有預約</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-graph-up"></i> 復健成果</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">準備開始您的復健計畫</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

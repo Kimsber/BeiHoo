@@ -1,0 +1,102 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block dashboard_content %}
+<div class="row g-4 mb-4">
+    <!-- Statistics Cards -->
+    <div class="col-md-3">
+        <div class="card text-center bg-primary text-white">
+            <div class="card-body">
+                <h3>{{ total_users }}</h3>
+                <p class="mb-0"><i class="bi bi-people"></i> 總使用者</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center bg-success text-white">
+            <div class="card-body">
+                <h3>{{ total_patients }}</h3>
+                <p class="mb-0"><i class="bi bi-person"></i> 病患</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center bg-info text-white">
+            <div class="card-body">
+                <h3>{{ total_doctors }}</h3>
+                <p class="mb-0"><i class="bi bi-clipboard-pulse"></i> 醫師</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center bg-warning text-white">
+            <div class="card-body">
+                <h3>{{ total_therapists }}</h3>
+                <p class="mb-0"><i class="bi bi-activity"></i> 治療師</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-clock-history"></i> 最近註冊使用者</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    {% for user in recent_users %}
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>{{ user.get_full_name|default:user.username }}</span>
+                        <span class="badge bg-secondary">{{ user.get_role_display }}</span>
+                    </li>
+                    {% empty %}
+                    <li class="list-group-item">暫無資料</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-list-check"></i> 系統稽核紀錄</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    {% for log in recent_logs %}
+                    <li class="list-group-item">
+                        <small class="text-muted">{{ log.timestamp|date:"Y-m-d H:i" }}</small><br>
+                        <strong>{{ log.user }}</strong> - {{ log.get_action_display }}
+                    </li>
+                    {% empty %}
+                    <li class="list-group-item">暫無紀錄</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h5><i class="bi bi-gear"></i> 快速操作</h5>
+                <div class="btn-group" role="group">
+                    <a href="/admin/" class="btn btn-primary">
+                        <i class="bi bi-speedometer"></i> Django Admin
+                    </a>
+                    <a href="#" class="btn btn-success">
+                        <i class="bi bi-person-plus"></i> 新增使用者
+                    </a>
+                    <a href="#" class="btn btn-info">
+                        <i class="bi bi-file-earmark-text"></i> 系統報告
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

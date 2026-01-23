@@ -64,6 +64,12 @@ class User(AbstractUser):
     def is_patient_user(self):
         """病患判斷"""
         return self.role == 'patient'
+    
+    @property
+    def dashboard_url(self):
+        """Get the URL name for user's dashboard"""
+        from django.conf import settings
+        return settings.ROLE_DASHBOARD_MAP.get(self.role, 'dashboard:patient')
 
 
 class AuditLog(models.Model):

@@ -1,0 +1,46 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block dashboard_content %}
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="card text-center bg-info text-white">
+            <div class="card-body">
+                <h3>{{ my_patients_count }}</h3>
+                <p class="mb-0"><i class="bi bi-people"></i> 我的病患</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center bg-success text-white">
+            <div class="card-body">
+                <h3>0</h3>
+                <p class="mb-0"><i class="bi bi-calendar-check"></i> 今日預約</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center bg-warning text-white">
+            <div class="card-body">
+                <h3>0</h3>
+                <p class="mb-0"><i class="bi bi-exclamation-triangle"></i> 待處理</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-calendar-week"></i> 今日行程</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">尚無預約行程</p>
+                <a href="#" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> 新增預約
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

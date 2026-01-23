@@ -18,7 +18,7 @@ def get_client_ip(request):
 def register_view(request):
     """使用者註冊"""
     if request.user.is_authenticated:
-        return redirect('home')
+        return redirect(user.dashboard_url)
     
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
@@ -38,7 +38,7 @@ def register_view(request):
             # 自動登入
             login(request, user)
             messages.success(request, f'歡迎 {user.get_full_name()}！註冊成功。')
-            return redirect('home')
+            return redirect(user.dashboard_url)
         else:
             messages.error(request, '註冊失敗，請檢查輸入的資料。')
     else:
@@ -50,7 +50,7 @@ def register_view(request):
 def login_view(request):
     """使用者登入"""
     if request.user.is_authenticated:
-        return redirect('home')
+        return redirect(user.dashboard_url)
     
     if request.method == 'POST':
         form = UserLoginForm(request, data=request.POST)
@@ -72,7 +72,7 @@ def login_view(request):
             next_url = request.GET.get('next')
             if next_url:
                 return redirect(next_url)
-            return redirect('home')
+            return redirect(user.dashboard_url)
         else:
             messages.error(request, '登入失敗，請檢查使用者名稱和密碼。')
     else:

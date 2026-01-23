@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     
     # Local apps
     'account',
+    'dashboard',
 ]
 
 MIDDLEWARE = [
@@ -94,3 +95,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Crispy Forms
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+# Role-based Dashboard Configuration
+ROLE_DASHBOARD_MAP = {
+    'admin': 'dashboard:admin',
+    'doctor': 'dashboard:doctor',
+    'therapist': 'dashboard:therapist',
+    'nurse': 'dashboard:nurse',
+    'patient': 'dashboard:patient',
+    'researcher': 'dashboard:researcher',
+}

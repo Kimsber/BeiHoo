@@ -1,0 +1,43 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block dashboard_content %}
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="card text-center bg-primary text-white">
+            <div class="card-body">
+                <h3>{{ total_patients }}</h3>
+                <p class="mb-0"><i class="bi bi-database"></i> 可用數據筆數</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center bg-success text-white">
+            <div class="card-body">
+                <h3>0</h3>
+                <p class="mb-0"><i class="bi bi-file-earmark-text"></i> 進行中研究</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center bg-info text-white">
+            <div class="card-body">
+                <h3>0</h3>
+                <p class="mb-0"><i class="bi bi-bar-chart"></i> 分析報告</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-bar-chart-line"></i> 數據分析工具</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">研究數據分析功能開發中...</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

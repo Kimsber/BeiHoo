@@ -1,0 +1,43 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block dashboard_content %}
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="card text-center bg-info text-white">
+            <div class="card-body">
+                <h3>{{ patients_count }}</h3>
+                <p class="mb-0"><i class="bi bi-people"></i> 照護病患</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center bg-danger text-white">
+            <div class="card-body">
+                <h3>0</h3>
+                <p class="mb-0"><i class="bi bi-exclamation-triangle"></i> 緊急事項</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center bg-success text-white">
+            <div class="card-body">
+                <h3>0</h3>
+                <p class="mb-0"><i class="bi bi-capsule"></i> 用藥提醒</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-list-check"></i> 今日待辦事項</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">尚無待辦事項</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

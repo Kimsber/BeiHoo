@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     # Local apps
     'account',
     'dashboard',
+    'appointments',
 ]
 
 MIDDLEWARE = [
@@ -68,9 +69,9 @@ DATABASES = {
 AUTH_USER_MODEL = 'account.User'
 
 # Login/Logout URLs
-LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = 'home'
-LOGOUT_REDIRECT_URL = 'login'
+LOGIN_URL = 'account:login'
+LOGIN_REDIRECT_URL = 'dashboard:home'
+LOGOUT_REDIRECT_URL = 'account:login'
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},

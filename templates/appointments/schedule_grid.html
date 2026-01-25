@@ -1,0 +1,242 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}預約排程表 - BeiHoo{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-calendar-week"></i> 預約排程表</h2>
+        <div>
+            <a href="{% url 'dashboard:admin' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> 返回儀表板
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card text-center bg-primary text-white">
+                <div class="card-body">
+                    <h3>{{ total_appointments }}</h3>
+                    <p class="mb-0"><i class="bi bi-calendar-check"></i> 總預約數</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center bg-info text-white">
+                <div class="card-body">
+                    <h3>{{ today_appointments }}</h3>
+                    <p class="mb-0"><i class="bi bi-calendar-day"></i> 今日預約</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center bg-success text-white">
+                <div class="card-body">
+                    <h3>{{ arrived_count }}</h3>
+                    <p class="mb-0"><i class="bi bi-check-circle"></i> 已報到</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center bg-warning text-white">
+                <div class="card-body">
+                    <h3>{{ completed_count }}</h3>
+                    <p class="mb-0"><i class="bi bi-check-all"></i> 已完成</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-4">
+                    <div class="btn-group" role="group">
+                        <a href="?date={{ prev_week|date:'Y-m-d' }}&view={{ view_mode }}" class="btn btn-outline-primary">
+                            <i class="bi bi-chevron-left"></i> 上週
+                        </a>
+                        <a href="?date={{ today|date:'Y-m-d' }}&view={{ view_mode }}" class="btn btn-outline-primary">
+                            今日
+                        </a>
+                        <a href="?date={{ next_week|date:'Y-m-d' }}&view={{ view_mode }}" class="btn btn-outline-primary">
+                            下週 <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-4 text-center">
+                    <h5 class="mb-0">
+                        {{ start_date|date:"Y年m月d日" }} - {{ end_date|date:"m月d日" }}
+                    </h5>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div class="btn-group" role="group">
+                        <a href="?date={{ start_date|date:'Y-m-d' }}&view=day" 
+                           class="btn btn-outline-secondary {% if view_mode == 'day' %}active{% endif %}">
+                            日檢視
+                        </a>
+                        <a href="?date={{ start_date|date:'Y-m-d' }}&view=week" 
+                           class="btn btn-outline-secondary {% if view_mode == 'week' %}active{% endif %}">
+                            週檢視
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Schedule Grid -->
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 10%;">日期</th>
+                            {% for practitioner in practitioners %}
+                            <th style="width: {% widthratio 90 practitioners.count 1 %}%;">
+                                {{ practitioner.get_full_name }}<br>
+                                <small class="text-muted">{{ practitioner.get_role_display }}</small>
+                            </th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for day in schedule_grid %}
+                        <tr {% if day.is_today %}class="table-primary"{% endif %}>
+                            <td class="align-top">
+                                <div class="text-center">
+                                    <strong>{{ day.date|date:"m/d" }}</strong><br>
+                                    <small>{{ day.date|date:"D" }}</small>
+                                    {% if day.is_today %}
+                                    <br><span class="badge bg-primary mt-1">今日</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            {% for prac_schedule in day.practitioners_schedule %}
+                            <td class="align-top p-2">
+                                {% for appt in prac_schedule.appointments %}
+                                <div class="mb-2 p-2 border-start border-3 bg-light" 
+                                     style="border-color: {{ appt.service_type.color }} !important;">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="flex-grow-1">
+                                            <strong>{{ appt.patient.get_full_name }}</strong>
+                                            <br>
+                                            <small class="text-muted">
+                                                <i class="bi bi-clock"></i> 
+                                                {{ appt.start_time|time:"H:i" }} - {{ appt.end_time|time:"H:i" }}
+                                            </small>
+                                            {% if appt.location %}
+                                            <br><small><i class="bi bi-geo-alt"></i> {{ appt.location }}</small>
+                                            {% endif %}
+                                        </div>
+                                        <div class="text-end">
+                                            {% if appt.status == 'booked' %}
+                                            <span class="badge bg-info">待報到</span>
+                                            {% elif appt.status == 'arrived' %}
+                                            <span class="badge bg-success">已報到</span>
+                                            {% elif appt.status == 'fulfilled' %}
+                                            <span class="badge bg-secondary">已完成</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="mt-1">
+                                        <small class="text-muted">
+                                            {{ appt.service_type.display_name_zh }}
+                                        </small>
+                                    </div>
+                                    {% if appt.reason_code %}
+                                    <div class="mt-1">
+                                        <small class="text-muted">{{ appt.reason_code }}</small>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <!-- Quick Actions -->
+                                    <div class="mt-2">
+                                        {% if appt.status == 'booked' %}
+                                        <button class="btn btn-sm btn-success" 
+                                                onclick="checkInAppointment({{ appt.id }})">
+                                            <i class="bi bi-check"></i> 報到
+                                        </button>
+                                        {% elif appt.status == 'arrived' %}
+                                        <button class="btn btn-sm btn-primary" 
+                                                onclick="completeAppointment({{ appt.id }})">
+                                            <i class="bi bi-check-all"></i> 完成
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% empty %}
+                                <small class="text-muted">無預約</small>
+                                {% endfor %}
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer text-muted">
+            <div class="d-flex justify-content-between align-items-center">
+                <small>
+                    <i class="bi bi-info-circle"></i> 
+                    顯示 {{ practitioners.count }} 位醫師/治療師的預約
+                </small>
+                <div>
+                    <span class="badge" style="background-color: #007bff;">門診</span>
+                    <span class="badge" style="background-color: #28a745;">復健</span>
+                    <span class="badge" style="background-color: #6f42c1;">機器人</span>
+                    <span class="badge" style="background-color: #fd7e14;">追蹤</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function checkInAppointment(appointmentId) {
+    if (confirm('確認病患報到？')) {
+        fetch(`/appointments/${appointmentId}/checkin/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('報到失敗');
+            }
+        });
+    }
+}
+
+function completeAppointment(appointmentId) {
+    if (confirm('確認完成此預約？')) {
+        fetch(`/appointments/${appointmentId}/complete/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('完成失敗');
+            }
+        });
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,345 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}班表管理 - BeiHoo{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2><i class="bi bi-calendar-week"></i> 班表管理</h2>
+            <p class="text-muted">管理所有醫療人員的值班排程</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'dashboard:shift_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> 新增班表
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="text-muted">總班表數</h6>
+                    <h3>{{ total_shifts }}</h3>
+                </div>
+            </div>
+        </div>
+                <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="text-muted">醫師人數</h6>
+                    <h3>{{ doctors_count }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="text-muted">治療師人數</h6>
+                    <h3>{{ therapists_count }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="text-muted">護理師人數</h6>
+                    <h3>{{ nurses_count }}</h3>
+                </div>
+            </div>
+        </div>
+        
+    <!-- Filter Form -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5><i class="bi bi-funnel"></i> 篩選條件</h5>
+        </div>
+        <div class="card-body">
+            <form method="get" id="filterForm">
+                <div class="row g-3">
+                    <div class="col-md-2">
+                        {{ filter_form.role }}
+                    </div>
+                    <div class="col-md-2">
+                        {{ filter_form.user }}
+                    </div>
+                    <div class="col-md-2">
+                        {{ filter_form.status }}
+                    </div>
+                    <div class="col-md-2">
+                        {{ filter_form.date_from }}
+                    </div>
+                    <div class="col-md-2">
+                        {{ filter_form.date_to }}
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-search"></i> 搜尋
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bulk Actions -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-outline-secondary" id="selectAll">
+                            <i class="bi bi-check-square"></i> 全選
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" id="deselectAll">
+                            <i class="bi bi-square"></i> 取消全選
+                        </button>
+                    </div>
+                    <span class="ms-3 text-muted">已選擇: <strong id="selectedCount">0</strong> 個班表</span>
+                </div>
+                <div class="col-md-6 text-end">
+                    <button type="button" class="btn btn-success" id="bulkConfirm" disabled>
+                        <i class="bi bi-check-circle"></i> 批次確認
+                    </button>
+                    <button type="button" class="btn btn-warning" id="bulkCancel" disabled>
+                        <i class="bi bi-x-circle"></i> 批次取消
+                    </button>
+                    <button type="button" class="btn btn-danger" id="bulkDelete" disabled>
+                        <i class="bi bi-trash"></i> 批次刪除
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shift Calendar View -->
+    <div class="card">
+        <div class="card-header">
+            <h5><i class="bi bi-calendar3"></i> 班表總覽</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th width="50">
+                                <input type="checkbox" id="selectAllCheckbox" class="form-check-input">
+                            </th>
+                            <th width="100">日期</th>
+                            <th>員工</th>
+                            <th>角色</th>
+                            <th>班別</th>
+                            <th>時間</th>
+                            <th width="80">狀態</th>
+                            <th>地點</th>
+                            <th width="150">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for shift in shifts %}
+                        <tr>
+                            <td>
+                                <input type="checkbox" class="form-check-input shift-checkbox" 
+                                       data-shift-id="{{ shift.id }}" value="{{ shift.id }}">
+                            </td>
+                            <td>
+                                {{ shift.date|date:"m/d" }}
+                                <br>
+                                <small class="text-muted">{{ shift.date|date:"D" }}</small>
+                            </td>
+                            <td>
+                                <strong>{{ shift.user.get_full_name|default:shift.user.username }}</strong>
+                            </td>
+                            <td>
+                                {% if shift.user.role == 'doctor' %}
+                                <span class="badge bg-primary">醫師</span>
+                                {% elif shift.user.role == 'therapist' %}
+                                <span class="badge bg-info">治療師</span>
+                                {% elif shift.user.role == 'nurse' %}
+                                <span class="badge bg-danger">護理師</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ shift.get_shift_type_display }}</td>
+                            <td>
+                                <small>
+                                    {{ shift.start_time|time:"H:i" }} - {{ shift.end_time|time:"H:i" }}
+                                </small>
+                            </td>
+                            <td>
+                                {% if shift.status == 'confirmed' %}
+                                <span class="badge bg-success">已確認</span>
+                                {% elif shift.status == 'scheduled' %}
+                                <span class="badge bg-warning">已排班</span>
+                                {% elif shift.status == 'completed' %}
+                                <span class="badge bg-secondary">已完成</span>
+                                {% elif shift.status == 'cancelled' %}
+                                <span class="badge bg-dark">已取消</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <small>{{ shift.location|default:"—" }}</small>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a href="{% url 'dashboard:shift_edit' shift.id %}" 
+                                       class="btn btn-outline-primary btn-sm" title="編輯">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-outline-danger btn-sm delete-shift" 
+                                            data-shift-id="{{ shift.id }}" title="刪除">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="9" class="text-center py-5">
+                                <i class="bi bi-inbox" style="font-size: 3rem; color: #ccc;"></i>
+                                <p class="text-muted mt-2">沒有符合條件的班表</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Update selected count
+function updateSelectedCount() {
+    const count = document.querySelectorAll('.shift-checkbox:checked').length;
+    document.getElementById('selectedCount').textContent = count;
+    
+    // Enable/disable bulk action buttons
+    const bulkButtons = ['bulkConfirm', 'bulkCancel', 'bulkDelete'];
+    bulkButtons.forEach(id => {
+        document.getElementById(id).disabled = count === 0;
+    });
+}
+
+// Select all checkboxes
+document.getElementById('selectAll').addEventListener('click', function() {
+    document.querySelectorAll('.shift-checkbox').forEach(cb => cb.checked = true);
+    updateSelectedCount();
+});
+
+// Deselect all checkboxes
+document.getElementById('deselectAll').addEventListener('click', function() {
+    document.querySelectorAll('.shift-checkbox').forEach(cb => cb.checked = false);
+    updateSelectedCount();
+});
+
+// Header checkbox select all
+document.getElementById('selectAllCheckbox').addEventListener('change', function() {
+    document.querySelectorAll('.shift-checkbox').forEach(cb => cb.checked = this.checked);
+    updateSelectedCount();
+});
+
+// Individual checkbox change
+document.querySelectorAll('.shift-checkbox').forEach(cb => {
+    cb.addEventListener('change', updateSelectedCount);
+});
+
+// Bulk confirm
+document.getElementById('bulkConfirm').addEventListener('click', function() {
+    performBulkAction('confirm', '確認');
+});
+
+// Bulk cancel
+document.getElementById('bulkCancel').addEventListener('click', function() {
+    performBulkAction('cancel', '取消');
+});
+
+// Bulk delete
+document.getElementById('bulkDelete').addEventListener('click', function() {
+    if (confirm('確定要刪除選中的班表嗎？此操作無法復原。')) {
+        performBulkAction('delete', '刪除');
+    }
+});
+
+// Perform bulk action
+function performBulkAction(action, actionName) {
+    const selectedIds = Array.from(document.querySelectorAll('.shift-checkbox:checked'))
+        .map(cb => parseInt(cb.dataset.shiftId));
+    
+    if (selectedIds.length === 0) {
+        alert('請先選擇要操作的班表');
+        return;
+    }
+    
+    fetch("{% url 'dashboard:shift_bulk_action' %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+            action: action,
+            shift_ids: selectedIds
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            location.reload();
+        } else {
+            alert('操作失敗: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('發生錯誤，請稍後再試');
+    });
+}
+
+// Delete individual shift
+document.querySelectorAll('.delete-shift').forEach(btn => {
+    btn.addEventListener('click', function() {
+        if (confirm('確定要刪除這個班表嗎？')) {
+            const shiftId = this.dataset.shiftId;
+            fetch(`/dashboard/shifts/${shiftId}/delete/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    location.reload();
+                } else {
+                    alert('刪除失敗: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('發生錯誤，請稍後再試');
+            });
+        }
+    });
+});
+</script>
+{% endblock %}

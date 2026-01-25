@@ -1,3 +1,9 @@
 db.sqlite3
 __pycache__/
 .git/
+create_test_shifts.py
+create_test_users.py
+setup_all_test_data.py
+create_appointment_test_data.py
+setup_test_data.bat
+.gitignore

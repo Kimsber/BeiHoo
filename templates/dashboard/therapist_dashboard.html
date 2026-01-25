@@ -1,7 +1,89 @@
 {% extends 'dashboard/base_dashboard.html' %}
 
 {% block dashboard_content %}
-<div class="row g-4">
+
+<!-- Shift Schedule Section -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        {% include 'dashboard/widgets/shift_widget.html' %}
+    </div>
+    
+    <!-- Quick Stats with Equipment Status -->
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">今日治療概況</h5>
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <div class="p-3">
+                            <h3 class="text-primary">{{ today_appointments.count }}</h3>
+                            <small class="text-muted">今日療程</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3">
+                            <h3 class="text-success">
+                                {{ today_appointments|selectattr:"service_type.requires_robot","equalto",True|list|length }}
+                            </h3>
+                            <small class="text-muted">機器人治療</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3">
+                            <h3 class="text-info">
+                                {{ today_appointments|selectattr:"service_type.requires_robot","equalto",False|list|length }}
+                            </h3>
+                            <small class="text-muted">一般復健</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Equipment Status -->
+                <hr>
+                <h6 class="mb-3">設備狀態</h6>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-robot text-success" style="font-size: 24px;"></i>
+                            <div class="ms-2">
+                                <div class="small">復健機器人 #1</div>
+                                <span class="badge bg-success">可用</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-robot text-success" style="font-size: 24px;"></i>
+                            <div class="ms-2">
+                                <div class="small">復健機器人 #2</div>
+                                <span class="badge bg-success">可用</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-robot text-warning" style="font-size: 24px;"></i>
+                            <div class="ms-2">
+                                <div class="small">復健機器人 #3</div>
+                                <span class="badge bg-warning">維護中</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Appointment Timeline -->
+<div class="row">
+    <div class="col-12">
+        {% include 'appointments/widgets/appointment_timeline.html' %}
+    </div>
+</div>
+
+<!-- Weekly Statistics -->
+<div class="row g-4 mt-2">
     <div class="col-md-3">
         <div class="card text-center bg-primary text-white">
             <div class="card-body">
@@ -13,7 +95,7 @@
     <div class="col-md-3">
         <div class="card text-center bg-success text-white">
             <div class="card-body">
-                <h3>0</h3>
+                <h3>{{ today_appointments.count }}</h3>
                 <p class="mb-0"><i class="bi bi-robot"></i> 今日療程</p>
             </div>
         </div>
@@ -21,8 +103,8 @@
     <div class="col-md-3">
         <div class="card text-center bg-info text-white">
             <div class="card-body">
-                <h3>0</h3>
-                <p class="mb-0"><i class="bi bi-activity"></i> 進行中計畫</p>
+                <h3>{{ upcoming_appointments.count }}</h3>
+                <p class="mb-0"><i class="bi bi-activity"></i> 未來預約</p>
             </div>
         </div>
     </div>
@@ -36,26 +118,4 @@
     </div>
 </div>
 
-<div class="row mt-4">
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="bi bi-calendar-week"></i> 今日治療計畫</h5>
-            </div>
-            <div class="card-body">
-                <p class="text-muted">尚無治療計畫</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="bi bi-robot"></i> 設備狀態</h5>
-            </div>
-            <div class="card-body">
-                <p class="text-muted">所有設備正常運作</p>
-            </div>
-        </div>
-    </div>
-</div>
 {% endblock %}

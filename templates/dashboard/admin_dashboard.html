@@ -1,8 +1,208 @@
 {% extends 'dashboard/base_dashboard.html' %}
 
 {% block dashboard_content %}
+
+<!-- Admin's Own Shift & Quick Stats -->
+<div class="row mb-3">
+    <div class="col-md-3">
+        {% include 'dashboard/widgets/shift_widget.html' with today_shift=my_shift only %}
+    </div>
+    
+    <!-- Today's Team Overview -->
+    <div class="col-md-9">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-calendar-check-fill"></i> 今日班表總覽
+                    <span class="badge bg-light text-dark float-end">
+                        {{ today_doctors.count|add:today_therapists.count|add:today_nurses.count }} 人值班
+                    </span>
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h6 class="text-primary border-bottom pb-2">
+                            <i class="bi bi-stethoscope"></i> 醫師 ({{ today_doctors.count }})
+                        </h6>
+                        {% for shift in today_doctors %}
+                        <div class="d-flex justify-content-between align-items-center mb-2 small">
+                            <span>
+                                <i class="bi bi-person-badge"></i> {{ shift.user.get_full_name }}
+                            </span>
+                            <div>
+                                <span class="badge bg-info">{{ shift.get_shift_type_display }}</span>
+                                <span class="text-muted">{{ shift.start_time|time:"H:i" }}</span>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="text-muted small">今日無排班</p>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <h6 class="text-success border-bottom pb-2">
+                            <i class="bi bi-activity"></i> 治療師 ({{ today_therapists.count }})
+                        </h6>
+                        {% for shift in today_therapists %}
+                        <div class="d-flex justify-content-between align-items-center mb-2 small">
+                            <span>
+                                <i class="bi bi-person-badge"></i> {{ shift.user.get_full_name }}
+                            </span>
+                            <div>
+                                <span class="badge bg-success">{{ shift.get_shift_type_display }}</span>
+                                <span class="text-muted">{{ shift.start_time|time:"H:i" }}</span>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="text-muted small">今日無排班</p>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <h6 class="text-danger border-bottom pb-2">
+                            <i class="bi bi-heart-pulse"></i> 護理師 ({{ today_nurses.count }})
+                        </h6>
+                        {% for shift in today_nurses %}
+                        <div class="d-flex justify-content-between align-items-center mb-2 small">
+                            <span>
+                                <i class="bi bi-person-badge"></i> {{ shift.user.get_full_name }}
+                            </span>
+                            <div>
+                                <span class="badge bg-danger">{{ shift.get_shift_type_display }}</span>
+                                <span class="text-muted">{{ shift.start_time|time:"H:i" }}</span>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="text-muted small">今日無排班</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Weekly Schedule Table -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-calendar-week"></i> 未來7天完整班表
+                    <span class="badge bg-light text-dark float-end">
+                        {{ all_upcoming_shifts.count }} 個班次
+                    </span>
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover table-bordered mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 12%;">日期</th>
+                                <th style="width: 29%;">醫師</th>
+                                <th style="width: 29%;">治療師</th>
+                                <th style="width: 30%;">護理師</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for day in weekly_schedule %}
+                            <tr {% if day.is_today %}class="table-primary"{% endif %}>
+                                <td class="align-top">
+                                    <strong>{{ day.date|date:"m/d" }}</strong><br>
+                                    <small class="text-muted">{{ day.date|date:"D" }}</small>
+                                    {% if day.is_today %}
+                                    <br><span class="badge bg-primary mt-1">今日</span>
+                                    {% endif %}
+                                </td>
+                                
+                                <!-- Doctors -->
+                                <td class="align-top">
+                                    {% for shift in day.doctors %}
+                                    <div class="mb-2 p-2 border-start border-primary border-3 bg-light">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div>
+                                                <strong class="text-primary">{{ shift.user.get_full_name }}</strong>
+                                                <br>
+                                                <small class="text-muted">
+                                                    <i class="bi bi-clock"></i> {{ shift.start_time|time:"H:i" }} - {{ shift.end_time|time:"H:i" }}
+                                                </small>
+                                                {% if shift.location %}
+                                                <br><small><i class="bi bi-geo-alt"></i> {{ shift.location }}</small>
+                                                {% endif %}
+                                            </div>
+                                            <span class="badge bg-info">{{ shift.get_shift_type_display }}</span>
+                                        </div>
+                                    </div>
+                                    {% empty %}
+                                    <small class="text-muted">無排班</small>
+                                    {% endfor %}
+                                </td>
+                                
+                                <!-- Therapists -->
+                                <td class="align-top">
+                                    {% for shift in day.therapists %}
+                                    <div class="mb-2 p-2 border-start border-success border-3 bg-light">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div>
+                                                <strong class="text-success">{{ shift.user.get_full_name }}</strong>
+                                                <br>
+                                                <small class="text-muted">
+                                                    <i class="bi bi-clock"></i> {{ shift.start_time|time:"H:i" }} - {{ shift.end_time|time:"H:i" }}
+                                                </small>
+                                                {% if shift.location %}
+                                                <br><small><i class="bi bi-geo-alt"></i> {{ shift.location }}</small>
+                                                {% endif %}
+                                            </div>
+                                            <span class="badge bg-success">{{ shift.get_shift_type_display }}</span>
+                                        </div>
+                                    </div>
+                                    {% empty %}
+                                    <small class="text-muted">無排班</small>
+                                    {% endfor %}
+                                </td>
+                                
+                                <!-- Nurses -->
+                                <td class="align-top">
+                                    {% for shift in day.nurses %}
+                                    <div class="mb-2 p-2 border-start border-danger border-3 bg-light">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div>
+                                                <strong class="text-danger">{{ shift.user.get_full_name }}</strong>
+                                                <br>
+                                                <small class="text-muted">
+                                                    <i class="bi bi-clock"></i> {{ shift.start_time|time:"H:i" }} - {{ shift.end_time|time:"H:i" }}
+                                                </small>
+                                                {% if shift.location %}
+                                                <br><small><i class="bi bi-geo-alt"></i> {{ shift.location }}</small>
+                                                {% endif %}
+                                            </div>
+                                            <span class="badge bg-danger">{{ shift.get_shift_type_display }}</span>
+                                        </div>
+                                    </div>
+                                    {% empty %}
+                                    <small class="text-muted">無排班</small>
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer text-muted">
+                <small>
+                    <i class="bi bi-info-circle"></i> 
+                    總計：醫師 {{ total_doctors }} 人 | 治療師 {{ total_therapists }} 人 | 護理師 {{ total_nurses }} 人
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- System Statistics (existing) -->
 <div class="row g-4 mb-4">
-    <!-- Statistics Cards -->
     <div class="col-md-3">
         <div class="card text-center bg-primary text-white">
             <div class="card-body">
@@ -37,6 +237,7 @@
     </div>
 </div>
 
+<!-- Recent Users and Audit Logs -->
 <div class="row">
     <div class="col-md-6">
         <div class="card">
@@ -79,24 +280,29 @@
     </div>
 </div>
 
+<!-- Quick Actions -->
 <div class="row mt-4">
     <div class="col-12">
         <div class="card">
             <div class="card-body">
                 <h5><i class="bi bi-gear"></i> 快速操作</h5>
                 <div class="btn-group" role="group">
-                    <a href="/admin/" class="btn btn-primary">
+                    <a href="/admin/dashboard/shift/" class="btn btn-primary">
+                        <i class="bi bi-calendar-plus"></i> 管理班表
+                    </a>
+                    <a href="{% url 'appointments:schedule_grid' %}" class="btn btn-success">
+                        <i class="bi bi-calendar-week"></i> 預約排程表
+                    </a>
+                    <a href="/admin/account/user/" class="btn btn-info">
+                        <i class="bi bi-person-plus"></i> 管理使用者
+                    </a>
+                    <a href="/admin/" class="btn btn-secondary">
                         <i class="bi bi-speedometer"></i> Django Admin
-                    </a>
-                    <a href="#" class="btn btn-success">
-                        <i class="bi bi-person-plus"></i> 新增使用者
-                    </a>
-                    <a href="#" class="btn btn-info">
-                        <i class="bi bi-file-earmark-text"></i> 系統報告
                     </a>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 {% endblock %}

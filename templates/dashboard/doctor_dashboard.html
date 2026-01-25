@@ -1,7 +1,64 @@
 {% extends 'dashboard/base_dashboard.html' %}
 
 {% block dashboard_content %}
-<div class="row g-4">
+
+<!-- Shift Schedule Section -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        {% include 'dashboard/widgets/shift_widget.html' %}
+    </div>
+    
+    <!-- Quick Stats -->
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">今日概況</h5>
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <div class="p-3">
+                            <h3 class="text-primary">{{ today_appointments.count }}</h3>
+                            <small class="text-muted">今日預約</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3">
+                            <h3 class="text-warning">
+                                {{ today_appointments|dictsort:"status"|dictsortreversed:"status"|selectattr:"status","equalto","booked"|list|length }}
+                            </h3>
+                            <small class="text-muted">待報到</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3">
+                            <h3 class="text-success">
+                                {{ today_appointments|dictsort:"status"|dictsortreversed:"status"|selectattr:"status","equalto","arrived"|list|length }}
+                            </h3>
+                            <small class="text-muted">進行中</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3">
+                            <h3 class="text-secondary">
+                                {{ today_appointments|dictsort:"status"|dictsortreversed:"status"|selectattr:"status","equalto","fulfilled"|list|length }}
+                            </h3>
+                            <small class="text-muted">已完成</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Appointment Timeline -->
+<div class="row">
+    <div class="col-12">
+        {% include 'appointments/widgets/appointment_timeline.html' %}
+    </div>
+</div>
+
+<!-- Original Statistics (keep if needed) -->
+<div class="row g-4 mt-2">
     <div class="col-md-4">
         <div class="card text-center bg-info text-white">
             <div class="card-body">
@@ -13,7 +70,7 @@
     <div class="col-md-4">
         <div class="card text-center bg-success text-white">
             <div class="card-body">
-                <h3>0</h3>
+                <h3>{{ today_appointments.count }}</h3>
                 <p class="mb-0"><i class="bi bi-calendar-check"></i> 今日預約</p>
             </div>
         </div>
@@ -28,19 +85,4 @@
     </div>
 </div>
 
-<div class="row mt-4">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="bi bi-calendar-week"></i> 今日行程</h5>
-            </div>
-            <div class="card-body">
-                <p class="text-muted">尚無預約行程</p>
-                <a href="#" class="btn btn-primary">
-                    <i class="bi bi-plus-circle"></i> 新增預約
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
 {% endblock %}

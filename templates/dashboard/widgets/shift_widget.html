@@ -1,0 +1,91 @@
+<!-- Shift Schedule Widget -->
+{% load static %}
+
+{% if today_shift %}
+<div class="card border-primary mb-3">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">
+            <i class="bi bi-calendar-check"></i> 今日班表
+            {% if today_shift.is_current %}
+                <span class="badge bg-success float-end">進行中</span>
+            {% endif %}
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-6">
+                <p class="mb-1"><strong>班別：</strong> 
+                    <span class="badge bg-info">{{ today_shift.get_shift_type_display }}</span>
+                </p>
+                <p class="mb-1"><strong>時間：</strong> {{ today_shift.start_time|time:"H:i" }} - {{ today_shift.end_time|time:"H:i" }}</p>
+            </div>
+            <div class="col-6">
+                <p class="mb-1"><strong>地點：</strong> {{ today_shift.location|default:"未指定" }}</p>
+                <p class="mb-1"><strong>狀態：</strong> 
+                    {% if today_shift.status == 'confirmed' %}
+                        <span class="badge bg-success">{{ today_shift.get_status_display }}</span>
+                    {% elif today_shift.status == 'cancelled' %}
+                        <span class="badge bg-danger">{{ today_shift.get_status_display }}</span>
+                    {% else %}
+                        <span class="badge bg-warning">{{ today_shift.get_status_display }}</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+        {% if today_shift.notes %}
+        <hr>
+        <p class="mb-0 small"><strong>備註：</strong> {{ today_shift.notes }}</p>
+        {% endif %}
+    </div>
+</div>
+{% else %}
+<div class="alert alert-info mb-3">
+    <i class="bi bi-info-circle"></i> 今日無排班
+</div>
+{% endif %}
+
+<!-- Upcoming Shifts -->
+{% if my_shifts %}
+<div class="card mb-3">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="bi bi-calendar-week"></i> 未來7天班表</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>日期</th>
+                        <th>班別</th>
+                        <th>時間</th>
+                        <th>地點</th>
+                        <th>狀態</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for shift in my_shifts %}
+                    <tr {% if shift.is_today %}class="table-primary"{% endif %}>
+                        <td>
+                            {{ shift.date|date:"m/d (D)" }}
+                            {% if shift.is_today %}<span class="badge bg-primary ms-1">今日</span>{% endif %}
+                        </td>
+                        <td><span class="badge bg-info">{{ shift.get_shift_type_display }}</span></td>
+                        <td class="small">{{ shift.start_time|time:"H:i" }} - {{ shift.end_time|time:"H:i" }}</td>
+                        <td class="small">{{ shift.location|default:"-" }}</td>
+                        <td>
+                            {% if shift.status == 'confirmed' %}
+                                <span class="badge bg-success">已確認</span>
+                            {% elif shift.status == 'cancelled' %}
+                                <span class="badge bg-danger">已取消</span>
+                            {% else %}
+                                <span class="badge bg-warning">已排班</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}

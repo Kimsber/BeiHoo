@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import UserRegistrationForm, UserLoginForm
+from .forms import UserRegistrationForm, UserLoginForm, UserProfileForm
 from .models import AuditLog
 
 def get_client_ip(request):
@@ -18,7 +18,7 @@ def get_client_ip(request):
 def register_view(request):
     """使用者註冊"""
     if request.user.is_authenticated:
-        return redirect(user.dashboard_url)
+        return redirect(request.user.dashboard_url)
     
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
@@ -50,7 +50,7 @@ def register_view(request):
 def login_view(request):
     """使用者登入"""
     if request.user.is_authenticated:
-        return redirect(user.dashboard_url)
+        return redirect(request.user.dashboard_url)
     
     if request.method == 'POST':
         form = UserLoginForm(request, data=request.POST)
@@ -65,8 +65,6 @@ def login_view(request):
                 ip_address=get_client_ip(request),
                 details=f'使用者登入: {user.username}'
             )
-            
-            messages.success(request, f'歡迎回來，{user.get_full_name()}！')
             
             # 檢查是否有 next 參數
             next_url = request.GET.get('next')
@@ -94,7 +92,7 @@ def logout_view(request):
     
     logout(request)
     messages.info(request, '您已成功登出。')
-    return redirect('login')
+    return redirect('account:login')
 
 
 @login_required
@@ -102,6 +100,33 @@ def profile_view(request):
     """個人資料頁面"""
     return render(request, 'account/profile.html', {'user': request.user})
 
+
+@login_required
+def profile_edit_view(request):
+    """編輯個人資料"""
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            user = form.save()
+            
+            # Log the action
+            AuditLog.objects.create(
+                user=request.user,
+                action='update',
+                resource_type='User',
+                resource_id=str(user.id),
+                ip_address=get_client_ip(request),
+                details=f'更新個人資料: {user.username}'
+            )
+            
+            messages.success(request, '個人資料已成功更新！')
+            return redirect('account:profile')
+        else:
+            messages.error(request, '資料更新失敗，請檢查輸入的內容。')
+    else:
+        form = UserProfileForm(instance=request.user)
+    
+    return render(request, 'account/profile_edit.html', {'form': form})
 
 @login_required
 def home_view(request):

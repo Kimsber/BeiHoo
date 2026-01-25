@@ -76,3 +76,72 @@ class UserLoginForm(AuthenticationForm):
             'placeholder': '請輸入密碼'
         })
     )
+
+
+class UserProfileForm(forms.ModelForm):
+    """使用者個人資料編輯表單"""
+    
+    email = forms.EmailField(
+        required=False, 
+        label='電子郵件',
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'example@email.com'
+        })
+    )
+    first_name = forms.CharField(
+        max_length=30, 
+        required=False, 
+        label='名字',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': '請輸入名字'
+        })
+    )
+    last_name = forms.CharField(
+        max_length=30, 
+        required=False, 
+        label='姓氏',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': '請輸入姓氏'
+        })
+    )
+    phone_number = forms.CharField(
+        max_length=20, 
+        required=False, 
+        label='電話',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': '0912-345-678'
+        })
+    )
+    date_of_birth = forms.DateField(
+        required=False, 
+        label='生日',
+        widget=forms.DateInput(attrs={
+            'class': 'form-control',
+            'type': 'date'
+        })
+    )
+    avatar = forms.ImageField(
+        required=False,
+        label='頭像',
+        widget=forms.FileInput(attrs={
+            'class': 'form-control',
+            'accept': 'image/*'
+        })
+    )
+    
+    class Meta:
+        model = User
+        fields = ['email', 'first_name', 'last_name', 'phone_number', 'date_of_birth', 'avatar']
+        
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if email:
+            # Check if email is already used by another user
+            existing_user = User.objects.filter(email=email).exclude(pk=self.instance.pk).first()
+            if existing_user:
+                raise forms.ValidationError('此電子郵件已被使用')
+        return email

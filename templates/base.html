@@ -30,22 +30,24 @@
                         </li>
                         
                         <!-- Admin Menu -->
-                        {% if user.role == 'admin' %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="/admin/">
-                                    <i class="bi bi-gear-fill"></i> 系統管理
-                                </a>
-                            </li>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                    <i class="bi bi-people"></i> 使用者管理
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#">所有使用者</a></li>
-                                    <li><a class="dropdown-item" href="#">新增使用者</a></li>
-                                    <li><a class="dropdown-item" href="#">稽核紀錄</a></li>
-                                </ul>
-                            </li>
+                       {% if user.role == 'admin' %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-gear"></i> 系統管理
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'dashboard:shift_management' %}">
+                                    <i class="bi bi-calendar-week"></i> 班表管理
+                                </a></li>
+                                <li><a class="dropdown-item" href="/admin/">
+                                    <i class="bi bi-person-gear"></i> 使用者管理
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'appointments:schedule_grid' %}">
+                                    <i class="bi bi-calendar-check"></i> 預約管理
+                                </a></li>
+                            </ul>
+                        </li>
                         {% endif %}
                         
                         <!-- Doctor Menu -->
@@ -149,15 +151,15 @@
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                                 <i class="bi bi-person-circle"></i> 
-                                {{ user.get_full_name|default:user.username }}
+                                {{ user.display_name }}
                                 <span class="badge bg-light text-dark ms-1">{{ user.get_role_display }}</span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="{% url 'profile' %}">
+                                <li><a class="dropdown-item" href="{% url 'account:profile' %}">
                                     <i class="bi bi-person"></i> 個人資料
                                 </a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{% url 'logout' %}">
+                                <li><a class="dropdown-item" href="{% url 'account:logout' %}">
                                     <i class="bi bi-box-arrow-right"></i> 登出
                                 </a></li>
                             </ul>
@@ -166,12 +168,12 @@
                 {% else %}
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'login' %}">
+                            <a class="nav-link" href="{% url 'account:login' %}">
                                 <i class="bi bi-box-arrow-in-right"></i> 登入
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'register' %}">
+                            <a class="nav-link" href="{% url 'account:register' %}">
                                 <i class="bi bi-person-plus"></i> 註冊
                             </a>
                         </li>

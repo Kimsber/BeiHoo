@@ -1,0 +1,299 @@
+<!-- Appointment Timeline Widget -->
+{% load static %}
+
+<div class="card mb-4">
+    <div class="card-header bg-success text-white">
+        <h5 class="mb-0">
+            <i class="bi bi-calendar-check"></i> 今日預約時間軸
+            <span class="badge bg-light text-dark float-end">{{ today_appointments.count }} 個預約</span>
+        </h5>
+    </div>
+    <div class="card-body p-0">
+        {% if today_appointments %}
+        <div class="timeline-container p-3">
+            {% for appt in today_appointments %}
+            <div class="appointment-item mb-3 p-3 border-start border-4 
+                {% if appt.status == 'fulfilled' %}bg-light border-secondary{% elif appt.status == 'arrived' %}bg-success-subtle border-success{% elif appt.status == 'booked' %}bg-info-subtle border-info{% else %}bg-light border-secondary{% endif %}"
+                 style="position: relative;">
+                
+                <!-- Time Badge -->
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                        <span class="badge bg-dark">
+                            {{ appt.start_time|time:"H:i" }} - {{ appt.end_time|time:"H:i" }}
+                        </span>
+                        <span class="badge" style="background-color: {{ appt.service_type.color }};">
+                            {{ appt.service_type.display_name_zh }}
+                        </span>
+                    </div>
+                    <div>
+                        {% if appt.status == 'fulfilled' %}
+                        <span class="badge bg-success"><i class="bi bi-check-circle"></i> 已完成</span>
+                        {% elif appt.status == 'arrived' %}
+                        <span class="badge bg-primary"><i class="bi bi-hourglass-split"></i> 進行中</span>
+                        {% elif appt.status == 'booked' %}
+                        <span class="badge bg-warning"><i class="bi bi-clock"></i> 待報到</span>
+                        {% elif appt.status == 'cancelled' %}
+                        <span class="badge bg-secondary"><i class="bi bi-x-circle"></i> 已取消</span>
+                        {% elif appt.status == 'noshow' %}
+                        <span class="badge bg-danger"><i class="bi bi-exclamation-circle"></i> 未到</span>
+                        {% endif %}
+                        
+                        {% if appt.is_overdue and appt.status == 'booked' %}
+                        <span class="badge bg-danger"><i class="bi bi-exclamation-triangle"></i> 逾時</span>
+                        {% endif %}
+                        
+                        {% if appt.is_upcoming %}
+                        <span class="badge bg-info"><i class="bi bi-bell"></i> 即將開始</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Patient Info -->
+                <div class="mb-2">
+                    <h6 class="mb-1">
+                        <i class="bi bi-person-circle"></i> 
+                        <strong>{{ appt.patient.get_full_name }}</strong>
+                        <small class="text-muted">({{ appt.patient.username }})</small>
+                    </h6>
+                    
+                    {% if appt.reason_code %}
+                    <div class="text-muted small">
+                        <i class="bi bi-file-medical"></i> 主訴: {{ appt.reason_code }}
+                    </div>
+                    {% endif %}
+                    
+                    {% if appt.location %}
+                    <div class="text-muted small">
+                        <i class="bi bi-geo-alt"></i> 地點: {{ appt.location }}
+                    </div>
+                    {% endif %}
+                    
+                    {% if appt.priority != 'routine' %}
+                    <div class="text-danger small">
+                        <i class="bi bi-exclamation-triangle-fill"></i> 
+                        優先度: {{ appt.get_priority_display }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Actions -->
+                <div class="mt-2">
+                    <div class="btn-group btn-group-sm" role="group">
+                        {% if appt.status == 'booked' %}
+                        <button type="button" class="btn btn-success" 
+                                onclick="checkInAppointment({{ appt.id }})">
+                            <i class="bi bi-check"></i> 報到
+                        </button>
+                        {% elif appt.status == 'arrived' %}
+                        <button type="button" class="btn btn-primary" 
+                                onclick="completeAppointment({{ appt.id }})">
+                            <i class="bi bi-check-all"></i> 完成看診
+                        </button>
+                        {% endif %}
+                        
+                        <a href="{% url 'appointments:detail' appt.id %}" class="btn btn-outline-info">
+                            <i class="bi bi-eye"></i> 詳情
+                        </a>
+                        
+                        {% if appt.status not in 'fulfilled,cancelled' %}
+                        <button type="button" class="btn btn-outline-danger" 
+                                onclick="cancelAppointment({{ appt.id }})">
+                            <i class="bi bi-x-circle"></i> 取消
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Additional Info -->
+                {% if appt.checked_in_at %}
+                <div class="mt-2 small text-muted">
+                    <i class="bi bi-clock-history"></i> 
+                    報到時間: {{ appt.checked_in_at|date:"H:i" }}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="p-4 text-center text-muted">
+            <i class="bi bi-calendar-x" style="font-size: 48px;"></i>
+            <p class="mt-2">今日無預約</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Upcoming Appointments (Next 7 Days) -->
+{% if upcoming_appointments %}
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <i class="bi bi-calendar-week"></i> 未來7天預約
+            <span class="badge bg-secondary float-end">{{ upcoming_appointments.count }} 個</span>
+        </h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>日期</th>
+                        <th>時間</th>
+                        <th>病患</th>
+                        <th>服務類型</th>
+                        <th>地點</th>
+                        <th>狀態</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for appt in upcoming_appointments %}
+                    <tr {% if appt.is_today %}class="table-primary"{% endif %}>
+                        <td>
+                            {{ appt.appointment_date|date:"m/d (D)" }}
+                            {% if appt.is_today %}
+                            <span class="badge bg-primary ms-1">今日</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <small>{{ appt.start_time|time:"H:i" }} - {{ appt.end_time|time:"H:i" }}</small>
+                        </td>
+                        <td>
+                            <strong>{{ appt.patient.get_full_name }}</strong>
+                        </td>
+                        <td>
+                            <span class="badge" style="background-color: {{ appt.service_type.color }};">
+                                {{ appt.service_type.display_name_zh }}
+                            </span>
+                        </td>
+                        <td>
+                            <small>{{ appt.location|default:"-" }}</small>
+                        </td>
+                        <td>
+                            {% if appt.status == 'booked' %}
+                            <span class="badge bg-info">待報到</span>
+                            {% elif appt.status == 'arrived' %}
+                            <span class="badge bg-success">已報到</span>
+                            {% elif appt.status == 'fulfilled' %}
+                            <span class="badge bg-secondary">已完成</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<style>
+.timeline-container {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.appointment-item {
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.appointment-item:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transform: translateX(5px);
+}
+</style>
+
+<script>
+function checkInAppointment(appointmentId) {
+    if (confirm('確認病患報到？')) {
+        fetch(`/appointments/${appointmentId}/checkin/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('報到失敗: ' + (data.error || '未知錯誤'));
+            }
+        })
+        .catch(error => {
+            alert('操作失敗');
+            console.error('Error:', error);
+        });
+    }
+}
+
+function completeAppointment(appointmentId) {
+    if (confirm('確認完成此預約？')) {
+        fetch(`/appointments/${appointmentId}/complete/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('完成失敗: ' + (data.error || '未知錯誤'));
+            }
+        })
+        .catch(error => {
+            alert('操作失敗');
+            console.error('Error:', error);
+        });
+    }
+}
+
+function cancelAppointment(appointmentId) {
+    const reason = prompt('請輸入取消原因:');
+    if (reason !== null) {
+        const formData = new FormData();
+        formData.append('reason', reason);
+        
+        fetch(`/appointments/${appointmentId}/cancel/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('取消失敗: ' + (data.error || '未知錯誤'));
+            }
+        })
+        .catch(error => {
+            alert('操作失敗');
+            console.error('Error:', error);
+        });
+    }
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>

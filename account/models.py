@@ -66,6 +66,14 @@ class User(AbstractUser):
         return self.role == 'patient'
     
     @property
+    def display_name(self):
+        """返回顯示名稱（優先使用姓名，否則使用帳號）"""
+        full_name = self.get_full_name()
+        if full_name:
+            return full_name
+        return self.username
+
+    @property
     def dashboard_url(self):
         """Get the URL name for user's dashboard"""
         from django.conf import settings

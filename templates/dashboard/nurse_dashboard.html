@@ -1,43 +1,323 @@
 {% extends 'dashboard/base_dashboard.html' %}
 
 {% block dashboard_content %}
-<div class="row g-4">
+
+<!-- Shift and Quick Stats -->
+<div class="row mb-4">
     <div class="col-md-4">
-        <div class="card text-center bg-info text-white">
-            <div class="card-body">
-                <h3>{{ patients_count }}</h3>
-                <p class="mb-0"><i class="bi bi-people"></i> 照護病患</p>
-            </div>
-        </div>
+        {% include 'dashboard/widgets/shift_widget.html' with today_shift=today_shift only %}
     </div>
-    <div class="col-md-4">
-        <div class="card text-center bg-danger text-white">
+    
+    <div class="col-md-8">
+        <div class="card">
             <div class="card-body">
-                <h3>0</h3>
-                <p class="mb-0"><i class="bi bi-exclamation-triangle"></i> 緊急事項</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card text-center bg-success text-white">
-            <div class="card-body">
-                <h3>0</h3>
-                <p class="mb-0"><i class="bi bi-capsule"></i> 用藥提醒</p>
+                <h5 class="card-title">今日報到概況</h5>
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <div class="p-3">
+                            <h3 class="text-primary">{{ all_today_appointments.count }}</h3>
+                            <small class="text-muted">總預約數</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3">
+                            <h3 class="text-warning">{{ booked_count }}</h3>
+                            <small class="text-muted">待報到</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3">
+                            <h3 class="text-success">{{ arrived_count }}</h3>
+                            <small class="text-muted">已報到</small>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="row mt-4">
+<!-- Quick Check-in -->
+<div class="row mb-4">
     <div class="col-12">
         <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="bi bi-list-check"></i> 今日待辦事項</h5>
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-upc-scan"></i> 快速報到</h5>
             </div>
             <div class="card-body">
-                <p class="text-muted">尚無待辦事項</p>
+                <div class="input-group input-group-lg">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" class="form-control" id="searchPatient" 
+                           placeholder="掃描健保卡 / 輸入病歷號 / 病患姓名">
+                    <button class="btn btn-primary" type="button" onclick="searchPatient()">
+                        <i class="bi bi-search"></i> 搜尋
+                    </button>
+                    <button class="btn btn-secondary" type="button">
+                        <i class="bi bi-upc-scan"></i> 掃描
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Today's Appointments List -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-bs-toggle="tab" href="#all">
+                            全部 ({{ all_today_appointments.count }})
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="tab" href="#waiting">
+                            待報到 ({{ booked_count }})
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="tab" href="#arrived">
+                            已報到 ({{ arrived_count }})
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="tab" href="#completed">
+                            已完成
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body p-0">
+                <div class="tab-content">
+                    <!-- All Tab -->
+                    <div class="tab-pane fade show active" id="all">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>時間</th>
+                                        <th>病患</th>
+                                        <th>醫師/治療師</th>
+                                        <th>類型</th>
+                                        <th>地點</th>
+                                        <th>狀態</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for appt in all_today_appointments %}
+                                    <tr class="{% if appt.is_overdue and appt.status == 'booked' %}table-danger{% endif %}">
+                                        <td>
+                                            <strong>{{ appt.start_time|time:"H:i" }}</strong>
+                                            {% if appt.is_overdue and appt.status == 'booked' %}
+                                            <br><small class="text-danger">已逾時</small>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <strong>{{ appt.patient.get_full_name }}</strong><br>
+                                            <small class="text-muted">{{ appt.patient.username }}</small>
+                                        </td>
+                                        <td>
+                                            {{ appt.practitioner.get_full_name }}<br>
+                                            <small class="text-muted">{{ appt.practitioner.get_role_display }}</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge" style="background-color: {{ appt.service_type.color }};">
+                                                {{ appt.service_type.display_name_zh }}
+                                            </span>
+                                        </td>
+                                        <td>{{ appt.location|default:"-" }}</td>
+                                        <td>
+                                            {% if appt.status == 'booked' %}
+                                            <span class="badge bg-warning">待報到</span>
+                                            {% elif appt.status == 'arrived' %}
+                                            <span class="badge bg-success">已報到</span>
+                                            {% elif appt.status == 'fulfilled' %}
+                                            <span class="badge bg-secondary">已完成</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if appt.status == 'booked' %}
+                                            <button class="btn btn-sm btn-success" 
+                                                    onclick="checkInAppointment({{ appt.id }})">
+                                                <i class="bi bi-check"></i> 報到
+                                            </button>
+                                            {% elif appt.status == 'arrived' %}
+                                            <span class="text-success">
+                                                <i class="bi bi-check-circle"></i> 已報到
+                                            </span>
+                                            {% endif %}
+                                            <a href="{% url 'appointments:detail' appt.id %}" 
+                                               class="btn btn-sm btn-outline-info">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="7" class="text-center text-muted py-4">
+                                            今日無預約
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Waiting Tab -->
+                    <div class="tab-pane fade" id="waiting">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>時間</th>
+                                        <th>病患</th>
+                                        <th>醫師/治療師</th>
+                                        <th>類型</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for appt in all_today_appointments %}
+                                    {% if appt.status == 'booked' %}
+                                    <tr class="{% if appt.is_overdue %}table-danger{% endif %}">
+                                        <td><strong>{{ appt.start_time|time:"H:i" }}</strong></td>
+                                        <td><strong>{{ appt.patient.get_full_name }}</strong></td>
+                                        <td>{{ appt.practitioner.get_full_name }}</td>
+                                        <td>
+                                            <span class="badge" style="background-color: {{ appt.service_type.color }};">
+                                                {{ appt.service_type.display_name_zh }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-success" 
+                                                    onclick="checkInAppointment({{ appt.id }})">
+                                                <i class="bi bi-check"></i> 報到
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endif %}
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted py-4">
+                                            無待報到病患
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Arrived Tab -->
+                    <div class="tab-pane fade" id="arrived">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>時間</th>
+                                        <th>病患</th>
+                                        <th>醫師/治療師</th>
+                                        <th>地點</th>
+                                        <th>報到時間</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for appt in all_today_appointments %}
+                                    {% if appt.status == 'arrived' %}
+                                    <tr class="table-success">
+                                        <td><strong>{{ appt.start_time|time:"H:i" }}</strong></td>
+                                        <td><strong>{{ appt.patient.get_full_name }}</strong></td>
+                                        <td>{{ appt.practitioner.get_full_name }}</td>
+                                        <td>{{ appt.location }}</td>
+                                        <td>{{ appt.checked_in_at|date:"H:i" }}</td>
+                                    </tr>
+                                    {% endif %}
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Completed Tab -->
+                    <div class="tab-pane fade" id="completed">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>時間</th>
+                                        <th>病患</th>
+                                        <th>醫師/治療師</th>
+                                        <th>完成時間</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for appt in all_today_appointments %}
+                                    {% if appt.status == 'fulfilled' %}
+                                    <tr>
+                                        <td>{{ appt.start_time|time:"H:i" }}</td>
+                                        <td>{{ appt.patient.get_full_name }}</td>
+                                        <td>{{ appt.practitioner.get_full_name }}</td>
+                                        <td>{{ appt.completed_at|date:"H:i" }}</td>
+                                    </tr>
+                                    {% endif %}
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function checkInAppointment(appointmentId) {
+    if (confirm('確認病患報到？')) {
+        fetch(`/appointments/${appointmentId}/checkin/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('報到失敗');
+            }
+        });
+    }
+}
+
+function searchPatient() {
+    const query = document.getElementById('searchPatient').value;
+    if (query) {
+        alert('搜尋功能開發中... 搜尋: ' + query);
+        // TODO: Implement search functionality
+    }
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+
 {% endblock %}

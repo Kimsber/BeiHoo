@@ -143,3 +143,178 @@ class BulkShiftActionForm(forms.Form):
     shift_ids = forms.CharField(
         widget=forms.HiddenInput()
     )
+
+
+class UserManagementForm(forms.ModelForm):
+    """Form for admin to create/edit users"""
+    
+    email = forms.EmailField(
+        required=False, 
+        label='電子郵件',
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'user@example.com'
+        })
+    )
+    
+    first_name = forms.CharField(
+        max_length=30, 
+        required=False, 
+        label='名字',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': '名字'
+        })
+    )
+    
+    last_name = forms.CharField(
+        max_length=30, 
+        required=False, 
+        label='姓氏',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': '姓氏'
+        })
+    )
+    
+    phone_number = forms.CharField(
+        max_length=20, 
+        required=False, 
+        label='電話',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': '0912-345-678'
+        })
+    )
+    
+    role = forms.ChoiceField(
+        choices=User.ROLE_CHOICES,
+        label='角色',
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+    
+    is_active = forms.BooleanField(
+        required=False,
+        initial=True,
+        label='啟用',
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
+    )
+    
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'first_name', 'last_name', 'phone_number', 'role', 'is_active']
+        widgets = {
+            'username': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': '使用者帳號'
+            })
+        }
+    
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if email:
+            existing_user = User.objects.filter(email=email).exclude(pk=self.instance.pk).first()
+            if existing_user:
+                raise ValidationError('此電子郵件已被使用')
+        return email
+    
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        existing_user = User.objects.filter(username=username).exclude(pk=self.instance.pk).first()
+        if existing_user:
+            raise ValidationError('此使用者名稱已被使用')
+        return username
+
+
+class UserCreateForm(UserManagementForm):
+    """Form for creating new users with password"""
+    
+    password1 = forms.CharField(
+        label='密碼',
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': '請輸入密碼'
+        })
+    )
+    
+    password2 = forms.CharField(
+        label='確認密碼',
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': '請再次輸入密碼'
+        })
+    )
+    
+    class Meta(UserManagementForm.Meta):
+        fields = ['username', 'email', 'first_name', 'last_name', 'phone_number', 'role', 'is_active', 'password1', 'password2']
+    
+    def clean_password2(self):
+        password1 = self.cleaned_data.get('password1')
+        password2 = self.cleaned_data.get('password2')
+        if password1 and password2 and password1 != password2:
+            raise ValidationError('兩次輸入的密碼不一致')
+        return password2
+    
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.set_password(self.cleaned_data['password1'])
+        if commit:
+            user.save()
+        return user
+
+
+class UserFilterForm(forms.Form):
+    """Form for filtering users"""
+    
+    role = forms.ChoiceField(
+        choices=[('', '所有角色')] + list(User.ROLE_CHOICES),
+        required=False,
+        label='角色',
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+    
+    is_active = forms.ChoiceField(
+        choices=[('', '全部'), ('1', '啟用'), ('0', '停用')],
+        required=False,
+        label='狀態',
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+    
+    search = forms.CharField(
+        required=False,
+        label='搜尋',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': '搜尋使用者名稱或姓名...'
+        })
+    )
+
+
+class PasswordResetFormAdmin(forms.Form):
+    """Form for admin to reset user password"""
+    
+    new_password1 = forms.CharField(
+        label='新密碼',
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': '請輸入新密碼'
+        })
+    )
+    
+    new_password2 = forms.CharField(
+        label='確認新密碼',
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': '請再次輸入新密碼'
+        })
+    )
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        password1 = cleaned_data.get('new_password1')
+        password2 = cleaned_data.get('new_password2')
+        
+        if password1 and password2 and password1 != password2:
+            raise ValidationError('兩次輸入的密碼不一致')
+        
+        return cleaned_data

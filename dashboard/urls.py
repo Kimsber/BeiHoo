@@ -18,4 +18,12 @@ urlpatterns = [
     path('shifts/<int:shift_id>/edit/', views.shift_edit, name='shift_edit'),
     path('shifts/<int:shift_id>/delete/', views.shift_delete, name='shift_delete'),
     path('shifts/bulk-action/', views.shift_bulk_action, name='shift_bulk_action'),
+
+    # User management URLs
+    path('users/', views.user_management, name='user_management'),
+    path('users/create/', views.user_create, name='user_create'),
+    path('users/<int:user_id>/edit/', views.user_edit, name='user_edit'),
+    path('users/<int:user_id>/delete/', views.user_delete, name='user_delete'),
+    path('users/<int:user_id>/toggle-active/', views.user_toggle_active, name='user_toggle_active'),
+    path('users/<int:user_id>/reset-password/', views.user_reset_password, name='user_reset_password'),
 ]

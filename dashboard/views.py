@@ -15,6 +15,11 @@ from django.contrib import messages
 from .forms import ShiftForm, ShiftFilterForm, BulkShiftActionForm
 import json
 
+from django.contrib.auth.hashers import make_password
+from django.db.models import Q, Count
+from .forms import (ShiftForm, ShiftFilterForm, BulkShiftActionForm, 
+                    UserManagementForm, UserCreateForm, UserFilterForm, PasswordResetFormAdmin)
+
 # Import appointment models
 from appointments.models import Appointment
 
@@ -483,3 +488,228 @@ def shift_bulk_action(request):
             return JsonResponse({'success': False, 'error': str(e)})
     
     return JsonResponse({'success': False, 'error': '無效的請求'}, status=400)
+
+
+@login_required
+def user_management(request):
+    """User management page for admin"""
+    if request.user.role != 'admin':
+        raise PermissionDenied("您沒有權限訪問此頁面")
+    
+    # Get filter parameters
+    filter_form = UserFilterForm(request.GET or None)
+    
+    # Base queryset
+    users = User.objects.all().order_by('-created_at')
+    
+    # Apply filters
+    if filter_form.is_valid():
+        role = filter_form.cleaned_data.get('role')
+        is_active = filter_form.cleaned_data.get('is_active')
+        search = filter_form.cleaned_data.get('search')
+        
+        if role:
+            users = users.filter(role=role)
+        if is_active:
+            users = users.filter(is_active=(is_active == '1'))
+        if search:
+            users = users.filter(
+                Q(username__icontains=search) |
+                Q(first_name__icontains=search) |
+                Q(last_name__icontains=search) |
+                Q(email__icontains=search)
+            )
+    
+    # Get statistics
+    total_users = User.objects.count()
+    active_users = User.objects.filter(is_active=True).count()
+    users_by_role = User.objects.values('role').annotate(count=Count('id'))
+    
+    context = {
+        'filter_form': filter_form,
+        'users': users,
+        'total_users': total_users,
+        'active_users': active_users,
+        'users_by_role': {item['role']: item['count'] for item in users_by_role},
+    }
+    
+    return render(request, 'dashboard/user_management.html', context)
+
+
+@login_required
+def user_create(request):
+    """Create a new user"""
+    if request.user.role != 'admin':
+        raise PermissionDenied("您沒有權限訪問此頁面")
+    
+    if request.method == 'POST':
+        form = UserCreateForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            
+            # Log the action
+            AuditLog.objects.create(
+                user=request.user,
+                action='create',
+                resource_type='User',
+                resource_id=str(user.id),
+                ip_address=request.META.get('REMOTE_ADDR'),
+                details=f'建立使用者: {user.username} ({user.get_role_display()})'
+            )
+            
+            messages.success(request, f'成功建立使用者：{user.username}')
+            return redirect('dashboard:user_management')
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f'{field}: {error}')
+    else:
+        form = UserCreateForm()
+    
+    return render(request, 'dashboard/user_form.html', {'form': form, 'action': 'create'})
+
+
+@login_required
+def user_edit(request, user_id):
+    """Edit an existing user"""
+    if request.user.role != 'admin':
+        raise PermissionDenied("您沒有權限訪問此頁面")
+    
+    user = get_object_or_404(User, id=user_id)
+    
+    if request.method == 'POST':
+        form = UserManagementForm(request.POST, instance=user)
+        if form.is_valid():
+            user = form.save()
+            
+            # Log the action
+            AuditLog.objects.create(
+                user=request.user,
+                action='update',
+                resource_type='User',
+                resource_id=str(user.id),
+                ip_address=request.META.get('REMOTE_ADDR'),
+                details=f'更新使用者: {user.username}'
+            )
+            
+            messages.success(request, '成功更新使用者資料')
+            return redirect('dashboard:user_management')
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f'{field}: {error}')
+    else:
+        form = UserManagementForm(instance=user)
+    
+    return render(request, 'dashboard/user_form.html', {
+        'form': form, 
+        'action': 'edit', 
+        'edit_user': user
+    })
+
+
+@login_required
+def user_delete(request, user_id):
+    """Delete a user"""
+    if request.user.role != 'admin':
+        return JsonResponse({'success': False, 'error': '沒有權限'}, status=403)
+    
+    user = get_object_or_404(User, id=user_id)
+    
+    # Prevent deleting yourself
+    if user.id == request.user.id:
+        return JsonResponse({'success': False, 'error': '無法刪除自己的帳號'}, status=400)
+    
+    if request.method == 'POST':
+        username = user.username
+        user.delete()
+        
+        # Log the action
+        AuditLog.objects.create(
+            user=request.user,
+            action='delete',
+            resource_type='User',
+            resource_id=str(user_id),
+            ip_address=request.META.get('REMOTE_ADDR'),
+            details=f'刪除使用者: {username}'
+        )
+        
+        return JsonResponse({'success': True, 'message': '成功刪除使用者'})
+    
+    return JsonResponse({'success': False, 'error': '無效的請求'}, status=400)
+
+
+@login_required
+def user_toggle_active(request, user_id):
+    """Toggle user active status"""
+    if request.user.role != 'admin':
+        return JsonResponse({'success': False, 'error': '沒有權限'}, status=403)
+    
+    user = get_object_or_404(User, id=user_id)
+    
+    # Prevent deactivating yourself
+    if user.id == request.user.id:
+        return JsonResponse({'success': False, 'error': '無法停用自己的帳號'}, status=400)
+    
+    if request.method == 'POST':
+        user.is_active = not user.is_active
+        user.save()
+        
+        status_text = '啟用' if user.is_active else '停用'
+        
+        # Log the action
+        AuditLog.objects.create(
+            user=request.user,
+            action='update',
+            resource_type='User',
+            resource_id=str(user.id),
+            ip_address=request.META.get('REMOTE_ADDR'),
+            details=f'{status_text}使用者: {user.username}'
+        )
+        
+        return JsonResponse({
+            'success': True, 
+            'message': f'已{status_text}使用者',
+            'is_active': user.is_active
+        })
+    
+    return JsonResponse({'success': False, 'error': '無效的請求'}, status=400)
+
+
+@login_required
+def user_reset_password(request, user_id):
+    """Reset user password"""
+    if request.user.role != 'admin':
+        raise PermissionDenied("您沒有權限訪問此頁面")
+    
+    user = get_object_or_404(User, id=user_id)
+    
+    if request.method == 'POST':
+        form = PasswordResetFormAdmin(request.POST)
+        if form.is_valid():
+            new_password = form.cleaned_data['new_password1']
+            user.set_password(new_password)
+            user.save()
+            
+            # Log the action
+            AuditLog.objects.create(
+                user=request.user,
+                action='update',
+                resource_type='User',
+                resource_id=str(user.id),
+                ip_address=request.META.get('REMOTE_ADDR'),
+                details=f'重設使用者密碼: {user.username}'
+            )
+            
+            messages.success(request, f'已成功重設 {user.username} 的密碼')
+            return redirect('dashboard:user_management')
+        else:
+            for error in form.non_field_errors():
+                messages.error(request, error)
+    else:
+        form = PasswordResetFormAdmin()
+    
+    return render(request, 'dashboard/user_reset_password.html', {
+        'form': form,
+        'reset_user': user
+    })

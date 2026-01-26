@@ -30,21 +30,28 @@
                         </li>
                         
                         <!-- Admin Menu -->
-                       {% if user.role == 'admin' %}
+                        {% if user.role == 'admin' %}
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                                 <i class="bi bi-gear"></i> 系統管理
                             </a>
                             <ul class="dropdown-menu">
+                                <li><h6 class="dropdown-header">人員管理</h6></li>
+                                <li><a class="dropdown-item" href="{% url 'dashboard:user_management' %}">
+                                    <i class="bi bi-people"></i> 使用者管理
+                                </a></li>
                                 <li><a class="dropdown-item" href="{% url 'dashboard:shift_management' %}">
                                     <i class="bi bi-calendar-week"></i> 班表管理
                                 </a></li>
-                                <li><a class="dropdown-item" href="/admin/">
-                                    <i class="bi bi-person-gear"></i> 使用者管理
+                                <li><hr class="dropdown-divider"></li>
+                                <li><h6 class="dropdown-header">預約與排程</h6></li>
+                                <li><a class="dropdown-item" href="{% url 'appointments:schedule_grid' %}">
+                                    <i class="bi bi-calendar-check"></i> 預約排程
                                 </a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{% url 'appointments:schedule_grid' %}">
-                                    <i class="bi bi-calendar-check"></i> 預約管理
+                                <li><h6 class="dropdown-header">系統工具</h6></li>
+                                <li><a class="dropdown-item" href="/admin/">
+                                    <i class="bi bi-terminal"></i> Django Admin
                                 </a></li>
                             </ul>
                         </li>

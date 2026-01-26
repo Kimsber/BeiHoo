@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if action == 'create' %}新增使用者{% else %}編輯使用者{% endif %} - BeiHoo{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4>
+                        <i class="bi bi-person-{% if action == 'create' %}plus{% else %}pencil{% endif %}"></i> 
+                        {% if action == 'create' %}新增使用者{% else %}編輯使用者{% endif %}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <!-- Username -->
+                        <div class="row mb-3">
+                            <label class="col-md-3 col-form-label">{{ form.username.label }} <span class="text-danger">*</span></label>
+                            <div class="col-md-9">
+                                {{ form.username }}
+                                {% if form.username.errors %}
+                                    <div class="text-danger">{{ form.username.errors }}</div>
+                                {% endif %}
+                                <small class="form-text text-muted">用於登入系統的帳號</small>
+                            </div>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="row mb-3">
+                            <label class="col-md-3 col-form-label">{{ form.email.label }}</label>
+                            <div class="col-md-9">
+                                {{ form.email }}
+                                {% if form.email.errors %}
+                                    <div class="text-danger">{{ form.email.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- First Name -->
+                        <div class="row mb-3">
+                            <label class="col-md-3 col-form-label">{{ form.first_name.label }}</label>
+                            <div class="col-md-9">
+                                {{ form.first_name }}
+                                {% if form.first_name.errors %}
+                                    <div class="text-danger">{{ form.first_name.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Last Name -->
+                        <div class="row mb-3">
+                            <label class="col-md-3 col-form-label">{{ form.last_name.label }}</label>
+                            <div class="col-md-9">
+                                {{ form.last_name }}
+                                {% if form.last_name.errors %}
+                                    <div class="text-danger">{{ form.last_name.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Phone Number -->
+                        <div class="row mb-3">
+                            <label class="col-md-3 col-form-label">{{ form.phone_number.label }}</label>
+                            <div class="col-md-9">
+                                {{ form.phone_number }}
+                                {% if form.phone_number.errors %}
+                                    <div class="text-danger">{{ form.phone_number.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Role -->
+                        <div class="row mb-3">
+                            <label class="col-md-3 col-form-label">{{ form.role.label }} <span class="text-danger">*</span></label>
+                            <div class="col-md-9">
+                                {{ form.role }}
+                                {% if form.role.errors %}
+                                    <div class="text-danger">{{ form.role.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Is Active -->
+                        <div class="row mb-3">
+                            <label class="col-md-3 col-form-label">{{ form.is_active.label }}</label>
+                            <div class="col-md-9">
+                                <div class="form-check">
+                                    {{ form.is_active }}
+                                    <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                                        允許此使用者登入系統
+                                    </label>
+                                </div>
+                                {% if form.is_active.errors %}
+                                    <div class="text-danger">{{ form.is_active.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        {% if action == 'create' %}
+                        <hr>
+                        <h5 class="mb-3">設定密碼</h5>
+
+                        <!-- Password 1 -->
+                        <div class="row mb-3">
+                            <label class="col-md-3 col-form-label">{{ form.password1.label }} <span class="text-danger">*</span></label>
+                            <div class="col-md-9">
+                                {{ form.password1 }}
+                                {% if form.password1.errors %}
+                                    <div class="text-danger">{{ form.password1.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Password 2 -->
+                        <div class="row mb-3">
+                            <label class="col-md-3 col-form-label">{{ form.password2.label }} <span class="text-danger">*</span></label>
+                            <div class="col-md-9">
+                                {{ form.password2 }}
+                                {% if form.password2.errors %}
+                                    <div class="text-danger">{{ form.password2.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {{ form.non_field_errors }}
+                        </div>
+                        {% endif %}
+
+                        {% if action == 'edit' and edit_user %}
+                        <div class="alert alert-info">
+                            <h6><i class="bi bi-info-circle"></i> 使用者資訊</h6>
+                            <p class="mb-1"><strong>建立時間：</strong> {{ edit_user.created_at|date:"Y-m-d H:i" }}</p>
+                            <p class="mb-0"><strong>最後登入：</strong> {{ edit_user.last_login|date:"Y-m-d H:i"|default:"從未登入" }}</p>
+                        </div>
+                        {% endif %}
+
+                        <hr>
+
+                        <div class="row">
+                            <div class="col-md-9 offset-md-3">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle"></i> 
+                                    {% if action == 'create' %}建立使用者{% else %}儲存變更{% endif %}
+                                </button>
+                                <a href="{% url 'dashboard:user_management' %}" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> 取消
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

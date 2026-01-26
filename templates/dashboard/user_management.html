@@ -1,0 +1,271 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}使用者管理 - BeiHoo{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2><i class="bi bi-people"></i> 使用者管理</h2>
+            <p class="text-muted">管理系統所有使用者帳號</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'dashboard:user_create' %}" class="btn btn-primary">
+                <i class="bi bi-person-plus"></i> 新增使用者
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="text-muted">總使用者數</h6>
+                    <h3>{{ total_users }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="text-muted">啟用中</h6>
+                    <h3 class="text-success">{{ active_users }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="text-muted">醫療人員</h6>
+                    <h3>{{ users_by_role.doctor|default:0|add:users_by_role.therapist|default:0|add:users_by_role.nurse|default:0 }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="text-muted">病患</h6>
+                    <h3>{{ users_by_role.patient|default:0 }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Form -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5><i class="bi bi-funnel"></i> 篩選條件</h5>
+        </div>
+        <div class="card-body">
+            <form method="get" id="filterForm">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        {{ filter_form.role }}
+                    </div>
+                    <div class="col-md-3">
+                        {{ filter_form.is_active }}
+                    </div>
+                    <div class="col-md-4">
+                        {{ filter_form.search }}
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-search"></i> 搜尋
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- User List Table -->
+    <div class="card">
+        <div class="card-header">
+            <h5><i class="bi bi-table"></i> 使用者列表</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th width="50">ID</th>
+                            <th>使用者名稱</th>
+                            <th>姓名</th>
+                            <th>角色</th>
+                            <th>電子郵件</th>
+                            <th>電話</th>
+                            <th width="80">狀態</th>
+                            <th>最後登入</th>
+                            <th width="200">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr class="{% if not user.is_active %}table-secondary{% endif %}">
+                            <td>{{ user.id }}</td>
+                            <td>
+                                <strong>{{ user.username }}</strong>
+                                {% if user.id == request.user.id %}
+                                <span class="badge bg-info ms-1">您</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ user.get_full_name|default:"—" }}</td>
+                            <td>
+                                {% if user.role == 'admin' %}
+                                <span class="badge bg-danger">系統管理員</span>
+                                {% elif user.role == 'doctor' %}
+                                <span class="badge bg-primary">醫師</span>
+                                {% elif user.role == 'therapist' %}
+                                <span class="badge bg-info">治療師</span>
+                                {% elif user.role == 'nurse' %}
+                                <span class="badge bg-success">護理師</span>
+                                {% elif user.role == 'patient' %}
+                                <span class="badge bg-secondary">病患</span>
+                                {% elif user.role == 'researcher' %}
+                                <span class="badge bg-warning">研究員</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ user.email|default:"—" }}</td>
+                            <td>{{ user.phone_number|default:"—" }}</td>
+                            <td>
+                                {% if user.is_active %}
+                                <span class="badge bg-success">啟用</span>
+                                {% else %}
+                                <span class="badge bg-secondary">停用</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if user.last_login %}
+                                <small>{{ user.last_login|date:"m/d H:i" }}</small>
+                                {% else %}
+                                <small class="text-muted">從未登入</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a href="{% url 'dashboard:user_edit' user.id %}" 
+                                       class="btn btn-outline-primary" 
+                                       title="編輯">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a href="{% url 'dashboard:user_reset_password' user.id %}" 
+                                       class="btn btn-outline-warning" 
+                                       title="重設密碼">
+                                        <i class="bi bi-key"></i>
+                                    </a>
+                                    {% if user.id != request.user.id %}
+                                    <button type="button" 
+                                            class="btn btn-outline-{% if user.is_active %}secondary{% else %}success{% endif %} toggle-active" 
+                                            data-user-id="{{ user.id }}"
+                                            data-user-name="{{ user.username }}"
+                                            data-is-active="{{ user.is_active|yesno:'true,false' }}"
+                                            title="{% if user.is_active %}停用{% else %}啟用{% endif %}">
+                                        <i class="bi bi-{% if user.is_active %}pause{% else %}play{% endif %}-circle"></i>
+                                    </button>
+                                    <button type="button" 
+                                            class="btn btn-outline-danger delete-user" 
+                                            data-user-id="{{ user.id }}"
+                                            data-user-name="{{ user.username }}"
+                                            title="刪除">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="9" class="text-center py-5">
+                                <i class="bi bi-inbox" style="font-size: 3rem; color: #ccc;"></i>
+                                <p class="text-muted mt-2">沒有符合條件的使用者</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Toggle active status
+document.querySelectorAll('.toggle-active').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const userId = this.dataset.userId;
+        const userName = this.dataset.userName;
+        const isActive = this.dataset.isActive === 'true';
+        const actionText = isActive ? '停用' : '啟用';
+        
+        if (confirm(`確定要${actionText}使用者 ${userName} 嗎？`)) {
+            fetch(`/dashboard/users/${userId}/toggle-active/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    location.reload();
+                } else {
+                    alert('操作失敗: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('發生錯誤，請稍後再試');
+            });
+        }
+    });
+});
+
+// Delete user
+document.querySelectorAll('.delete-user').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const userId = this.dataset.userId;
+        const userName = this.dataset.userName;
+        
+        if (confirm(`確定要刪除使用者 ${userName} 嗎？此操作無法復原。`)) {
+            fetch(`/dashboard/users/${userId}/delete/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    location.reload();
+                } else {
+                    alert('刪除失敗: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('發生錯誤，請稍後再試');
+            });
+        }
+    });
+});
+</script>
+{% endblock %}

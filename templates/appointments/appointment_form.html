@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if action == 'create' %}新增預約{% else %}編輯預約{% endif %} - BeiHoo{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header">
+                    <h4>
+                        <i class="bi bi-calendar-{% if action == 'create' %}plus{% else %}pencil{% endif %}"></i> 
+                        {% if action == 'create' %}新增預約{% else %}編輯預約{% endif %}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <!-- Left Column -->
+                            <div class="col-md-6">
+                                <h5 class="mb-3">病患資訊</h5>
+                                
+                                <!-- Patient -->
+                                <div class="mb-3">
+                                    <label class="form-label">{{ form.patient.label }} <span class="text-danger">*</span></label>
+                                    {{ form.patient }}
+                                    {% if form.patient.errors %}
+                                        <div class="text-danger">{{ form.patient.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Reason -->
+                                <div class="mb-3">
+                                    <label class="form-label">{{ form.reason.label }}</label>
+                                    {{ form.reason }}
+                                    {% if form.reason.errors %}
+                                        <div class="text-danger">{{ form.reason.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Right Column -->
+                            <div class="col-md-6">
+                                <h5 class="mb-3">預約資訊</h5>
+                                
+                                <!-- Practitioner -->
+                                <div class="mb-3">
+                                    <label class="form-label">{{ form.practitioner.label }} <span class="text-danger">*</span></label>
+                                    {{ form.practitioner }}
+                                    {% if form.practitioner.errors %}
+                                        <div class="text-danger">{{ form.practitioner.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Service Type -->
+                                <div class="mb-3">
+                                    <label class="form-label">{{ form.service_type.label }} <span class="text-danger">*</span></label>
+                                    {{ form.service_type }}
+                                    {% if form.service_type.errors %}
+                                        <div class="text-danger">{{ form.service_type.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Date -->
+                                <div class="mb-3">
+                                    <label class="form-label">{{ form.appointment_date.label }} <span class="text-danger">*</span></label>
+                                    {{ form.appointment_date }}
+                                    {% if form.appointment_date.errors %}
+                                        <div class="text-danger">{{ form.appointment_date.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Time -->
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">{{ form.start_time.label }} <span class="text-danger">*</span></label>
+                                            {{ form.start_time }}
+                                            {% if form.start_time.errors %}
+                                                <div class="text-danger">{{ form.start_time.errors }}</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">{{ form.end_time.label }} <span class="text-danger">*</span></label>
+                                            {{ form.end_time }}
+                                            {% if form.end_time.errors %}
+                                                <div class="text-danger">{{ form.end_time.errors }}</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Status -->
+                                <div class="mb-3">
+                                    <label class="form-label">{{ form.status.label }}</label>
+                                    {{ form.status }}
+                                    {% if form.status.errors %}
+                                        <div class="text-danger">{{ form.status.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {{ form.non_field_errors }}
+                        </div>
+                        {% endif %}
+
+                        {% if action == 'edit' and appointment %}
+                        <div class="alert alert-info">
+                            <h6><i class="bi bi-info-circle"></i> 預約資訊</h6>
+                            <p class="mb-1"><strong>預約編號：</strong> {{ appointment.identifier }}</p>
+                            <p class="mb-1"><strong>建立時間：</strong> {{ appointment.created_at|date:"Y-m-d H:i" }}</p>
+                            <p class="mb-0"><strong>最後更新：</strong> {{ appointment.updated_at|date:"Y-m-d H:i" }}</p>
+                        </div>
+                        {% endif %}
+
+                        <hr>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'appointments:schedule_grid' %}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> 取消
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> 
+                                {% if action == 'create' %}建立預約{% else %}儲存變更{% endif %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Auto-calculate end time based on service type
+document.getElementById('{{ form.service_type.id_for_label }}').addEventListener('change', function() {
+    const serviceSelect = this;
+    const startTimeInput = document.getElementById('{{ form.start_time.id_for_label }}');
+    const endTimeInput = document.getElementById('{{ form.end_time.id_for_label }}');
+    
+    if (startTimeInput.value) {
+        // Here you could fetch the default duration from service type
+        // For now, we'll add 30 minutes as default
+        const startTime = startTimeInput.value.split(':');
+        const startHour = parseInt(startTime[0]);
+        const startMinute = parseInt(startTime[1]);
+        
+        let endMinute = startMinute + 30;
+        let endHour = startHour;
+        
+        if (endMinute >= 60) {
+            endHour += 1;
+            endMinute -= 60;
+        }
+        
+        endTimeInput.value = `${String(endHour).padStart(2, '0')}:${String(endMinute).padStart(2, '0')}`;
+    }
+});
+
+// Also update end time when start time changes
+document.getElementById('{{ form.start_time.id_for_label }}').addEventListener('change', function() {
+    const startTimeInput = this;
+    const endTimeInput = document.getElementById('{{ form.end_time.id_for_label }}');
+    
+    if (startTimeInput.value && !endTimeInput.value) {
+        const startTime = startTimeInput.value.split(':');
+        const startHour = parseInt(startTime[0]);
+        const startMinute = parseInt(startTime[1]);
+        
+        let endMinute = startMinute + 30;
+        let endHour = startHour;
+        
+        if (endMinute >= 60) {
+            endHour += 1;
+            endMinute -= 60;
+        }
+        
+        endTimeInput.value = `${String(endHour).padStart(2, '0')}:${String(endMinute).padStart(2, '0')}`;
+    }
+});
+</script>
+{% endblock %}

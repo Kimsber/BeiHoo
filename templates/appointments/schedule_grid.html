@@ -6,11 +6,17 @@
 {% block content %}
 <div class="container-fluid">
     <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2><i class="bi bi-calendar-week"></i> 預約排程表</h2>
-        <div>
-            <a href="{% url 'dashboard:admin' %}" class="btn btn-secondary">
-                <i class="bi bi-arrow-left"></i> 返回儀表板
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2><i class="bi bi-calendar-check"></i> 預約排程管理</h2>
+            <p class="text-muted">管理所有預約排程</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'appointments:list' %}" class="btn btn-outline-primary me-2">
+                <i class="bi bi-list-ul"></i> 列表檢視
+            </a>
+            <a href="{% url 'appointments:create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> 新增預約
             </a>
         </div>
     </div>
@@ -156,7 +162,7 @@
                                     {% endif %}
                                     
                                     <!-- Quick Actions -->
-                                    <div class="mt-2">
+                                    <div class="mt-2 d-flex gap-1">
                                         {% if appt.status == 'booked' %}
                                         <button class="btn btn-sm btn-success" 
                                                 onclick="checkInAppointment({{ appt.id }})">
@@ -166,6 +172,22 @@
                                         <button class="btn btn-sm btn-primary" 
                                                 onclick="completeAppointment({{ appt.id }})">
                                             <i class="bi bi-check-all"></i> 完成
+                                        </button>
+                                        {% endif %}
+                                        
+                                        <a href="{% url 'appointments:edit' appt.id %}" 
+                                        class="btn btn-sm btn-outline-secondary" 
+                                        title="編輯">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        
+                                        {% if request.user.role == 'admin' %}
+                                        <button type="button" 
+                                                class="btn btn-sm btn-outline-danger delete-appointment" 
+                                                data-appointment-id="{{ appt.id }}" 
+                                                data-appointment-identifier="{{ appt.identifier }}"
+                                                title="刪除">
+                                            <i class="bi bi-trash"></i>
                                         </button>
                                         {% endif %}
                                     </div>
@@ -238,5 +260,50 @@ function completeAppointment(appointmentId) {
         });
     }
 }
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Delete appointment
+document.querySelectorAll('.delete-appointment').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const appointmentId = this.dataset.appointmentId;
+        const identifier = this.dataset.appointmentIdentifier;
+        
+        if (confirm(`確定要刪除預約 ${identifier} 嗎？此操作無法復原。`)) {
+            fetch(`/appointments/${appointmentId}/delete/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    location.reload();
+                } else {
+                    alert('刪除失敗: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('發生錯誤，請稍後再試');
+            });
+        }
+    });
+});
 </script>
 {% endblock %}

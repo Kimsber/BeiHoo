@@ -10,6 +10,9 @@ from collections import defaultdict
 from .models import Appointment, ServiceType, AppointmentNote
 from account.models import User
 
+from .forms import AppointmentForm, AppointmentFilterForm, AppointmentNoteForm
+from account.models import AuditLog
+from django.contrib import messages
 
 @login_required
 def check_in_appointment(request, appointment_id):
@@ -209,3 +212,178 @@ def appointment_schedule_grid(request):
     }
     
     return render(request, 'appointments/schedule_grid.html', context)
+
+
+@login_required
+def appointment_list(request):
+    """List all appointments with filtering"""
+    if request.user.role not in ['admin', 'nurse']:
+        raise PermissionDenied
+    
+    filter_form = AppointmentFilterForm(request.GET or None)
+    
+    # Base queryset
+    appointments = Appointment.objects.select_related(
+        'patient', 'practitioner', 'service_type'
+    ).order_by('-appointment_date', '-start_time')
+    
+    # Apply filters
+    if filter_form.is_valid():
+        date_from = filter_form.cleaned_data.get('date_from')
+        date_to = filter_form.cleaned_data.get('date_to')
+        practitioner = filter_form.cleaned_data.get('practitioner')
+        service_type = filter_form.cleaned_data.get('service_type')
+        status = filter_form.cleaned_data.get('status')
+        search = filter_form.cleaned_data.get('search')
+        
+        if date_from:
+            appointments = appointments.filter(appointment_date__gte=date_from)
+        if date_to:
+            appointments = appointments.filter(appointment_date__lte=date_to)
+        if practitioner:
+            appointments = appointments.filter(practitioner=practitioner)
+        if service_type:
+            appointments = appointments.filter(service_type=service_type)
+        if status:
+            appointments = appointments.filter(status=status)
+        if search:
+            appointments = appointments.filter(
+                Q(patient__username__icontains=search) |
+                Q(patient__first_name__icontains=search) |
+                Q(patient__last_name__icontains=search)
+            )
+    else:
+        # Default: show upcoming appointments
+        today = timezone.now().date()
+        appointments = appointments.filter(appointment_date__gte=today)
+    
+    # Statistics
+    total_appointments = appointments.count()
+    by_status = appointments.values('status').annotate(count=Count('id'))
+    status_counts = {item['status']: item['count'] for item in by_status}
+    
+    context = {
+        'filter_form': filter_form,
+        'appointments': appointments[:100],  # Limit to 100 for performance
+        'total_appointments': total_appointments,
+        'status_counts': status_counts,
+    }
+    
+    return render(request, 'appointments/appointment_list.html', context)
+
+
+@login_required
+def appointment_create(request):
+    """Create a new appointment"""
+    if request.user.role not in ['admin', 'nurse', 'doctor', 'therapist']:
+        raise PermissionDenied
+    
+    if request.method == 'POST':
+        form = AppointmentForm(request.POST)
+        if form.is_valid():
+            appointment = form.save(commit=False)
+            # Auto-generate identifier
+            appointment.identifier = f"APT-{timezone.now().strftime('%Y%m%d%H%M%S')}"
+            appointment.save()
+            
+            # Log the action
+            AuditLog.objects.create(
+                user=request.user,
+                action='create',
+                resource_type='Appointment',
+                resource_id=str(appointment.id),
+                ip_address=request.META.get('REMOTE_ADDR'),
+                details=f'建立預約: {appointment.patient.get_full_name()} - {appointment.appointment_date}'
+            )
+            
+            messages.success(request, f'成功建立預約：{appointment.identifier}')
+            return redirect('appointments:schedule_grid')
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f'{form.fields.get(field, field).label if field != "__all__" else "錯誤"}: {error}')
+    else:
+        # Pre-fill with query parameters if provided
+        initial = {}
+        if request.GET.get('date'):
+            initial['appointment_date'] = request.GET.get('date')
+        if request.GET.get('practitioner'):
+            initial['practitioner'] = request.GET.get('practitioner')
+        form = AppointmentForm(initial=initial)
+    
+    return render(request, 'appointments/appointment_form.html', {
+        'form': form,
+        'action': 'create'
+    })
+
+
+@login_required
+def appointment_edit(request, appointment_id):
+    """Edit an existing appointment"""
+    if request.user.role not in ['admin', 'nurse']:
+        raise PermissionDenied
+    
+    appointment = get_object_or_404(Appointment, id=appointment_id)
+    
+    # Cannot edit completed or cancelled appointments
+    if appointment.status in ['fulfilled', 'cancelled', 'noshow', 'entered-in-error']:
+        messages.error(request, '無法編輯已完成或已取消的預約')
+        return redirect('appointments:schedule_grid')
+    
+    if request.method == 'POST':
+        form = AppointmentForm(request.POST, instance=appointment)
+        if form.is_valid():
+            appointment = form.save()
+            
+            # Log the action
+            AuditLog.objects.create(
+                user=request.user,
+                action='update',
+                resource_type='Appointment',
+                resource_id=str(appointment.id),
+                ip_address=request.META.get('REMOTE_ADDR'),
+                details=f'更新預約: {appointment.identifier}'
+            )
+            
+            messages.success(request, '成功更新預約')
+            return redirect('appointments:schedule_grid')
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f'{form.fields.get(field, field).label if field != "__all__" else "錯誤"}: {error}')
+    else:
+        form = AppointmentForm(instance=appointment)
+    
+    return render(request, 'appointments/appointment_form.html', {
+        'form': form,
+        'action': 'edit',
+        'appointment': appointment
+    })
+
+
+@login_required
+def appointment_delete(request, appointment_id):
+    """Delete an appointment"""
+    if request.user.role not in ['admin']:
+        return JsonResponse({'success': False, 'error': '沒有權限'}, status=403)
+    
+    appointment = get_object_or_404(Appointment, id=appointment_id)
+    
+    if request.method == 'POST':
+        identifier = appointment.identifier
+        patient_name = appointment.patient.get_full_name()
+        appointment.delete()
+        
+        # Log the action
+        AuditLog.objects.create(
+            user=request.user,
+            action='delete',
+            resource_type='Appointment',
+            resource_id=str(appointment_id),
+            ip_address=request.META.get('REMOTE_ADDR'),
+            details=f'刪除預約: {identifier} - {patient_name}'
+        )
+        
+        return JsonResponse({'success': True, 'message': '成功刪除預約'})
+    
+    return JsonResponse({'success': False, 'error': '無效的請求'}, status=400)

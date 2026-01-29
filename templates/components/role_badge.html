@@ -1,0 +1,24 @@
+{% comment %}
+Role Badge Component
+Usage: {% include 'components/role_badge.html' with role=user.role %}
+{% endcomment %}
+
+{% if role == 'admin' %}
+<span class="badge bg-danger">系統管理員</span>
+{% elif role == 'doctor' %}
+<span class="badge bg-primary">醫師</span>
+{% elif role == 'therapist' %}
+<span class="badge bg-info">治療師</span>
+{% elif role == 'nurse' %}
+<span class="badge bg-success">護理師</span>
+{% elif role == 'case_manager' %}
+<span class="badge" style="background-color: #6f42c1; color: white;">個管師</span>
+{% elif role == 'caregiver' %}
+<span class="badge" style="background-color: #20c997; color: white;">照服員</span>
+{% elif role == 'patient' %}
+<span class="badge bg-secondary">病患</span>
+{% elif role == 'researcher' %}
+<span class="badge bg-warning text-dark">研究員</span>
+{% else %}
+<span class="badge bg-secondary">{{ role }}</span>
+{% endif %}

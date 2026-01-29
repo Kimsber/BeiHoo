@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}匯入班表 Excel - BeiHoo{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2><i class="bi bi-file-earmark-excel"></i> 匯入班表 Excel</h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">首頁</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard:shift_management' %}">班表管理</a></li>
+                    <li class="breadcrumb-item active">匯入 Excel</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-upload"></i> 上傳 Excel 檔案</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        
+                        <div class="mt-3">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-upload"></i> 上傳並匯入
+                            </button>
+                            <a href="{% url 'dashboard:shift_management' %}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> 取消
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <!-- Template Download Card -->
+            <div class="card mb-3">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-download"></i> 下載範本</h5>
+                </div>
+                <div class="card-body">
+                    <p>請先下載 Excel 範本，填入班表資料後再上傳。</p>
+                    <a href="{% url 'dashboard:shift_download_template' %}" class="btn btn-success btn-block w-100">
+                        <i class="bi bi-file-earmark-excel"></i> 下載 Excel 範本
+                    </a>
+                </div>
+            </div>
+
+            <!-- Instructions Card -->
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-info-circle"></i> 使用說明</h5>
+                </div>
+                <div class="card-body">
+                    <h6>Excel 格式要求：</h6>
+                    <ol class="small">
+                        <li>第一行為表頭，從第二行開始填寫資料</li>
+                        <li>必填欄位：員工帳號、班別、日期、開始時間、結束時間</li>
+                        <li>日期格式：YYYY-MM-DD 或 YYYY/MM/DD</li>
+                        <li>時間格式：HH:MM（24小時制）</li>
+                        <li>員工帳號必須是系統中已存在的使用者</li>
+                    </ol>
+
+                    <h6 class="mt-3">班別代碼：</h6>
+                    <ul class="small">
+                        <li><code>morning</code> - 早班</li>
+                        <li><code>afternoon</code> - 午班</li>
+                        <li><code>evening</code> - 晚班</li>
+                        <li><code>night</code> - 夜班</li>
+                        <li><code>on_call</code> - 待命</li>
+                    </ul>
+
+                    <div class="alert alert-warning mt-3 mb-0">
+                        <small>
+                            <i class="bi bi-exclamation-triangle"></i>
+                            系統會自動檢查班表衝突，重複的班表將不會匯入。
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

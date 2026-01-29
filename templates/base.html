@@ -48,10 +48,78 @@
                                 <li><a class="dropdown-item" href="{% url 'appointments:schedule_grid' %}">
                                     <i class="bi bi-calendar-check"></i> 預約排程
                                 </a></li>
+                                <li><a class="dropdown-item" href="{% url 'appointments:list' %}">
+                                    <i class="bi bi-list-ul"></i> 預約清單
+                                </a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><h6 class="dropdown-header">系統工具</h6></li>
                                 <li><a class="dropdown-item" href="/admin/">
                                     <i class="bi bi-terminal"></i> Django Admin
+                                </a></li>
+                            </ul>
+                        </li>
+                        
+                        <!-- Clinical Management Menu for Admin -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-clipboard2-pulse"></i> 臨床管理
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><h6 class="dropdown-header">醫師功能</h6></li>
+                                <li><a class="dropdown-item" href="#">
+                                    <i class="bi bi-person-lines-fill"></i> 病患管理
+                                </a></li>
+                                <li><a class="dropdown-item" href="#">
+                                    <i class="bi bi-clipboard-data"></i> 診療記錄
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><h6 class="dropdown-header">治療師功能</h6></li>
+                                <li><a class="dropdown-item" href="#">
+                                    <i class="bi bi-activity"></i> 復健計畫
+                                </a></li>
+                                <li><a class="dropdown-item" href="#">
+                                    <i class="bi bi-graph-up"></i> 進度追蹤
+                                </a></li>
+                                <li><a class="dropdown-item" href="#">
+                                    <i class="bi bi-robot"></i> 設備管理
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><h6 class="dropdown-header">護理功能</h6></li>
+                                <li><a class="dropdown-item" href="#">
+                                    <i class="bi bi-heart-pulse"></i> 生命徵象
+                                </a></li>
+                                <li><a class="dropdown-item" href="#">
+                                    <i class="bi bi-capsule"></i> 用藥管理
+                                </a></li>
+                                <li><a class="dropdown-item" href="#">
+                                    <i class="bi bi-clipboard-heart"></i> 護理紀錄
+                                </a></li>
+                            </ul>
+                        </li>
+                        
+                        <!-- Research & Analytics Menu for Admin -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-graph-up-arrow"></i> 數據分析
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><h6 class="dropdown-header">統計分析</h6></li>
+                                <li><a class="dropdown-item" href="#">
+                                    <i class="bi bi-bar-chart"></i> 系統數據分析
+                                </a></li>
+                                <li><a class="dropdown-item" href="#">
+                                    <i class="bi bi-pie-chart"></i> 預約統計
+                                </a></li>
+                                <li><a class="dropdown-item" href="#">
+                                    <i class="bi bi-graph-up"></i> 治療成效
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><h6 class="dropdown-header">報告產生</h6></li>
+                                <li><a class="dropdown-item" href="#">
+                                    <i class="bi bi-file-earmark-text"></i> 研究報告
+                                </a></li>
+                                <li><a class="dropdown-item" href="#">
+                                    <i class="bi bi-file-earmark-bar-graph"></i> 營運報表
                                 </a></li>
                             </ul>
                         </li>
@@ -115,6 +183,44 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="#">
                                     <i class="bi bi-heart-pulse"></i> 生命徵象
+                                </a>
+                            </li>
+                        {% endif %}
+
+                        <!-- Case Manager Menu -->
+                        {% if user.role == 'case_manager' %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">
+                                    <i class="bi bi-clipboard2-check"></i> 個案管理
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">
+                                    <i class="bi bi-file-medical"></i> 照護計畫
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">
+                                    <i class="bi bi-graph-up"></i> 追蹤評估
+                                </a>
+                            </li>
+                        {% endif %}
+                        
+                        <!-- Caregiver Menu -->
+                        {% if user.role == 'caregiver' %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">
+                                    <i class="bi bi-heart"></i> 照護紀錄
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">
+                                    <i class="bi bi-clipboard-pulse"></i> 日常活動
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">
+                                    <i class="bi bi-bell"></i> 異常通報
                                 </a>
                             </li>
                         {% endif %}
@@ -196,7 +302,7 @@
             {% for message in messages %}
                 <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
                     {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             {% endfor %}
         {% endif %}
@@ -217,4 +323,4 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     {% block extra_js %}{% endblock %}
 </body>
-</html>
+</html> 

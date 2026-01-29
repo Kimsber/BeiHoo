@@ -1,9 +1,14 @@
 db.sqlite3
 __pycache__/
 .git/
+log.txt
+CASE_MANAGER_CAREGIVER_TEST_DATA.md
 create_test_shifts.py
 create_test_users.py
 setup_all_test_data.py
 create_appointment_test_data.py
+create_case_manager_caregiver_data.py
+create_case_manager_caregiver_shifts.py
 setup_test_data.bat
+setup_case_manager_caregiver_data.bat
 .gitignore

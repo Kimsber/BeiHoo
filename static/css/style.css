@@ -17,9 +17,21 @@ main {
 
 .card {
     transition: transform 0.2s;
+    margin-bottom: 1.5rem;
 }
 
 .card:hover {
     transform: translateY(-5px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Add spacing between sections */
+.row + .card,
+.row + .row {
+    margin-top: 1.5rem;
+}
+
+/* Ensure filter sections have proper spacing */
+.card + .card {
+    margin-top: 1.5rem;
 }

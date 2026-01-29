@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}個管師儀表板 - BeiHoo{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2><i class="bi bi-clipboard2-check"></i> 個管師儀表板</h2>
+            <p class="text-muted">歡迎回來，{{ case_manager.get_full_name }}</p>
+        </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h3>{{ total_patients }}</h3>
+                    <p class="mb-0"><i class="bi bi-people"></i> 管理病患數</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body text-center">
+                    <h3>{{ total_appointments_today }}</h3>
+                    <p class="mb-0"><i class="bi bi-calendar-check"></i> 今日預約</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <h3>{{ my_shifts.count }}</h3>
+                    <p class="mb-0"><i class="bi bi-calendar-week"></i> 本週班表</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body text-center">
+                    <h3>-</h3>
+                    <p class="mb-0"><i class="bi bi-bell"></i> 待處理事項</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Today's Schedule -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-calendar-day"></i> 今日班表</h5>
+                </div>
+                <div class="card-body">
+                    {% if today_shift %}
+                        <p><strong>班別：</strong>{{ today_shift.get_shift_type_display }}</p>
+                        <p><strong>時間：</strong>{{ today_shift.start_time|time:"H:i" }} - {{ today_shift.end_time|time:"H:i" }}</p>
+                        <p><strong>地點：</strong>{{ today_shift.location|default:"未指定" }}</p>
+                    {% else %}
+                        <p class="text-muted">今日無班表</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-calendar-check"></i> 今日預約</h5>
+                </div>
+                <div class="card-body">
+                    {% if today_appointments %}
+                        <div class="list-group list-group-flush">
+                            {% for appt in today_appointments|slice:":5" %}
+                            <div class="list-group-item">
+                                <strong>{{ appt.start_time|time:"H:i" }}</strong> - 
+                                {{ appt.patient.get_full_name }}
+                                <br><small class="text-muted">{{ appt.service_type.display_name_zh }}</small>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">今日無預約</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

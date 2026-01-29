@@ -8,7 +8,7 @@ class ShiftForm(forms.ModelForm):
     """Form for creating and editing shifts"""
     
     user = forms.ModelChoiceField(
-        queryset=User.objects.filter(is_active=True, role__in=['doctor', 'therapist', 'nurse']),
+        queryset=User.objects.filter(is_active=True, role__in=['doctor', 'therapist', 'nurse', 'case_manager', 'caregiver']),
         label='員工',
         widget=forms.Select(attrs={'class': 'form-select'})
     )
@@ -86,6 +86,8 @@ class ShiftFilterForm(forms.Form):
             ('doctor', '醫師'),
             ('therapist', '治療師'),
             ('nurse', '護理師'),
+            ('case_manager', '個管師'),
+            ('caregiver', '照服員'),
         ],
         required=False,
         label='角色',
@@ -100,7 +102,7 @@ class ShiftFilterForm(forms.Form):
     )
     
     user = forms.ModelChoiceField(
-        queryset=User.objects.filter(is_active=True, role__in=['doctor', 'therapist', 'nurse']),
+        queryset=User.objects.filter(is_active=True, role__in=['doctor', 'therapist', 'nurse', 'case_manager', 'caregiver']),
         required=False,
         label='員工',
         widget=forms.Select(attrs={'class': 'form-select'})
@@ -318,3 +320,29 @@ class PasswordResetFormAdmin(forms.Form):
             raise ValidationError('兩次輸入的密碼不一致')
         
         return cleaned_data
+
+
+class ShiftExcelUploadForm(forms.Form):
+    """Form for uploading Excel file with shift schedules"""
+    
+    excel_file = forms.FileField(
+        label='Excel 檔案',
+        widget=forms.FileInput(attrs={
+            'class': 'form-control',
+            'accept': '.xlsx,.xls'
+        }),
+        help_text='請上傳 Excel 檔案 (.xlsx 或 .xls)'
+    )
+    
+    def clean_excel_file(self):
+        file = self.cleaned_data.get('excel_file')
+        if file:
+            # Check file extension
+            if not file.name.endswith(('.xlsx', '.xls')):
+                raise ValidationError('請上傳 Excel 檔案 (.xlsx 或 .xls)')
+            
+            # Check file size (max 5MB)
+            if file.size > 5 * 1024 * 1024:
+                raise ValidationError('檔案大小不得超過 5MB')
+        
+        return file

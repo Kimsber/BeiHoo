@@ -113,19 +113,7 @@
                             </td>
                             <td>{{ user.get_full_name|default:"—" }}</td>
                             <td>
-                                {% if user.role == 'admin' %}
-                                <span class="badge bg-danger">系統管理員</span>
-                                {% elif user.role == 'doctor' %}
-                                <span class="badge bg-primary">醫師</span>
-                                {% elif user.role == 'therapist' %}
-                                <span class="badge bg-info">治療師</span>
-                                {% elif user.role == 'nurse' %}
-                                <span class="badge bg-success">護理師</span>
-                                {% elif user.role == 'patient' %}
-                                <span class="badge bg-secondary">病患</span>
-                                {% elif user.role == 'researcher' %}
-                                <span class="badge bg-warning">研究員</span>
-                                {% endif %}
+                                {% include 'components/role_badge.html' with role=user.role %}
                             </td>
                             <td>{{ user.email|default:"—" }}</td>
                             <td>{{ user.phone_number|default:"—" }}</td>

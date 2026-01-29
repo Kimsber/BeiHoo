@@ -103,6 +103,8 @@ ROLE_DASHBOARD_MAP = {
     'doctor': 'dashboard:doctor',
     'therapist': 'dashboard:therapist',
     'nurse': 'dashboard:nurse',
+    'case_manager': 'dashboard:case_manager',
+    'caregiver': 'dashboard:caregiver',
     'patient': 'dashboard:patient',
     'researcher': 'dashboard:researcher',
 }

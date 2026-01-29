@@ -9,6 +9,8 @@ class User(AbstractUser):
         ('doctor', '醫師'),
         ('therapist', '治療師'),
         ('nurse', '護理師'),
+        ('case_manager', '個管師'),
+        ('caregiver', '照服員'),
         ('patient', '病患'),
         ('researcher', '研究員'),
     ]
@@ -58,7 +60,7 @@ class User(AbstractUser):
     @property
     def is_clinician(self):
         """醫療人員判斷"""
-        return self.role in ['doctor', 'therapist', 'nurse']
+        return self.role in ['doctor', 'therapist', 'nurse', 'case_manager']
     
     @property
     def is_patient_user(self):

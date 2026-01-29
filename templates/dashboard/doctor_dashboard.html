@@ -22,25 +22,19 @@
                     </div>
                     <div class="col-md-3">
                         <div class="p-3">
-                            <h3 class="text-warning">
-                                {{ today_appointments|dictsort:"status"|dictsortreversed:"status"|selectattr:"status","equalto","booked"|list|length }}
-                            </h3>
+                            <h3 class="text-warning">{{ booked_count }}</h3>
                             <small class="text-muted">待報到</small>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="p-3">
-                            <h3 class="text-success">
-                                {{ today_appointments|dictsort:"status"|dictsortreversed:"status"|selectattr:"status","equalto","arrived"|list|length }}
-                            </h3>
+                            <h3 class="text-success">{{ arrived_count }}</h3>
                             <small class="text-muted">進行中</small>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="p-3">
-                            <h3 class="text-secondary">
-                                {{ today_appointments|dictsort:"status"|dictsortreversed:"status"|selectattr:"status","equalto","fulfilled"|list|length }}
-                            </h3>
+                            <h3 class="text-secondary">{{ fulfilled_count }}</h3>
                             <small class="text-muted">已完成</small>
                         </div>
                     </div>

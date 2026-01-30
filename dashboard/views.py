@@ -166,7 +166,7 @@ def admin_dashboard(request):
         'completed_appointments': completed_appointments,
         'booked_appointments': booked_appointments,
     }
-    return render(request, 'dashboard/admin_dashboard.html', context)
+    return render(request, 'dashboards/admin.html', context)
 
 
 @login_required
@@ -200,7 +200,7 @@ def doctor_dashboard(request):
         'arrived_count': today_appts.filter(status='arrived').count(),
         'fulfilled_count': today_appts.filter(status='fulfilled').count(),
     }
-    return render(request, 'dashboard/doctor_dashboard.html', context)
+    return render(request, 'dashboards/doctor.html', context)
 
 
 @login_required
@@ -242,7 +242,7 @@ def therapist_dashboard(request):
         'robot_therapy_count': robot_therapy_count,
         'regular_therapy_count': regular_therapy_count,
     }
-    return render(request, 'dashboard/therapist_dashboard.html', context)
+    return render(request, 'dashboards/therapist.html', context)
 
 
 @login_required
@@ -275,7 +275,7 @@ def nurse_dashboard(request):
         'booked_count': all_today_appointments.filter(status='booked').count(),
         'arrived_count': all_today_appointments.filter(status='arrived').count(),
     }
-    return render(request, 'dashboard/nurse_dashboard.html', context)
+    return render(request, 'dashboards/nurse.html', context)
 
 
 @login_required
@@ -311,7 +311,7 @@ def case_manager_dashboard(request):
         'today_appointments': today_appointments,
         'total_appointments_today': today_appointments.count(),
     }
-    return render(request, 'dashboard/case_manager_dashboard.html', context)
+    return render(request, 'dashboards/case_manager.html', context)
 
 
 @login_required
@@ -340,7 +340,7 @@ def caregiver_dashboard(request):
         # Patient care
         'assigned_patients': assigned_patients[:10],  # Show first 10
     }
-    return render(request, 'dashboard/caregiver_dashboard.html', context)
+    return render(request, 'dashboards/caregiver.html', context)
 
 
 @login_required
@@ -353,7 +353,7 @@ def patient_dashboard(request):
         'title': '我的健康儀表板',
         'patient': request.user,
     }
-    return render(request, 'dashboard/patient_dashboard.html', context)
+    return render(request, 'dashboards/patient.html', context)
 
 
 @login_required
@@ -367,7 +367,7 @@ def researcher_dashboard(request):
         'researcher': request.user,
         'total_patients': User.objects.filter(role='patient').count(),
     }
-    return render(request, 'dashboard/researcher_dashboard.html', context)
+    return render(request, 'dashboards/researcher.html', context)
 
 
 @login_required
@@ -440,7 +440,7 @@ def shift_management(request):
         'nurses_count': nurses_count,
     }
     
-    return render(request, 'dashboard/shift_management.html', context)
+    return render(request, 'admin/shift_management.html', context)
 
 
 @login_required
@@ -472,7 +472,7 @@ def shift_create(request):
     else:
         form = ShiftForm()
     
-    return render(request, 'dashboard/shift_form.html', {'form': form, 'action': 'create'})
+    return render(request, 'admin/shift_form.html', {'form': form, 'action': 'create'})
 
 
 @login_required
@@ -506,7 +506,7 @@ def shift_edit(request, shift_id):
     else:
         form = ShiftForm(instance=shift)
     
-    return render(request, 'dashboard/shift_form.html', {'form': form, 'action': 'edit', 'shift': shift})
+    return render(request, 'admin/shift_form.html', {'form': form, 'action': 'edit', 'shift': shift})
 
 
 @login_required
@@ -626,7 +626,7 @@ def user_management(request):
         'users_by_role': {item['role']: item['count'] for item in users_by_role},
     }
     
-    return render(request, 'dashboard/user_management.html', context)
+    return render(request, 'admin/user_management.html', context)
 
 
 @login_required
@@ -659,7 +659,7 @@ def user_create(request):
     else:
         form = UserCreateForm()
     
-    return render(request, 'dashboard/user_form.html', {'form': form, 'action': 'create'})
+    return render(request, 'admin/user_form.html', {'form': form, 'action': 'create'})
 
 
 @login_required
@@ -694,7 +694,7 @@ def user_edit(request, user_id):
     else:
         form = UserManagementForm(instance=user)
     
-    return render(request, 'dashboard/user_form.html', {
+    return render(request, 'admin/user_form.html', {
         'form': form, 
         'action': 'edit', 
         'edit_user': user
@@ -802,7 +802,7 @@ def user_reset_password(request, user_id):
     else:
         form = PasswordResetFormAdmin()
     
-    return render(request, 'dashboard/user_reset_password.html', {
+    return render(request, 'admin/user_reset_password.html', {
         'form': form,
         'reset_user': user
     })
@@ -977,7 +977,7 @@ def shift_upload_excel(request):
     else:
         form = ShiftExcelUploadForm()
     
-    return render(request, 'dashboard/shift_upload_excel.html', {
+    return render(request, 'admin/shift_upload_excel.html', {
         'form': form,
         'title': '匯入班表 Excel'
     })

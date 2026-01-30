@@ -235,7 +235,8 @@ class UserCreateForm(UserManagementForm):
         label='密碼',
         widget=forms.PasswordInput(attrs={
             'class': 'form-control',
-            'placeholder': '請輸入密碼'
+            'placeholder': '請輸入密碼',
+            'autocomplete': 'new-password'
         })
     )
     
@@ -243,9 +244,23 @@ class UserCreateForm(UserManagementForm):
         label='確認密碼',
         widget=forms.PasswordInput(attrs={
             'class': 'form-control',
-            'placeholder': '請再次輸入密碼'
+            'placeholder': '請再次輸入密碼',
+            'autocomplete': 'new-password'
         })
     )
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Disable autocomplete for all fields in create form
+        for field_name, field in self.fields.items():
+            if field_name == 'username':
+                field.widget.attrs['autocomplete'] = 'off'
+            elif field_name == 'email':
+                field.widget.attrs['autocomplete'] = 'off'
+            elif field_name in ['first_name', 'last_name']:
+                field.widget.attrs['autocomplete'] = 'off'
+            elif field_name == 'phone_number':
+                field.widget.attrs['autocomplete'] = 'off'
     
     class Meta(UserManagementForm.Meta):
         fields = ['username', 'email', 'first_name', 'last_name', 'phone_number', 'role', 'is_active', 'password1', 'password2']

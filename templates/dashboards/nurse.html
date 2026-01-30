@@ -1,11 +1,11 @@
-{% extends 'dashboard/base_dashboard.html' %}
+{% extends 'base_dashboard.html' %}
 
 {% block dashboard_content %}
 
 <!-- Shift and Quick Stats -->
 <div class="row mb-4">
     <div class="col-md-4">
-        {% include 'dashboard/widgets/shift_widget.html' with today_shift=today_shift only %}
+        {% include 'dashboards/widgets/shift_widget.html' with today_shift=today_shift only %}
     </div>
     
     <div class="col-md-8">

@@ -1,6 +1,7 @@
 db.sqlite3
 __pycache__/
 .git/
+media/
 log.txt
 CASE_MANAGER_CAREGIVER_TEST_DATA.md
 create_test_shifts.py

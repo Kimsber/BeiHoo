@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if form.instance.pk %}編輯{% else %}開立{% endif %}藥物 - BeiHoo{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2><i class="bi bi-capsule"></i> {% if form.instance.pk %}編輯{% else %}開立{% endif %}藥物</h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.patient.id_for_label }}" class="form-label">病患 <span class="text-danger">*</span></label>
+                                {{ form.patient }}
+                                {% if form.patient.errors %}
+                                    <div class="text-danger">{{ form.patient.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.medication_name.id_for_label }}" class="form-label">藥品名稱 <span class="text-danger">*</span></label>
+                                {{ form.medication_name }}
+                                {% if form.medication_name.errors %}
+                                    <div class="text-danger">{{ form.medication_name.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.dosage.id_for_label }}" class="form-label">劑量 <span class="text-danger">*</span></label>
+                                {{ form.dosage }}
+                                {% if form.dosage.errors %}
+                                    <div class="text-danger">{{ form.dosage.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.route.id_for_label }}" class="form-label">給藥途徑 <span class="text-danger">*</span></label>
+                                {{ form.route }}
+                                {% if form.route.errors %}
+                                    <div class="text-danger">{{ form.route.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.frequency.id_for_label }}" class="form-label">頻率 <span class="text-danger">*</span></label>
+                                {{ form.frequency }}
+                                {% if form.frequency.errors %}
+                                    <div class="text-danger">{{ form.frequency.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.start_date.id_for_label }}" class="form-label">開始日期 <span class="text-danger">*</span></label>
+                                {{ form.start_date }}
+                                {% if form.start_date.errors %}
+                                    <div class="text-danger">{{ form.start_date.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.end_date.id_for_label }}" class="form-label">結束日期</label>
+                                {{ form.end_date }}
+                                {% if form.end_date.errors %}
+                                    <div class="text-danger">{{ form.end_date.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.status.id_for_label }}" class="form-label">狀態 <span class="text-danger">*</span></label>
+                                {{ form.status }}
+                                {% if form.status.errors %}
+                                    <div class="text-danger">{{ form.status.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.indication.id_for_label }}" class="form-label">適應症 <span class="text-danger">*</span></label>
+                            {{ form.indication }}
+                            {% if form.indication.errors %}
+                                <div class="text-danger">{{ form.indication.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.special_instructions.id_for_label }}" class="form-label">特別指示</label>
+                            {{ form.special_instructions }}
+                            {% if form.special_instructions.errors %}
+                                <div class="text-danger">{{ form.special_instructions.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'clinical:medication_list' %}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> 取消
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save"></i> 儲存
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

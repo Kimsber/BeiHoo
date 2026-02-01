@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ equipment.equipment_name }} - 設備詳情 - BeiHoo{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2><i class="bi bi-robot"></i> {{ equipment.equipment_name }}</h2>
+                <div>
+                    <a href="{% url 'clinical:equipment_list' %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> 返回清單
+                    </a>
+                    {% if can_edit %}
+                    <a href="{% url 'clinical:equipment_edit' equipment.pk %}" class="btn btn-warning">
+                        <i class="bi bi-pencil"></i> 編輯
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'clinical:equipment_reservation_create' %}?equipment_id={{ equipment.pk }}" class="btn btn-success">
+                        <i class="bi bi-calendar-plus"></i> 預約設備
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">設備資訊</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <tr>
+                            <th width="35%">設備名稱：</th>
+                            <td>{{ equipment.equipment_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>類型：</th>
+                            <td>{{ equipment.get_equipment_type_display }}</td>
+                        </tr>
+                        <tr>
+                            <th>序號：</th>
+                            <td><code>{{ equipment.serial_number }}</code></td>
+                        </tr>
+                        <tr>
+                            <th>製造商：</th>
+                            <td>{{ equipment.manufacturer|default:"-" }}</td>
+                        </tr>
+                        <tr>
+                            <th>型號：</th>
+                            <td>{{ equipment.model_number|default:"-" }}</td>
+                        </tr>
+                        <tr>
+                            <th>狀態：</th>
+                            <td>
+                                <span class="badge bg-{% if equipment.status == 'available' %}success{% elif equipment.status == 'in_use' %}info{% elif equipment.status == 'maintenance' %}warning{% else %}danger{% endif %}">
+                                    {{ equipment.get_status_display }}
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>存放位置：</th>
+                            <td>{{ equipment.location }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">維護記錄</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        {% if equipment.purchase_date %}
+                        <tr>
+                            <th width="40%">購買日期：</th>
+                            <td>{{ equipment.purchase_date|date:"Y-m-d" }}</td>
+                        </tr>
+                        {% endif %}
+                        {% if equipment.last_maintenance_date %}
+                        <tr>
+                            <th>最後維護日期：</th>
+                            <td>{{ equipment.last_maintenance_date|date:"Y-m-d" }}</td>
+                        </tr>
+                        {% endif %}
+                        {% if equipment.next_maintenance_date %}
+                        <tr>
+                            <th>下次維護日期：</th>
+                            <td>
+                                <span class="badge bg-{% if equipment.next_maintenance_date < today %}danger{% else %}success{% endif %}">
+                                    {{ equipment.next_maintenance_date|date:"Y-m-d" }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endif %}
+                    </table>
+                    
+                    {% if equipment.notes %}
+                    <hr>
+                    <h6>備註：</h6>
+                    <p>{{ equipment.notes }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reservations -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-calendar-check"></i> 預約記錄</h5>
+                </div>
+                <div class="card-body">
+                    {% if reservations %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>預約日期</th>
+                                    <th>時間</th>
+                                    <th>預約人</th>
+                                    <th>病患</th>
+                                    <th>使用目的</th>
+                                    <th>狀態</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for reservation in reservations %}
+                                <tr>
+                                    <td>{{ reservation.reservation_date|date:"Y-m-d" }}</td>
+                                    <td>{{ reservation.start_time|time:"H:i" }} - {{ reservation.end_time|time:"H:i" }}</td>
+                                    <td>{{ reservation.reserved_by.get_full_name }}</td>
+                                    <td>{{ reservation.patient.get_full_name|default:"-" }}</td>
+                                    <td>{{ reservation.purpose|truncatewords:10 }}</td>
+                                    <td>
+                                        <span class="badge bg-{% if reservation.status == 'confirmed' %}success{% elif reservation.status == 'in_use' %}info{% elif reservation.status == 'completed' %}secondary{% else %}warning{% endif %}">
+                                            {{ reservation.get_status_display }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> 目前沒有預約記錄
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

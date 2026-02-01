@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}異常通報 - BeiHoo{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2><i class="bi bi-exclamation-triangle"></i> 異常通報</h2>
+                    {% if patient %}
+                    <p class="text-muted">病患：{{ patient.get_full_name }}</p>
+                    {% endif %}
+                </div>
+                <div>
+                    {% if patient %}
+                    <a href="{% url 'clinical:patient_detail' patient.pk %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> 返回病患詳情
+                    </a>
+                    {% endif %}
+                    {% if can_create %}
+                    <a href="{% url 'clinical:incident_report_create' %}" class="btn btn-danger">
+                        <i class="bi bi-exclamation-triangle"></i> 通報異常事件
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            {% if incidents %}
+            {% for incident in incidents %}
+            <div class="card mb-3 border-{% if incident.severity == 'critical' %}danger{% elif incident.severity == 'severe' %}warning{% else %}secondary{% endif %}">
+                <div class="card-header bg-{% if incident.severity == 'critical' %}danger{% elif incident.severity == 'severe' %}warning{% else %}secondary{% endif %} text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ incident.get_incident_type_display }}</strong> - {{ incident.patient.get_full_name }}
+                        </div>
+                        <div>
+                            <span class="badge bg-light text-dark">{{ incident.get_severity_display }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <strong>發生時間：</strong><br>
+                            {{ incident.incident_datetime|date:"Y-m-d H:i" }}
+                        </div>
+                        <div class="col-md-3">
+                            <strong>發生地點：</strong><br>
+                            {{ incident.location|default:"未填寫" }}
+                        </div>
+                        <div class="col-md-3">
+                            <strong>通報人：</strong><br>
+                            {{ incident.reported_by.get_full_name }}
+                        </div>
+                        <div class="col-md-3">
+                            <strong>狀態：</strong><br>
+                            <span class="badge bg-{% if incident.status == 'reported' %}warning{% elif incident.status == 'under_review' %}info{% else %}success{% endif %}">
+                                {{ incident.get_status_display }}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-2">
+                        <strong>事件描述：</strong>
+                        <p class="mb-1">{{ incident.description|truncatewords:30 }}</p>
+                    </div>
+                    
+                    <div class="mb-2">
+                        <strong>立即處置：</strong>
+                        <p class="mb-1">{{ incident.immediate_action|truncatewords:20 }}</p>
+                    </div>
+                    
+                    <div class="text-end">
+                        <a href="{% url 'clinical:incident_report_detail' incident.pk %}" class="btn btn-sm btn-primary">
+                            <i class="bi bi-eye"></i> 查看詳情
+                        </a>
+                    </div>
+                </div>
+                <div class="card-footer text-muted">
+                    <small>通報時間：{{ incident.created_at|date:"Y-m-d H:i:s" }}</small>
+                </div>
+            </div>
+            {% endfor %}
+
+            <!-- Pagination -->
+            {% if is_paginated %}
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">上一頁</a>
+                    </li>
+                    {% endif %}
+                    <li class="page-item active">
+                        <span class="page-link">第 {{ page_obj.number }} / {{ page_obj.paginator.num_pages }} 頁</span>
+                    </li>
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">下一頁</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+
+            {% else %}
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i> 目前沒有異常事件
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

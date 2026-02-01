@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}診療記錄詳情 - BeiHoo{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2><i class="bi bi-clipboard-data"></i> 診療記錄詳情</h2>
+                <div>
+                    <a href="{% url 'clinical:patient_detail' medical_record.patient.pk %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> 返回病患詳情
+                    </a>
+                    {% if user == medical_record.practitioner or user.role == 'admin' %}
+                    <a href="{% url 'clinical:medical_record_edit' medical_record.pk %}" class="btn btn-warning">
+                        <i class="bi bi-pencil"></i> 編輯
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">基本資訊</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <tr>
+                            <th width="35%">病患：</th>
+                            <td>{{ medical_record.patient.get_full_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>記錄日期：</th>
+                            <td>{{ medical_record.record_date|date:"Y-m-d" }}</td>
+                        </tr>
+                        <tr>
+                            <th>記錄時間：</th>
+                            <td>{{ medical_record.record_time|time:"H:i" }}</td>
+                        </tr>
+                        <tr>
+                            <th>記錄類型：</th>
+                            <td><span class="badge bg-info">{{ medical_record.get_record_type_display }}</span></td>
+                        </tr>
+                        <tr>
+                            <th>醫療人員：</th>
+                            <td>{{ medical_record.practitioner.get_full_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>診斷：</th>
+                            <td>{{ medical_record.diagnosis|default:"未填寫" }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">記錄時間</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>建立時間：</strong> {{ medical_record.created_at|date:"Y-m-d H:i:s" }}</p>
+                    <p><strong>更新時間：</strong> {{ medical_record.updated_at|date:"Y-m-d H:i:s" }}</p>
+                    {% if medical_record.fhir_id %}
+                    <p><strong>FHIR ID：</strong> <code>{{ medical_record.fhir_id }}</code></p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">SOAP 記錄</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h6 class="text-primary"><strong>S - Subjective (主訴)</strong></h6>
+                        <p class="border-start border-primary border-3 ps-3">{{ medical_record.chief_complaint }}</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="text-success"><strong>O - Objective (客觀發現)</strong></h6>
+                        <p class="border-start border-success border-3 ps-3">{{ medical_record.objective_findings|default:"未填寫" }}</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="text-warning"><strong>A - Assessment (評估)</strong></h6>
+                        <p class="border-start border-warning border-3 ps-3">{{ medical_record.assessment }}</p>
+                    </div>
+
+                    <div class="mb-0">
+                        <h6 class="text-danger"><strong>P - Plan (計畫)</strong></h6>
+                        <p class="border-start border-danger border-3 ps-3">{{ medical_record.plan }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -10,6 +10,7 @@ urlpatterns = [
     path('account/', include(('account.urls', 'account'), namespace='account')),
     path('appointments/', include(('appointments.urls', 'appointments'), namespace='appointments')),
     path('dashboard/', include(('dashboard.urls', 'dashboard'), namespace='dashboard')),
+    path('clinical/', include(('clinical.urls', 'clinical'), namespace='clinical')),
 ]
 
 if settings.DEBUG:

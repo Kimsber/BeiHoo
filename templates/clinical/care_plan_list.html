@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}照護計畫 - BeiHoo{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2><i class="bi bi-file-medical"></i> 照護計畫</h2>
+                    {% if patient %}
+                    <p class="text-muted">病患：{{ patient.get_full_name }}</p>
+                    {% endif %}
+                </div>
+                <div>
+                    {% if patient %}
+                    <a href="{% url 'clinical:patient_detail' patient.pk %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> 返回病患詳情
+                    </a>
+                    {% endif %}
+                    {% if can_create %}
+                    <a href="{% url 'clinical:care_plan_create' %}" class="btn btn-success">
+                        <i class="bi bi-plus-circle"></i> 建立照護計畫
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            {% if care_plans %}
+            <div class="row">
+                {% for plan in care_plans %}
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <div class="card h-100 border-{% if plan.status == 'active' %}success{% elif plan.status == 'completed' %}secondary{% else %}warning{% endif %}">
+                        <div class="card-header bg-{% if plan.status == 'active' %}success{% elif plan.status == 'completed' %}secondary{% else %}warning{% endif %} text-white">
+                            <h6 class="mb-0">{{ plan.title }}</h6>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>病患：</strong> {{ plan.patient.get_full_name }}</p>
+                            <p><strong>個管師：</strong> {{ plan.case_manager.get_full_name }}</p>
+                            <p><strong>開始日期：</strong> {{ plan.period_start|date:"Y-m-d" }}</p>
+                            {% if plan.period_end %}
+                            <p><strong>結束日期：</strong> {{ plan.period_end|date:"Y-m-d" }}</p>
+                            {% endif %}
+                            <p><strong>目標數：</strong> {{ plan.goals.count }} 個</p>
+                            <p class="mb-2"><strong>說明：</strong></p>
+                            <p class="text-muted">{{ plan.description|truncatewords:15 }}</p>
+                            <span class="badge bg-{% if plan.status == 'active' %}success{% elif plan.status == 'completed' %}secondary{% else %}warning{% endif %}">
+                                {{ plan.get_status_display }}
+                            </span>
+                        </div>
+                        <div class="card-footer">
+                            <a href="{% url 'clinical:care_plan_detail' plan.pk %}" class="btn btn-sm btn-primary w-100">
+                                <i class="bi bi-eye"></i> 查看詳情
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if is_paginated %}
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center mt-4">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">上一頁</a>
+                    </li>
+                    {% endif %}
+                    <li class="page-item active">
+                        <span class="page-link">第 {{ page_obj.number }} / {{ page_obj.paginator.num_pages }} 頁</span>
+                    </li>
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">下一頁</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+
+            {% else %}
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i> 目前沒有照護計畫
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

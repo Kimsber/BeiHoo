@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}記錄復健療程 - BeiHoo{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2><i class="bi bi-clipboard-check"></i> 記錄復健療程</h2>
+            <p class="text-muted">復健計畫：{{ rehab_plan.plan_name }} - {{ rehab_plan.patient.get_full_name }}</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.session_date.id_for_label }}" class="form-label">療程日期 <span class="text-danger">*</span></label>
+                                {{ form.session_date }}
+                                {% if form.session_date.errors %}
+                                    <div class="text-danger">{{ form.session_date.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.session_time.id_for_label }}" class="form-label">療程時間 <span class="text-danger">*</span></label>
+                                {{ form.session_time }}
+                                {% if form.session_time.errors %}
+                                    <div class="text-danger">{{ form.session_time.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.duration_minutes.id_for_label }}" class="form-label">時長（分鐘） <span class="text-danger">*</span></label>
+                                {{ form.duration_minutes }}
+                                {% if form.duration_minutes.errors %}
+                                    <div class="text-danger">{{ form.duration_minutes.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="form-check mb-2">
+                                    {{ form.robot_used }}
+                                    <label class="form-check-label" for="{{ form.robot_used.id_for_label }}">
+                                        使用機器人
+                                    </label>
+                                </div>
+                                <label for="{{ form.robot_name.id_for_label }}" class="form-label">機器人名稱</label>
+                                {{ form.robot_name }}
+                                {% if form.robot_name.errors %}
+                                    <div class="text-danger">{{ form.robot_name.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.progress_score.id_for_label }}" class="form-label">進度評分 (1-10)</label>
+                                {{ form.progress_score }}
+                                <small class="form-text text-muted">1=最差, 10=最佳</small>
+                                {% if form.progress_score.errors %}
+                                    <div class="text-danger">{{ form.progress_score.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.activities_performed.id_for_label }}" class="form-label">執行活動 <span class="text-danger">*</span></label>
+                            {{ form.activities_performed }}
+                            {% if form.activities_performed.errors %}
+                                <div class="text-danger">{{ form.activities_performed.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.patient_response.id_for_label }}" class="form-label">病患反應 <span class="text-danger">*</span></label>
+                            {{ form.patient_response }}
+                            {% if form.patient_response.errors %}
+                                <div class="text-danger">{{ form.patient_response.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            {{ form.completed }}
+                            <label class="form-check-label" for="{{ form.completed.id_for_label }}">
+                                已完成
+                            </label>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.notes.id_for_label }}" class="form-label">備註</label>
+                            {{ form.notes }}
+                            {% if form.notes.errors %}
+                                <div class="text-danger">{{ form.notes.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'clinical:rehab_plan_detail' rehab_plan.pk %}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> 取消
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save"></i> 儲存記錄
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

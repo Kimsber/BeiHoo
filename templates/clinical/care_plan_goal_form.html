@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if form.instance.pk %}編輯{% else %}新增{% endif %}照護目標 - BeiHoo{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2><i class="bi bi-bullseye"></i> {% if form.instance.pk %}編輯{% else %}新增{% endif %}照護目標</h2>
+            {% if care_plan %}
+            <p class="text-muted">照護計畫：{{ care_plan.title }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.description.id_for_label }}" class="form-label">目標描述 <span class="text-danger">*</span></label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <div class="text-danger">{{ form.description.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.target_date.id_for_label }}" class="form-label">目標日期</label>
+                                {{ form.target_date }}
+                                {% if form.target_date.errors %}
+                                    <div class="text-danger">{{ form.target_date.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.achievement_status.id_for_label }}" class="form-label">達成狀態 <span class="text-danger">*</span></label>
+                                {{ form.achievement_status }}
+                                {% if form.achievement_status.errors %}
+                                    <div class="text-danger">{{ form.achievement_status.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.priority.id_for_label }}" class="form-label">優先度 (1-10) <span class="text-danger">*</span></label>
+                                {{ form.priority }}
+                                <small class="form-text text-muted">1=最低, 10=最高</small>
+                                {% if form.priority.errors %}
+                                    <div class="text-danger">{{ form.priority.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.notes.id_for_label }}" class="form-label">備註</label>
+                            {{ form.notes }}
+                            {% if form.notes.errors %}
+                                <div class="text-danger">{{ form.notes.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% if care_plan %}{% url 'clinical:care_plan_detail' care_plan.pk %}{% else %}{% url 'clinical:care_plan_list' %}{% endif %}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> 取消
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save"></i> 儲存
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

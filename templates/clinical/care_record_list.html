@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}照護記錄 - BeiHoo{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2><i class="bi bi-clipboard-check"></i> 照護記錄</h2>
+                    {% if patient %}
+                    <p class="text-muted">病患：{{ patient.get_full_name }}</p>
+                    {% endif %}
+                </div>
+                <div>
+                    {% if patient %}
+                    <a href="{% url 'clinical:patient_detail' patient.pk %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> 返回病患詳情
+                    </a>
+                    {% endif %}
+                    {% if can_create %}
+                    <a href="{% url 'clinical:care_record_create' %}" class="btn btn-success">
+                        <i class="bi bi-plus-circle"></i> 新增照護記錄
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    {% if care_records %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>日期時間</th>
+                                    <th>病患</th>
+                                    <th>活動類型</th>
+                                    <th>時長</th>
+                                    <th>活動說明</th>
+                                    <th>照服員</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in care_records %}
+                                <tr>
+                                    <td>{{ record.record_date|date:"Y-m-d" }}<br>{{ record.record_time|time:"H:i" }}</td>
+                                    <td>{{ record.patient.get_full_name }}</td>
+                                    <td><span class="badge bg-info">{{ record.get_activity_type_display }}</span></td>
+                                    <td>{{ record.duration_minutes|default:"-" }} 分鐘</td>
+                                    <td>{{ record.description|truncatewords:15 }}</td>
+                                    <td>{{ record.caregiver.get_full_name }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    {% if is_paginated %}
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">上一頁</a>
+                            </li>
+                            {% endif %}
+                            <li class="page-item active">
+                                <span class="page-link">第 {{ page_obj.number }} / {{ page_obj.paginator.num_pages }} 頁</span>
+                            </li>
+                            {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}">下一頁</a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+
+                    {% else %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> 目前沒有照護記錄
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

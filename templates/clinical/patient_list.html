@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}病患清單 - BeiHoo{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2><i class="bi bi-person-lines-fill"></i> 病患清單</h2>
+            <p class="text-muted">總計 {{ total_patients }} 位病患</p>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-funnel"></i> 篩選</h5>
+                </div>
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        {{ filter_form.status }}
+                        {{ filter_form.case_manager }}
+                        {{ filter_form.caregiver }}
+                        {{ filter_form.search }}
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-search"></i> 搜尋
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    {% if can_create %}
+    <div class="row mb-3">
+        <div class="col-12">
+            <a href="{% url 'clinical:patient_record_create' %}" class="btn btn-success">
+                <i class="bi bi-person-plus"></i> 新增病患記錄
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Patient List -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    {% if patients %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>病歷號</th>
+                                    <th>姓名</th>
+                                    <th>診斷</th>
+                                    <th>個管師</th>
+                                    <th>照服員</th>
+                                    <th>狀態</th>
+                                    <th>入院日期</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for patient in patients %}
+                                <tr>
+                                    <td>{{ patient.patient_record.medical_record_number|default:"-" }}</td>
+                                    <td>
+                                        <strong>{{ patient.get_full_name }}</strong><br>
+                                        <small class="text-muted">{{ patient.username }}</small>
+                                    </td>
+                                    <td>{{ patient.patient_record.primary_diagnosis|default:"-" }}</td>
+                                    <td>
+                                        {% if patient.patient_record.case_manager %}
+                                            {{ patient.patient_record.case_manager.get_full_name }}
+                                        {% else %}
+                                            <span class="text-muted">未指派</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if patient.patient_record.caregiver %}
+                                            {{ patient.patient_record.caregiver.get_full_name }}
+                                        {% else %}
+                                            <span class="text-muted">未指派</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ patient.patient_record.status }}">
+                                            {{ patient.patient_record.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>{{ patient.patient_record.admission_date|date:"Y-m-d" }}</td>
+                                    <td>
+                                        <a href="{% url 'clinical:patient_detail' patient.pk %}" class="btn btn-sm btn-primary">
+                                            <i class="bi bi-eye"></i> 查看
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    {% if is_paginated %}
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1">首頁</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">上一頁</a>
+                            </li>
+                            {% endif %}
+
+                            <li class="page-item active">
+                                <span class="page-link">第 {{ page_obj.number }} / {{ page_obj.paginator.num_pages }} 頁</span>
+                            </li>
+
+                            {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}">下一頁</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">末頁</a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+
+                    {% else %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> 目前沒有病患資料
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

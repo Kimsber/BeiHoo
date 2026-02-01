@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}異常事件詳情 - BeiHoo{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2><i class="bi bi-exclamation-triangle text-{% if incident.severity == 'critical' %}danger{% elif incident.severity == 'severe' %}warning{% else %}secondary{% endif %}"></i> 異常事件詳情</h2>
+                <div>
+                    <a href="{% url 'clinical:incident_report_list' %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> 返回清單
+                    </a>
+                    {% if can_update %}
+                    <a href="{% url 'clinical:incident_report_edit' incident.pk %}" class="btn btn-warning">
+                        <i class="bi bi-pencil"></i> 編輯
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card border-{% if incident.severity == 'critical' %}danger{% elif incident.severity == 'severe' %}warning{% else %}secondary{% endif %}">
+                <div class="card-header bg-{% if incident.severity == 'critical' %}danger{% elif incident.severity == 'severe' %}warning{% else %}secondary{% endif %} text-white">
+                    <h5 class="mb-0">基本資訊</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <tr>
+                            <th width="35%">病患：</th>
+                            <td>{{ incident.patient.get_full_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>事件類型：</th>
+                            <td><span class="badge bg-info">{{ incident.get_incident_type_display }}</span></td>
+                        </tr>
+                        <tr>
+                            <th>嚴重度：</th>
+                            <td>
+                                <span class="badge bg-{% if incident.severity == 'critical' %}danger{% elif incident.severity == 'severe' %}warning{% elif incident.severity == 'moderate' %}info{% else %}secondary{% endif %}">
+                                    {{ incident.get_severity_display }}
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>發生時間：</th>
+                            <td>{{ incident.incident_datetime|date:"Y-m-d H:i" }}</td>
+                        </tr>
+                        <tr>
+                            <th>發生地點：</th>
+                            <td>{{ incident.location|default:"未填寫" }}</td>
+                        </tr>
+                        <tr>
+                            <th>通報人：</th>
+                            <td>{{ incident.reported_by.get_full_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>通報時間：</th>
+                            <td>{{ incident.created_at|date:"Y-m-d H:i:s" }}</td>
+                        </tr>
+                        <tr>
+                            <th>狀態：</th>
+                            <td>
+                                <span class="badge bg-{% if incident.status == 'reported' %}warning{% elif incident.status == 'under_review' %}info{% elif incident.status == 'action_taken' %}primary{% else %}success{% endif %}">
+                                    {{ incident.get_status_display }}
+                                </span>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-warning text-white">
+                    <h5 class="mb-0">通知人員</h5>
+                </div>
+                <div class="card-body">
+                    {% if incident.notified_staff.all %}
+                    <ul class="list-group">
+                        {% for staff in incident.notified_staff.all %}
+                        <li class="list-group-item">
+                            <i class="bi bi-person-check"></i> {{ staff.get_full_name }}
+                            <span class="badge bg-secondary">{{ staff.get_role_display }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="text-muted">未通知任何人員</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">事件詳情</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h6 class="text-danger"><strong>事件描述</strong></h6>
+                        <p class="border-start border-danger border-3 ps-3">{{ incident.description }}</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="text-warning"><strong>立即處置</strong></h6>
+                        <p class="border-start border-warning border-3 ps-3">{{ incident.immediate_action }}</p>
+                    </div>
+
+                    {% if incident.follow_up_notes %}
+                    <div class="mb-0">
+                        <h6 class="text-success"><strong>後續追蹤</strong></h6>
+                        <p class="border-start border-success border-3 ps-3">{{ incident.follow_up_notes }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

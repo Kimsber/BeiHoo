@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ care_plan.title }} - 照護計畫 - BeiHoo{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2><i class="bi bi-file-medical"></i> {{ care_plan.title }}</h2>
+                <div>
+                    <a href="{% url 'clinical:patient_detail' care_plan.patient.pk %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> 返回病患詳情
+                    </a>
+                    {% if can_edit %}
+                    <a href="{% url 'clinical:care_plan_edit' care_plan.pk %}" class="btn btn-warning">
+                        <i class="bi bi-pencil"></i> 編輯
+                    </a>
+                    {% endif %}
+                    {% if can_add_goal %}
+                    <a href="{% url 'clinical:care_plan_goal_create' care_plan.pk %}" class="btn btn-success">
+                        <i class="bi bi-plus-circle"></i> 新增目標
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">計畫資訊</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <tr>
+                            <th width="35%">病患：</th>
+                            <td>{{ care_plan.patient.get_full_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>個管師：</th>
+                            <td>{{ care_plan.case_manager.get_full_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>開始日期：</th>
+                            <td>{{ care_plan.period_start|date:"Y-m-d" }}</td>
+                        </tr>
+                        {% if care_plan.period_end %}
+                        <tr>
+                            <th>結束日期：</th>
+                            <td>{{ care_plan.period_end|date:"Y-m-d" }}</td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <th>狀態：</th>
+                            <td><span class="badge bg-success">{{ care_plan.get_status_display }}</span></td>
+                        </tr>
+                        <tr>
+                            <th>建立時間：</th>
+                            <td>{{ care_plan.created_at|date:"Y-m-d H:i" }}</td>
+                        </tr>
+                        <tr>
+                            <th>更新時間：</th>
+                            <td>{{ care_plan.updated_at|date:"Y-m-d H:i" }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">計畫說明</h5>
+                </div>
+                <div class="card-body">
+                    <p>{{ care_plan.description }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Goals -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-bullseye"></i> 照護目標 ({{ goals.count }} 個)</h5>
+                </div>
+                <div class="card-body">
+                    {% if goals %}
+                    <div class="row">
+                        {% for goal in goals %}
+                        <div class="col-md-6 mb-3">
+                            <div class="card border-{% if goal.achievement_status == 'achieved' %}success{% elif goal.achievement_status == 'not_achieved' %}danger{% else %}info{% endif %}">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h6 class="mb-0">目標 #{{ forloop.counter }}</h6>
+                                        <span class="badge bg-{% if goal.achievement_status == 'achieved' %}success{% elif goal.achievement_status == 'not_achieved' %}danger{% else %}info{% endif %}">
+                                            {{ goal.get_achievement_status_display }}
+                                        </span>
+                                    </div>
+                                    <p>{{ goal.description }}</p>
+                                    <div class="d-flex justify-content-between">
+                                        <small class="text-muted">
+                                            優先度: {{ goal.priority }}/10
+                                            {% if goal.target_date %}
+                                            | 目標日期: {{ goal.target_date|date:"Y-m-d" }}
+                                            {% endif %}
+                                        </small>
+                                        {% if can_edit %}
+                                        <a href="{% url 'clinical:care_plan_goal_edit' goal.pk %}" class="btn btn-sm btn-warning">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                    {% if goal.notes %}
+                                    <hr>
+                                    <small class="text-muted">{{ goal.notes }}</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> 尚無照護目標
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

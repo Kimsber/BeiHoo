@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if form.instance.pk %}編輯{% else %}新增{% endif %}診療記錄 - BeiHoo{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2><i class="bi bi-clipboard-data"></i> {% if form.instance.pk %}編輯{% else %}新增{% endif %}診療記錄 (SOAP)</h2>
+            <p class="text-muted">SOAP格式：Subjective（主訴）、Objective（客觀）、Assessment（評估）、Plan（計畫）</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.patient.id_for_label }}" class="form-label">病患 <span class="text-danger">*</span></label>
+                                {{ form.patient }}
+                                {% if form.patient.errors %}
+                                    <div class="text-danger">{{ form.patient.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.record_date.id_for_label }}" class="form-label">記錄日期 <span class="text-danger">*</span></label>
+                                {{ form.record_date }}
+                                {% if form.record_date.errors %}
+                                    <div class="text-danger">{{ form.record_date.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.record_time.id_for_label }}" class="form-label">記錄時間 <span class="text-danger">*</span></label>
+                                {{ form.record_time }}
+                                {% if form.record_time.errors %}
+                                    <div class="text-danger">{{ form.record_time.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.record_type.id_for_label }}" class="form-label">記錄類型 <span class="text-danger">*</span></label>
+                                {{ form.record_type }}
+                                {% if form.record_type.errors %}
+                                    <div class="text-danger">{{ form.record_type.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.diagnosis.id_for_label }}" class="form-label">診斷</label>
+                                {{ form.diagnosis }}
+                                {% if form.diagnosis.errors %}
+                                    <div class="text-danger">{{ form.diagnosis.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+                        <h5 class="mb-3">SOAP記錄</h5>
+
+                        <div class="mb-3">
+                            <label for="{{ form.chief_complaint.id_for_label }}" class="form-label">
+                                <strong>S - Subjective (主訴)</strong> <span class="text-danger">*</span>
+                            </label>
+                            <p class="text-muted small">病患的主觀症狀描述、主訴內容</p>
+                            {{ form.chief_complaint }}
+                            {% if form.chief_complaint.errors %}
+                                <div class="text-danger">{{ form.chief_complaint.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.objective_findings.id_for_label }}" class="form-label">
+                                <strong>O - Objective (客觀發現)</strong>
+                            </label>
+                            <p class="text-muted small">客觀檢查結果、生命徵象、理學檢查發現</p>
+                            {{ form.objective_findings }}
+                            {% if form.objective_findings.errors %}
+                                <div class="text-danger">{{ form.objective_findings.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.assessment.id_for_label }}" class="form-label">
+                                <strong>A - Assessment (評估)</strong> <span class="text-danger">*</span>
+                            </label>
+                            <p class="text-muted small">綜合評估、診斷分析、病情判斷</p>
+                            {{ form.assessment }}
+                            {% if form.assessment.errors %}
+                                <div class="text-danger">{{ form.assessment.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.plan.id_for_label }}" class="form-label">
+                                <strong>P - Plan (計畫)</strong> <span class="text-danger">*</span>
+                            </label>
+                            <p class="text-muted small">治療計畫、處置方式、後續追蹤</p>
+                            {{ form.plan }}
+                            {% if form.plan.errors %}
+                                <div class="text-danger">{{ form.plan.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'clinical:medical_record_list' %}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> 取消
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save"></i> 儲存記錄
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

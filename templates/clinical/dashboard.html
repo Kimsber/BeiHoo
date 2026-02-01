@@ -1,0 +1,187 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}臨床管理 - BeiHoo{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2><i class="bi bi-clipboard2-pulse"></i> 臨床管理</h2>
+            <p class="text-muted">歡迎，{{ user.get_full_name }}</p>
+        </div>
+    </div>
+
+    {% if user.role == 'admin' %}
+    <!-- Admin Dashboard -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h3>{{ total_patients }}</h3>
+                    <p class="mb-0"><i class="bi bi-people"></i> 總病患數</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <h3>{{ active_rehab_plans }}</h3>
+                    <p class="mb-0"><i class="bi bi-activity"></i> 進行中復健計畫</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body text-center">
+                    <h3>{{ pending_incidents }}</h3>
+                    <p class="mb-0"><i class="bi bi-exclamation-triangle"></i> 待處理事件</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body text-center">
+                    <h3>-</h3>
+                    <p class="mb-0"><i class="bi bi-graph-up"></i> 本週療程</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Incidents -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-warning text-white">
+                    <h5 class="mb-0"><i class="bi bi-exclamation-triangle"></i> 最近異常事件</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_incidents %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>時間</th>
+                                    <th>病患</th>
+                                    <th>事件類型</th>
+                                    <th>嚴重度</th>
+                                    <th>通報人</th>
+                                    <th>狀態</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for incident in recent_incidents %}
+                                <tr>
+                                    <td>{{ incident.incident_datetime|date:"Y-m-d H:i" }}</td>
+                                    <td>{{ incident.patient.get_full_name }}</td>
+                                    <td>{{ incident.get_incident_type_display }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ incident.severity }}">
+                                            {{ incident.get_severity_display }}
+                                        </span>
+                                    </td>
+                                    <td>{{ incident.reported_by.get_full_name }}</td>
+                                    <td>{{ incident.get_status_display }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">無異常事件</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% elif user.role == 'case_manager' %}
+    <!-- Case Manager Dashboard -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h3>{{ my_patients.count }}</h3>
+                    <p class="mb-0"><i class="bi bi-people"></i> 管理病患數</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <h3>{{ active_care_plans }}</h3>
+                    <p class="mb-0"><i class="bi bi-file-medical"></i> 進行中照護計畫</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-info text-white">
+                <div class="card-body text-center">
+                    <h3>-</h3>
+                    <p class="mb-0"><i class="bi bi-calendar-check"></i> 本週評估</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-people"></i> 我的個案</h5>
+                </div>
+                <div class="card-body">
+                    <a href="{% url 'clinical:patient_list' %}" class="btn btn-primary">查看所有個案</a>
+                    <a href="{% url 'clinical:care_plan_list' %}" class="btn btn-success">照護計畫管理</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% elif user.role == 'caregiver' %}
+    <!-- Caregiver Dashboard -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h3>{{ my_patients.count }}</h3>
+                    <p class="mb-0"><i class="bi bi-people"></i> 照護對象</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <h3>{{ today_care_records }}</h3>
+                    <p class="mb-0"><i class="bi bi-clipboard-check"></i> 今日記錄</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-warning text-white">
+                <div class="card-body text-center">
+                    <h3>-</h3>
+                    <p class="mb-0"><i class="bi bi-bell"></i> 待處理任務</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-clipboard-pulse"></i> 快速功能</h5>
+                </div>
+                <div class="card-body">
+                    <a href="{% url 'clinical:patient_list' %}" class="btn btn-primary">查看照護對象</a>
+                    <a href="{% url 'clinical:care_record_create' %}" class="btn btn-success">新增照護記錄</a>
+                    <a href="{% url 'clinical:incident_report_create' %}" class="btn btn-warning">通報異常</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

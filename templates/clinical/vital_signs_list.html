@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}生命徵象記錄 - BeiHoo{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2><i class="bi bi-heart-pulse"></i> 生命徵象記錄</h2>
+                    {% if patient %}
+                    <p class="text-muted">病患：{{ patient.get_full_name }}</p>
+                    {% endif %}
+                </div>
+                <div>
+                    {% if patient %}
+                    <a href="{% url 'clinical:patient_detail' patient.pk %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> 返回病患詳情
+                    </a>
+                    {% endif %}
+                    {% if can_create %}
+                    <a href="{% url 'clinical:vital_signs_create' %}" class="btn btn-success">
+                        <i class="bi bi-plus-circle"></i> 記錄生命徵象
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    {% if vital_signs %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>記錄時間</th>
+                                    <th>病患</th>
+                                    <th>血壓</th>
+                                    <th>心率</th>
+                                    <th>呼吸率</th>
+                                    <th>體溫</th>
+                                    <th>血氧</th>
+                                    <th>體重</th>
+                                    <th>記錄人</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for vital in vital_signs %}
+                                <tr>
+                                    <td>{{ vital.recorded_at|date:"Y-m-d H:i" }}</td>
+                                    <td>{{ vital.patient.get_full_name }}</td>
+                                    <td>
+                                        {% if vital.systolic_bp and vital.diastolic_bp %}
+                                            <span class="badge bg-{% if vital.systolic_bp > 140 or vital.diastolic_bp > 90 %}danger{% elif vital.systolic_bp < 90 or vital.diastolic_bp < 60 %}warning{% else %}success{% endif %}">
+                                                {{ vital.blood_pressure }}
+                                            </span>
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if vital.heart_rate %}
+                                            <span class="badge bg-{% if vital.heart_rate > 100 or vital.heart_rate < 60 %}warning{% else %}success{% endif %}">
+                                                {{ vital.heart_rate }} bpm
+                                            </span>
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ vital.respiratory_rate|default:"-" }}</td>
+                                    <td>
+                                        {% if vital.temperature %}
+                                            <span class="badge bg-{% if vital.temperature > 37.5 %}danger{% elif vital.temperature < 36 %}warning{% else %}success{% endif %}">
+                                                {{ vital.temperature }}°C
+                                            </span>
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if vital.spo2 %}
+                                            <span class="badge bg-{% if vital.spo2 < 95 %}danger{% else %}success{% endif %}">
+                                                {{ vital.spo2 }}%
+                                            </span>
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ vital.weight|default:"-" }} kg</td>
+                                    <td>{{ vital.recorded_by.get_full_name }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    {% if is_paginated %}
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">上一頁</a>
+                            </li>
+                            {% endif %}
+                            <li class="page-item active">
+                                <span class="page-link">第 {{ page_obj.number }} / {{ page_obj.paginator.num_pages }} 頁</span>
+                            </li>
+                            {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}">下一頁</a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+
+                    {% else %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> 目前沒有生命徵象記錄
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

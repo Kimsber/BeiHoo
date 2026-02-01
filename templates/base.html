@@ -65,34 +65,53 @@
                                 <i class="bi bi-clipboard2-pulse"></i> 臨床管理
                             </a>
                             <ul class="dropdown-menu">
-                                <li><h6 class="dropdown-header">醫師功能</h6></li>
-                                <li><a class="dropdown-item" href="#">
-                                    <i class="bi bi-person-lines-fill"></i> 病患管理
+                                <li><h6 class="dropdown-header">病患管理</h6></li>
+                                <li><a class="dropdown-item" href="{% url 'clinical:patient_list' %}">
+                                    <i class="bi bi-person-lines-fill"></i> 病患清單
                                 </a></li>
-                                <li><a class="dropdown-item" href="#">
+                                <li><a class="dropdown-item" href="{% url 'clinical:patient_record_create' %}">
+                                    <i class="bi bi-person-plus"></i> 建立病患記錄
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><h6 class="dropdown-header">醫師功能</h6></li>
+                                <li><a class="dropdown-item" href="{% url 'clinical:medical_record_list' %}">
                                     <i class="bi bi-clipboard-data"></i> 診療記錄
+                                </a></li>
+                                <li><a class="dropdown-item" href="{% url 'clinical:medical_record_create' %}">
+                                    <i class="bi bi-clipboard-plus"></i> 新增診療記錄
                                 </a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><h6 class="dropdown-header">治療師功能</h6></li>
-                                <li><a class="dropdown-item" href="#">
+                                <li><a class="dropdown-item" href="{% url 'clinical:rehab_plan_list' %}">
                                     <i class="bi bi-activity"></i> 復健計畫
                                 </a></li>
-                                <li><a class="dropdown-item" href="#">
-                                    <i class="bi bi-graph-up"></i> 進度追蹤
+                                <li><a class="dropdown-item" href="{% url 'clinical:rehab_plan_create' %}">
+                                    <i class="bi bi-clipboard-plus"></i> 建立復健計畫
                                 </a></li>
-                                <li><a class="dropdown-item" href="#">
+                                <li><a class="dropdown-item" href="{% url 'clinical:equipment_list' %}">
                                     <i class="bi bi-robot"></i> 設備管理
                                 </a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><h6 class="dropdown-header">護理功能</h6></li>
-                                <li><a class="dropdown-item" href="#">
+                                <li><a class="dropdown-item" href="{% url 'clinical:vital_signs_list' %}">
                                     <i class="bi bi-heart-pulse"></i> 生命徵象
                                 </a></li>
-                                <li><a class="dropdown-item" href="#">
+                                <li><a class="dropdown-item" href="{% url 'clinical:medication_list' %}">
                                     <i class="bi bi-capsule"></i> 用藥管理
                                 </a></li>
-                                <li><a class="dropdown-item" href="#">
+                                <li><a class="dropdown-item" href="{% url 'clinical:nursing_note_list' %}">
                                     <i class="bi bi-clipboard-heart"></i> 護理紀錄
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><h6 class="dropdown-header">個管與照護</h6></li>
+                                <li><a class="dropdown-item" href="{% url 'clinical:care_plan_list' %}">
+                                    <i class="bi bi-file-medical"></i> 照護計畫
+                                </a></li>
+                                <li><a class="dropdown-item" href="{% url 'clinical:care_record_list' %}">
+                                    <i class="bi bi-clipboard-check"></i> 照護記錄
+                                </a></li>
+                                <li><a class="dropdown-item" href="{% url 'clinical:incident_report_list' %}">
+                                    <i class="bi bi-exclamation-triangle"></i> 異常通報
                                 </a></li>
                             </ul>
                         </li>
@@ -128,17 +147,17 @@
                         <!-- Doctor Menu -->
                         {% if user.role == 'doctor' %}
                             <li class="nav-item">
-                                <a class="nav-link" href="#">
+                                <a class="nav-link" href="{% url 'clinical:patient_list' %}">
                                     <i class="bi bi-person-lines-fill"></i> 我的病患
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#">
+                                <a class="nav-link" href="{% url 'appointments:list' %}">
                                     <i class="bi bi-calendar-check"></i> 預約管理
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#">
+                                <a class="nav-link" href="{% url 'clinical:medical_record_list' %}">
                                     <i class="bi bi-clipboard-data"></i> 診療記錄
                                 </a>
                             </li>
@@ -147,22 +166,22 @@
                         <!-- Therapist Menu -->
                         {% if user.role == 'therapist' %}
                             <li class="nav-item">
-                                <a class="nav-link" href="#">
+                                <a class="nav-link" href="{% url 'clinical:patient_list' %}">
                                     <i class="bi bi-person-lines-fill"></i> 治療對象
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#">
+                                <a class="nav-link" href="{% url 'clinical:rehab_plan_list' %}">
                                     <i class="bi bi-activity"></i> 復健計畫
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#">
+                                <a class="nav-link" href="{% url 'clinical:equipment_list' %}">
                                     <i class="bi bi-robot"></i> 設備管理
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#">
+                                <a class="nav-link" href="{% url 'clinical:rehab_plan_list' %}">
                                     <i class="bi bi-graph-up"></i> 進度追蹤
                                 </a>
                             </li>
@@ -171,18 +190,23 @@
                         <!-- Nurse Menu -->
                         {% if user.role == 'nurse' %}
                             <li class="nav-item">
-                                <a class="nav-link" href="#">
+                                <a class="nav-link" href="{% url 'clinical:patient_list' %}">
                                     <i class="bi bi-person-lines-fill"></i> 病患照護
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#">
+                                <a class="nav-link" href="{% url 'clinical:medication_list' %}">
                                     <i class="bi bi-capsule"></i> 用藥管理
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#">
+                                <a class="nav-link" href="{% url 'clinical:vital_signs_list' %}">
                                     <i class="bi bi-heart-pulse"></i> 生命徵象
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'clinical:nursing_note_list' %}">
+                                    <i class="bi bi-clipboard-heart"></i> 護理紀錄
                                 </a>
                             </li>
                         {% endif %}
@@ -190,17 +214,17 @@
                         <!-- Case Manager Menu -->
                         {% if user.role == 'case_manager' %}
                             <li class="nav-item">
-                                <a class="nav-link" href="#">
+                                <a class="nav-link" href="{% url 'clinical:patient_list' %}">
                                     <i class="bi bi-clipboard2-check"></i> 個案管理
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#">
+                                <a class="nav-link" href="{% url 'clinical:care_plan_list' %}">
                                     <i class="bi bi-file-medical"></i> 照護計畫
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#">
+                                <a class="nav-link" href="{% url 'clinical:care_plan_list' %}">
                                     <i class="bi bi-graph-up"></i> 追蹤評估
                                 </a>
                             </li>
@@ -209,17 +233,17 @@
                         <!-- Caregiver Menu -->
                         {% if user.role == 'caregiver' %}
                             <li class="nav-item">
-                                <a class="nav-link" href="#">
+                                <a class="nav-link" href="{% url 'clinical:care_record_list' %}">
                                     <i class="bi bi-heart"></i> 照護紀錄
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#">
-                                    <i class="bi bi-clipboard-pulse"></i> 日常活動
+                                <a class="nav-link" href="{% url 'clinical:patient_list' %}">
+                                    <i class="bi bi-clipboard-pulse"></i> 照護對象
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#">
+                                <a class="nav-link" href="{% url 'clinical:incident_report_list' %}">
                                     <i class="bi bi-bell"></i> 異常通報
                                 </a>
                             </li>

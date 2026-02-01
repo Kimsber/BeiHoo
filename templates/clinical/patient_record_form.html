@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if form.instance.pk %}編輯{% else %}建立{% endif %}病患記錄 - BeiHoo{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2><i class="bi bi-file-medical"></i> {% if form.instance.pk %}編輯{% else %}建立{% endif %}病患記錄</h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.patient.id_for_label }}" class="form-label">病患 <span class="text-danger">*</span></label>
+                                {{ form.patient }}
+                                {% if form.patient.errors %}
+                                    <div class="text-danger">{{ form.patient.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.medical_record_number.id_for_label }}" class="form-label">病歷號 <span class="text-danger">*</span></label>
+                                {{ form.medical_record_number }}
+                                {% if form.medical_record_number.errors %}
+                                    <div class="text-danger">{{ form.medical_record_number.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.admission_date.id_for_label }}" class="form-label">入院日期 <span class="text-danger">*</span></label>
+                                {{ form.admission_date }}
+                                {% if form.admission_date.errors %}
+                                    <div class="text-danger">{{ form.admission_date.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.discharge_date.id_for_label }}" class="form-label">出院日期</label>
+                                {{ form.discharge_date }}
+                                {% if form.discharge_date.errors %}
+                                    <div class="text-danger">{{ form.discharge_date.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.primary_diagnosis.id_for_label }}" class="form-label">主要診斷 <span class="text-danger">*</span></label>
+                                {{ form.primary_diagnosis }}
+                                {% if form.primary_diagnosis.errors %}
+                                    <div class="text-danger">{{ form.primary_diagnosis.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.status.id_for_label }}" class="form-label">狀態 <span class="text-danger">*</span></label>
+                                {{ form.status }}
+                                {% if form.status.errors %}
+                                    <div class="text-danger">{{ form.status.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.secondary_diagnosis.id_for_label }}" class="form-label">次要診斷</label>
+                            {{ form.secondary_diagnosis }}
+                            {% if form.secondary_diagnosis.errors %}
+                                <div class="text-danger">{{ form.secondary_diagnosis.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.allergies.id_for_label }}" class="form-label">過敏史</label>
+                            {{ form.allergies }}
+                            {% if form.allergies.errors %}
+                                <div class="text-danger">{{ form.allergies.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.medical_history.id_for_label }}" class="form-label">病史</label>
+                            {{ form.medical_history }}
+                            {% if form.medical_history.errors %}
+                                <div class="text-danger">{{ form.medical_history.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.case_manager.id_for_label }}" class="form-label">個管師</label>
+                                {{ form.case_manager }}
+                                {% if form.case_manager.errors %}
+                                    <div class="text-danger">{{ form.case_manager.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.caregiver.id_for_label }}" class="form-label">照服員</label>
+                                {{ form.caregiver }}
+                                {% if form.caregiver.errors %}
+                                    <div class="text-danger">{{ form.caregiver.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.emergency_contact_name.id_for_label }}" class="form-label">緊急聯絡人</label>
+                                {{ form.emergency_contact_name }}
+                                {% if form.emergency_contact_name.errors %}
+                                    <div class="text-danger">{{ form.emergency_contact_name.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.emergency_contact_phone.id_for_label }}" class="form-label">緊急聯絡電話</label>
+                                {{ form.emergency_contact_phone }}
+                                {% if form.emergency_contact_phone.errors %}
+                                    <div class="text-danger">{{ form.emergency_contact_phone.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.notes.id_for_label }}" class="form-label">備註</label>
+                            {{ form.notes }}
+                            {% if form.notes.errors %}
+                                <div class="text-danger">{{ form.notes.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'clinical:patient_list' %}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> 取消
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save"></i> 儲存
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

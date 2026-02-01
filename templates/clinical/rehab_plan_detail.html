@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ rehab_plan.plan_name }} - 復健計畫 - BeiHoo{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2><i class="bi bi-activity"></i> {{ rehab_plan.plan_name }}</h2>
+                <div>
+                    <a href="{% url 'clinical:patient_detail' rehab_plan.patient.pk %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> 返回病患詳情
+                    </a>
+                    {% if can_edit %}
+                    <a href="{% url 'clinical:rehab_plan_edit' rehab_plan.pk %}" class="btn btn-warning">
+                        <i class="bi bi-pencil"></i> 編輯
+                    </a>
+                    {% endif %}
+                    {% if can_add_session %}
+                    <a href="{% url 'clinical:rehab_session_create' rehab_plan.pk %}" class="btn btn-success">
+                        <i class="bi bi-plus-circle"></i> 新增療程記錄
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">計畫資訊</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <tr>
+                            <th width="35%">病患：</th>
+                            <td>{{ rehab_plan.patient.get_full_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>治療師：</th>
+                            <td>{{ rehab_plan.therapist.get_full_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>開始日期：</th>
+                            <td>{{ rehab_plan.start_date|date:"Y-m-d" }}</td>
+                        </tr>
+                        {% if rehab_plan.end_date %}
+                        <tr>
+                            <th>結束日期：</th>
+                            <td>{{ rehab_plan.end_date|date:"Y-m-d" }}</td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <th>狀態：</th>
+                            <td><span class="badge bg-success">{{ rehab_plan.get_status_display }}</span></td>
+                        </tr>
+                        <tr>
+                            <th>每週次數：</th>
+                            <td>{{ rehab_plan.sessions_per_week }} 次</td>
+                        </tr>
+                        <tr>
+                            <th>計畫週數：</th>
+                            <td>{{ rehab_plan.duration_weeks }} 週</td>
+                        </tr>
+                        <tr>
+                            <th>需要機器人：</th>
+                            <td>{% if rehab_plan.requires_robot %}<i class="bi bi-check-circle text-success"></i> 是{% else %}<i class="bi bi-x-circle text-muted"></i> 否{% endif %}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">計畫說明</h5>
+                </div>
+                <div class="card-body">
+                    <h6>說明：</h6>
+                    <p>{{ rehab_plan.description }}</p>
+                    
+                    <h6>目標：</h6>
+                    <p>{{ rehab_plan.goals }}</p>
+                    
+                    {% if rehab_plan.notes %}
+                    <h6>備註：</h6>
+                    <p>{{ rehab_plan.notes }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sessions -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-list-check"></i> 療程記錄 ({{ sessions.count }} 次)</h5>
+                </div>
+                <div class="card-body">
+                    {% if sessions %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>日期時間</th>
+                                    <th>時長</th>
+                                    <th>機器人</th>
+                                    <th>活動內容</th>
+                                    <th>進度評分</th>
+                                    <th>狀態</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for session in sessions %}
+                                <tr>
+                                    <td>{{ session.session_date|date:"Y-m-d" }} {{ session.session_time|time:"H:i" }}</td>
+                                    <td>{{ session.duration_minutes }} 分鐘</td>
+                                    <td>
+                                        {% if session.robot_used %}
+                                            <i class="bi bi-check-circle text-success"></i> {{ session.robot_name }}
+                                        {% else %}
+                                            <i class="bi bi-x-circle text-muted"></i> 無
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ session.activities_performed|truncatewords:10 }}</td>
+                                    <td>
+                                        {% if session.progress_score %}
+                                            <span class="badge bg-{% if session.progress_score >= 8 %}success{% elif session.progress_score >= 5 %}warning{% else %}danger{% endif %}">
+                                                {{ session.progress_score }}/10
+                                            </span>
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if session.completed %}
+                                            <i class="bi bi-check-circle text-success"></i> 已完成
+                                        {% else %}
+                                            <i class="bi bi-x-circle text-muted"></i> 未完成
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> 尚無療程記錄
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

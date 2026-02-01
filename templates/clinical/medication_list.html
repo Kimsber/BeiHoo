@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}用藥管理 - BeiHoo{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2><i class="bi bi-capsule"></i> 用藥管理</h2>
+                    {% if patient %}
+                    <p class="text-muted">病患：{{ patient.get_full_name }}</p>
+                    {% endif %}
+                </div>
+                <div>
+                    {% if patient %}
+                    <a href="{% url 'clinical:patient_detail' patient.pk %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> 返回病患詳情
+                    </a>
+                    {% endif %}
+                    {% if can_create %}
+                    <a href="{% url 'clinical:medication_create' %}" class="btn btn-success">
+                        <i class="bi bi-plus-circle"></i> 開立藥物
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    {% if medications %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>病患</th>
+                                    <th>藥品名稱</th>
+                                    <th>劑量</th>
+                                    <th>途徑</th>
+                                    <th>頻率</th>
+                                    <th>開始日期</th>
+                                    <th>結束日期</th>
+                                    <th>開立醫師</th>
+                                    <th>狀態</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for med in medications %}
+                                <tr>
+                                    <td>{{ med.patient.get_full_name }}</td>
+                                    <td><strong>{{ med.medication_name }}</strong></td>
+                                    <td>{{ med.dosage }}</td>
+                                    <td>{{ med.route }}</td>
+                                    <td><span class="badge bg-info">{{ med.get_frequency_display }}</span></td>
+                                    <td>{{ med.start_date|date:"Y-m-d" }}</td>
+                                    <td>{{ med.end_date|date:"Y-m-d"|default:"-" }}</td>
+                                    <td>{{ med.prescribed_by.get_full_name }}</td>
+                                    <td>
+                                        <span class="badge bg-{% if med.status == 'active' %}success{% elif med.status == 'completed' %}secondary{% elif med.status == 'discontinued' %}danger{% else %}warning{% endif %}">
+                                            {{ med.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'clinical:medication_edit' med.pk %}" class="btn btn-sm btn-warning">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    {% if is_paginated %}
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">上一頁</a>
+                            </li>
+                            {% endif %}
+                            <li class="page-item active">
+                                <span class="page-link">第 {{ page_obj.number }} / {{ page_obj.paginator.num_pages }} 頁</span>
+                            </li>
+                            {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}">下一頁</a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+
+                    {% else %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> 目前沒有用藥記錄
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

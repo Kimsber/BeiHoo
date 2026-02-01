@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if form.instance.pk %}編輯{% else %}新增{% endif %}設備 - BeiHoo{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2><i class="bi bi-robot"></i> {% if form.instance.pk %}編輯{% else %}新增{% endif %}設備</h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.equipment_name.id_for_label }}" class="form-label">設備名稱 <span class="text-danger">*</span></label>
+                                {{ form.equipment_name }}
+                                {% if form.equipment_name.errors %}
+                                    <div class="text-danger">{{ form.equipment_name.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.equipment_type.id_for_label }}" class="form-label">設備類型 <span class="text-danger">*</span></label>
+                                {{ form.equipment_type }}
+                                {% if form.equipment_type.errors %}
+                                    <div class="text-danger">{{ form.equipment_type.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.manufacturer.id_for_label }}" class="form-label">製造商</label>
+                                {{ form.manufacturer }}
+                                {% if form.manufacturer.errors %}
+                                    <div class="text-danger">{{ form.manufacturer.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.model_number.id_for_label }}" class="form-label">型號</label>
+                                {{ form.model_number }}
+                                {% if form.model_number.errors %}
+                                    <div class="text-danger">{{ form.model_number.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.serial_number.id_for_label }}" class="form-label">序號 <span class="text-danger">*</span></label>
+                                {{ form.serial_number }}
+                                {% if form.serial_number.errors %}
+                                    <div class="text-danger">{{ form.serial_number.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.purchase_date.id_for_label }}" class="form-label">購買日期</label>
+                                {{ form.purchase_date }}
+                                {% if form.purchase_date.errors %}
+                                    <div class="text-danger">{{ form.purchase_date.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.last_maintenance_date.id_for_label }}" class="form-label">最後維護日期</label>
+                                {{ form.last_maintenance_date }}
+                                {% if form.last_maintenance_date.errors %}
+                                    <div class="text-danger">{{ form.last_maintenance_date.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.next_maintenance_date.id_for_label }}" class="form-label">下次維護日期</label>
+                                {{ form.next_maintenance_date }}
+                                {% if form.next_maintenance_date.errors %}
+                                    <div class="text-danger">{{ form.next_maintenance_date.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.status.id_for_label }}" class="form-label">狀態 <span class="text-danger">*</span></label>
+                                {{ form.status }}
+                                {% if form.status.errors %}
+                                    <div class="text-danger">{{ form.status.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.location.id_for_label }}" class="form-label">存放位置 <span class="text-danger">*</span></label>
+                                {{ form.location }}
+                                {% if form.location.errors %}
+                                    <div class="text-danger">{{ form.location.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.notes.id_for_label }}" class="form-label">備註</label>
+                            {{ form.notes }}
+                            {% if form.notes.errors %}
+                                <div class="text-danger">{{ form.notes.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'clinical:equipment_list' %}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> 取消
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save"></i> 儲存
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

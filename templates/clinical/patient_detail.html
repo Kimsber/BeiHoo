@@ -1,0 +1,415 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ patient.get_full_name }} - 病患詳情 - BeiHoo{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Patient Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2><i class="bi bi-person-circle"></i> {{ patient.get_full_name }}</h2>
+                    <p class="text-muted">
+                        病歷號：{{ patient_record.medical_record_number|default:"未設定" }} | 
+                        帳號：{{ patient.username }}
+                    </p>
+                </div>
+                <div>
+                    <a href="{% url 'clinical:patient_list' %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> 返回清單
+                    </a>
+                    {% if can_edit %}
+                    <a href="{% url 'clinical:patient_record_edit' patient_record.pk %}" class="btn btn-warning">
+                        <i class="bi bi-pencil"></i> 編輯病患記錄
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Patient Record Info -->
+    {% if patient_record %}
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-file-medical"></i> 基本資料</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <tr>
+                            <th width="35%">主要診斷：</th>
+                            <td>{{ patient_record.primary_diagnosis }}</td>
+                        </tr>
+                        <tr>
+                            <th>入院日期：</th>
+                            <td>{{ patient_record.admission_date|date:"Y-m-d" }}</td>
+                        </tr>
+                        {% if patient_record.discharge_date %}
+                        <tr>
+                            <th>出院日期：</th>
+                            <td>{{ patient_record.discharge_date|date:"Y-m-d" }}</td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <th>狀態：</th>
+                            <td><span class="badge bg-info">{{ patient_record.get_status_display }}</span></td>
+                        </tr>
+                        <tr>
+                            <th>個管師：</th>
+                            <td>{{ patient_record.case_manager.get_full_name|default:"未指派" }}</td>
+                        </tr>
+                        <tr>
+                            <th>照服員：</th>
+                            <td>{{ patient_record.caregiver.get_full_name|default:"未指派" }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-warning text-white">
+                    <h5 class="mb-0"><i class="bi bi-exclamation-triangle"></i> 重要資訊</h5>
+                </div>
+                <div class="card-body">
+                    <h6>過敏史：</h6>
+                    <p>{{ patient_record.allergies|default:"無" }}</p>
+                    
+                    <h6>緊急聯絡人：</h6>
+                    <p>{{ patient_record.emergency_contact_name|default:"未設定" }}<br>
+                    {{ patient_record.emergency_contact_phone }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-lightning"></i> 快速操作</h5>
+                </div>
+                <div class="card-body">
+                    {% if can_add_medical_record %}
+                    <a href="{% url 'clinical:medical_record_create' %}?patient_id={{ patient.pk }}" class="btn btn-primary">
+                        <i class="bi bi-clipboard-plus"></i> 新增診療記錄
+                    </a>
+                    {% endif %}
+                    
+                    {% if can_add_rehab_plan %}
+                    <a href="{% url 'clinical:rehab_plan_create' %}?patient_id={{ patient.pk }}" class="btn btn-success">
+                        <i class="bi bi-activity"></i> 建立復健計畫
+                    </a>
+                    {% endif %}
+                    
+                    {% if can_record_vitals %}
+                    <a href="{% url 'clinical:vital_signs_create' %}?patient_id={{ patient.pk }}" class="btn btn-info">
+                        <i class="bi bi-heart-pulse"></i> 記錄生命徵象
+                    </a>
+                    {% endif %}
+                    
+                    {% if can_manage_medication %}
+                    <a href="{% url 'clinical:medication_create' %}?patient_id={{ patient.pk }}" class="btn btn-warning">
+                        <i class="bi bi-capsule"></i> 開立藥物
+                    </a>
+                    {% endif %}
+                    
+                    {% if can_add_nursing_note %}
+                    <a href="{% url 'clinical:nursing_note_create' %}?patient_id={{ patient.pk }}" class="btn btn-secondary">
+                        <i class="bi bi-clipboard-heart"></i> 護理紀錄
+                    </a>
+                    {% endif %}
+                    
+                    {% if can_manage_care_plan %}
+                    <a href="{% url 'clinical:care_plan_create' %}?patient_id={{ patient.pk }}" class="btn btn-primary">
+                        <i class="bi bi-file-medical"></i> 建立照護計畫
+                    </a>
+                    {% endif %}
+                    
+                    {% if can_add_care_record %}
+                    <a href="{% url 'clinical:care_record_create' %}?patient_id={{ patient.pk }}" class="btn btn-success">
+                        <i class="bi bi-clipboard-check"></i> 新增照護記錄
+                    </a>
+                    {% endif %}
+                    
+                    {% if can_report_incident %}
+                    <a href="{% url 'clinical:incident_report_create' %}?patient_id={{ patient.pk }}" class="btn btn-danger">
+                        <i class="bi bi-exclamation-triangle"></i> 通報異常
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabbed Content -->
+    <div class="row">
+        <div class="col-12">
+            <ul class="nav nav-tabs" id="patientTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="medical-tab" data-bs-toggle="tab" data-bs-target="#medical" type="button">
+                        <i class="bi bi-clipboard-data"></i> 診療記錄
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="rehab-tab" data-bs-toggle="tab" data-bs-target="#rehab" type="button">
+                        <i class="bi bi-activity"></i> 復健計畫
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="vitals-tab" data-bs-toggle="tab" data-bs-target="#vitals" type="button">
+                        <i class="bi bi-heart-pulse"></i> 生命徵象
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="medication-tab" data-bs-toggle="tab" data-bs-target="#medication" type="button">
+                        <i class="bi bi-capsule"></i> 用藥
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="nursing-tab" data-bs-toggle="tab" data-bs-target="#nursing" type="button">
+                        <i class="bi bi-clipboard-heart"></i> 護理記錄
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="care-plan-tab" data-bs-toggle="tab" data-bs-target="#care-plan" type="button">
+                        <i class="bi bi-file-medical"></i> 照護計畫
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="care-record-tab" data-bs-toggle="tab" data-bs-target="#care-record" type="button">
+                        <i class="bi bi-clipboard-check"></i> 照護記錄
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="incidents-tab" data-bs-toggle="tab" data-bs-target="#incidents" type="button">
+                        <i class="bi bi-exclamation-triangle"></i> 異常事件
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content border border-top-0 p-3" id="patientTabsContent">
+                <!-- Medical Records Tab -->
+                <div class="tab-pane fade show active" id="medical" role="tabpanel">
+                    <h5>診療記錄</h5>
+                    {% if medical_records %}
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead>
+                                <tr>
+                                    <th>日期</th>
+                                    <th>類型</th>
+                                    <th>醫療人員</th>
+                                    <th>診斷</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in medical_records %}
+                                <tr>
+                                    <td>{{ record.record_date|date:"Y-m-d" }}</td>
+                                    <td>{{ record.get_record_type_display }}</td>
+                                    <td>{{ record.practitioner.get_full_name }}</td>
+                                    <td>{{ record.diagnosis|default:"-" }}</td>
+                                    <td>
+                                        <a href="{% url 'clinical:medical_record_detail' record.pk %}" class="btn btn-sm btn-primary">查看</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <a href="{% url 'clinical:medical_record_list_by_patient' patient.pk %}" class="btn btn-sm btn-outline-primary">查看全部</a>
+                    {% else %}
+                    <p class="text-muted">暫無診療記錄</p>
+                    {% endif %}
+                </div>
+
+                <!-- Rehab Plans Tab -->
+                <div class="tab-pane fade" id="rehab" role="tabpanel">
+                    <h5>復健計畫</h5>
+                    {% if rehab_plans %}
+                    {% for plan in rehab_plans %}
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <h6>{{ plan.plan_name }}</h6>
+                            <p class="mb-1">治療師：{{ plan.therapist.get_full_name }}</p>
+                            <p class="mb-1">期間：{{ plan.start_date|date:"Y-m-d" }} 
+                                {% if plan.end_date %}至 {{ plan.end_date|date:"Y-m-d" }}{% endif %}</p>
+                            <span class="badge bg-{{ plan.status }}">{{ plan.get_status_display }}</span>
+                            <a href="{% url 'clinical:rehab_plan_detail' plan.pk %}" class="btn btn-sm btn-primary float-end">查看詳情</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <p class="text-muted">暫無復健計畫</p>
+                    {% endif %}
+                </div>
+
+                <!-- Vital Signs Tab -->
+                <div class="tab-pane fade" id="vitals" role="tabpanel">
+                    <h5>生命徵象</h5>
+                    {% if recent_vitals %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>時間</th>
+                                    <th>血壓</th>
+                                    <th>心率</th>
+                                    <th>體溫</th>
+                                    <th>血氧</th>
+                                    <th>記錄人</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for vital in recent_vitals %}
+                                <tr>
+                                    <td>{{ vital.recorded_at|date:"Y-m-d H:i" }}</td>
+                                    <td>{{ vital.blood_pressure }}</td>
+                                    <td>{{ vital.heart_rate|default:"-" }}</td>
+                                    <td>{{ vital.temperature|default:"-" }}</td>
+                                    <td>{{ vital.spo2|default:"-" }}</td>
+                                    <td>{{ vital.recorded_by.get_full_name }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <a href="{% url 'clinical:vital_signs_list_by_patient' patient.pk %}" class="btn btn-sm btn-outline-primary">查看全部</a>
+                    {% else %}
+                    <p class="text-muted">暫無生命徵象記錄</p>
+                    {% endif %}
+                </div>
+
+                <!-- Medications Tab -->
+                <div class="tab-pane fade" id="medication" role="tabpanel">
+                    <h5>用藥</h5>
+                    {% if medications %}
+                    {% for med in medications %}
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <h6>{{ med.medication_name }}</h6>
+                            <p class="mb-1">劑量：{{ med.dosage }} | 頻率：{{ med.get_frequency_display }}</p>
+                            <p class="mb-1">開立醫師：{{ med.prescribed_by.get_full_name }}</p>
+                            <span class="badge bg-{{ med.status }}">{{ med.get_status_display }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <a href="{% url 'clinical:medication_list_by_patient' patient.pk %}" class="btn btn-sm btn-outline-primary">查看全部</a>
+                    {% else %}
+                    <p class="text-muted">暫無用藥記錄</p>
+                    {% endif %}
+                </div>
+
+                <!-- Nursing Notes Tab -->
+                <div class="tab-pane fade" id="nursing" role="tabpanel">
+                    <h5>護理記錄</h5>
+                    {% if nursing_notes %}
+                    {% for note in nursing_notes %}
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <h6>{{ note.get_note_type_display }}</h6>
+                                <small class="text-muted">{{ note.note_datetime|date:"Y-m-d H:i" }}</small>
+                            </div>
+                            <p class="mb-1"><strong>評估：</strong>{{ note.assessment|truncatewords:20 }}</p>
+                            <p class="mb-0">護理師：{{ note.nurse.get_full_name }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <a href="{% url 'clinical:nursing_note_list_by_patient' patient.pk %}" class="btn btn-sm btn-outline-primary">查看全部</a>
+                    {% else %}
+                    <p class="text-muted">暫無護理記錄</p>
+                    {% endif %}
+                </div>
+
+                <!-- Care Plans Tab -->
+                <div class="tab-pane fade" id="care-plan" role="tabpanel">
+                    <h5>照護計畫</h5>
+                    {% if care_plans %}
+                    {% for plan in care_plans %}
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <h6>{{ plan.title }}</h6>
+                            <p class="mb-1">個管師：{{ plan.case_manager.get_full_name }}</p>
+                            <p class="mb-1">期間：{{ plan.period_start|date:"Y-m-d" }} 
+                                {% if plan.period_end %}至 {{ plan.period_end|date:"Y-m-d" }}{% endif %}</p>
+                            <p class="mb-1">目標數：{{ plan.goals.count }}</p>
+                            <span class="badge bg-{{ plan.status }}">{{ plan.get_status_display }}</span>
+                            <a href="{% url 'clinical:care_plan_detail' plan.pk %}" class="btn btn-sm btn-primary float-end">查看詳情</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <p class="text-muted">暫無照護計畫</p>
+                    {% endif %}
+                </div>
+
+                <!-- Care Records Tab -->
+                <div class="tab-pane fade" id="care-record" role="tabpanel">
+                    <h5>照護記錄</h5>
+                    {% if care_records %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>日期時間</th>
+                                    <th>活動類型</th>
+                                    <th>照服員</th>
+                                    <th>時長</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in care_records %}
+                                <tr>
+                                    <td>{{ record.record_date|date:"Y-m-d" }} {{ record.record_time|time:"H:i" }}</td>
+                                    <td>{{ record.get_activity_type_display }}</td>
+                                    <td>{{ record.caregiver.get_full_name }}</td>
+                                    <td>{{ record.duration_minutes|default:"-" }} 分鐘</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <a href="{% url 'clinical:care_record_list_by_patient' patient.pk %}" class="btn btn-sm btn-outline-primary">查看全部</a>
+                    {% else %}
+                    <p class="text-muted">暫無照護記錄</p>
+                    {% endif %}
+                </div>
+
+                <!-- Incidents Tab -->
+                <div class="tab-pane fade" id="incidents" role="tabpanel">
+                    <h5>異常事件</h5>
+                    {% if incidents %}
+                    {% for incident in incidents %}
+                    <div class="card mb-2 border-{{ incident.severity }}">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <h6>{{ incident.get_incident_type_display }}</h6>
+                                <span class="badge bg-{{ incident.severity }}">{{ incident.get_severity_display }}</span>
+                            </div>
+                            <p class="mb-1">時間：{{ incident.incident_datetime|date:"Y-m-d H:i" }}</p>
+                            <p class="mb-1">通報人：{{ incident.reported_by.get_full_name }}</p>
+                            <p class="mb-0">狀態：{{ incident.get_status_display }}</p>
+                            <a href="{% url 'clinical:incident_report_detail' incident.pk %}" class="btn btn-sm btn-warning float-end">查看詳情</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <a href="{% url 'clinical:incident_report_list_by_patient' patient.pk %}" class="btn btn-sm btn-outline-primary">查看全部</a>
+                    {% else %}
+                    <p class="text-muted">暫無異常事件</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

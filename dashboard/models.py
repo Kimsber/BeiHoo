@@ -6,9 +6,11 @@ class Shift(models.Model):
     """Work shift schedule for healthcare staff"""
     
     SHIFT_TYPE_CHOICES = [
-        ('morning', '早班 (08:00-16:00)'),
-        ('afternoon', '中班 (16:00-00:00)'),
-        ('night', '夜班 (00:00-08:00)'),
+        ('morning', '早班 (05:00-11:00)'),
+        ('afternoon', '中班 (10:00-16:00)'),
+        ('evening', '晚班 (15:00-20:00)'),
+        ('night', '夜班 (19:00-01:00)'),
+        ('midnight', '大夜班 (01:00-06:00)'),
         ('full_day', '全日 (08:00-17:00)'),
     ]
     

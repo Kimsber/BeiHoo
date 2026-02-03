@@ -10,11 +10,12 @@
             <div class="d-flex justify-content-between align-items-center">
                 <h2><i class="bi bi-clipboard-data"></i> 診療記錄詳情</h2>
                 <div>
-                    <a href="{% url 'clinical:patient_detail' medical_record.patient.pk %}" class="btn btn-secondary">
-                        <i class="bi bi-arrow-left"></i> 返回病患詳情
-                    </a>
+                    <!-- Smart back button with fallback -->
+                    <button onclick="smartBack()" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> 返回
+                    </button>
                     {% if user == medical_record.practitioner or user.role == 'admin' %}
-                    <a href="{% url 'clinical:medical_record_edit' medical_record.pk %}" class="btn btn-warning">
+                    <a href="{% url 'clinical:medical_record_edit' medical_record.pk %}?next={{ request.path }}" class="btn btn-warning">
                         <i class="bi bi-pencil"></i> 編輯
                     </a>
                     {% endif %}
@@ -33,7 +34,11 @@
                     <table class="table table-sm">
                         <tr>
                             <th width="35%">病患：</th>
-                            <td>{{ medical_record.patient.get_full_name }}</td>
+                            <td>
+                                <a href="{% url 'clinical:patient_detail' medical_record.patient.pk %}" class="text-decoration-none">
+                                    {{ medical_record.patient.get_full_name }}
+                                </a>
+                            </td>
                         </tr>
                         <tr>
                             <th>記錄日期：</th>
@@ -107,4 +112,17 @@
         </div>
     </div>
 </div>
+
+<script>
+function smartBack() {
+    // Check if there's history to go back to
+    if (document.referrer && document.referrer.indexOf(window.location.host) !== -1) {
+        // If referrer is from same site, go back
+        window.history.back();
+    } else {
+        // Otherwise, go to patient detail page
+        window.location.href = "{% url 'clinical:patient_detail' medical_record.patient.pk %}";
+    }
+}
+</script>
 {% endblock %}

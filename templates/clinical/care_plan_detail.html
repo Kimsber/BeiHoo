@@ -10,16 +10,16 @@
             <div class="d-flex justify-content-between align-items-center">
                 <h2><i class="bi bi-file-medical"></i> {{ care_plan.title }}</h2>
                 <div>
-                    <a href="{% url 'clinical:patient_detail' care_plan.patient.pk %}" class="btn btn-secondary">
-                        <i class="bi bi-arrow-left"></i> 返回病患詳情
-                    </a>
+                    <button onclick="smartBack()" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> 返回
+                    </button>
                     {% if can_edit %}
-                    <a href="{% url 'clinical:care_plan_edit' care_plan.pk %}" class="btn btn-warning">
+                    <a href="{% url 'clinical:care_plan_edit' care_plan.pk %}?next={{ request.path }}" class="btn btn-warning">
                         <i class="bi bi-pencil"></i> 編輯
                     </a>
                     {% endif %}
                     {% if can_add_goal %}
-                    <a href="{% url 'clinical:care_plan_goal_create' care_plan.pk %}" class="btn btn-success">
+                    <a href="{% url 'clinical:care_plan_goal_create' care_plan.pk %}?next={{ request.path }}" class="btn btn-success">
                         <i class="bi bi-plus-circle"></i> 新增目標
                     </a>
                     {% endif %}
@@ -38,7 +38,11 @@
                     <table class="table table-sm">
                         <tr>
                             <th width="35%">病患：</th>
-                            <td>{{ care_plan.patient.get_full_name }}</td>
+                            <td>
+                                <a href="{% url 'clinical:patient_detail' care_plan.patient.pk %}" class="text-decoration-none">
+                                    {{ care_plan.patient.get_full_name }}
+                                </a>
+                            </td>
                         </tr>
                         <tr>
                             <th>個管師：</th>
@@ -112,7 +116,7 @@
                                             {% endif %}
                                         </small>
                                         {% if can_edit %}
-                                        <a href="{% url 'clinical:care_plan_goal_edit' goal.pk %}" class="btn btn-sm btn-warning">
+                                        <a href="{% url 'clinical:care_plan_goal_edit' goal.pk %}?next={{ request.path }}" class="btn btn-sm btn-warning">
                                             <i class="bi bi-pencil"></i>
                                         </a>
                                         {% endif %}
@@ -136,4 +140,17 @@
         </div>
     </div>
 </div>
+
+<script>
+function smartBack() {
+    // Check if there's history to go back to
+    if (document.referrer && document.referrer.indexOf(window.location.host) !== -1) {
+        // If referrer is from same site, go back
+        window.history.back();
+    } else {
+        // Otherwise, go to patient detail page
+        window.location.href = "{% url 'clinical:patient_detail' care_plan.patient.pk %}";
+    }
+}
+</script>
 {% endblock %}

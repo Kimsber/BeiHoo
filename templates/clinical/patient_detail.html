@@ -21,7 +21,7 @@
                         <i class="bi bi-arrow-left"></i> 返回清單
                     </a>
                     {% if can_edit %}
-                    <a href="{% url 'clinical:patient_record_edit' patient_record.pk %}" class="btn btn-warning">
+                    <a href="{% url 'clinical:patient_record_edit' patient_record.pk %}?next={{ request.path }}" class="btn btn-warning">
                         <i class="bi bi-pencil"></i> 編輯病患記錄
                     </a>
                     {% endif %}
@@ -98,49 +98,49 @@
                 </div>
                 <div class="card-body">
                     {% if can_add_medical_record %}
-                    <a href="{% url 'clinical:medical_record_create' %}?patient_id={{ patient.pk }}" class="btn btn-primary">
+                    <a href="{% url 'clinical:medical_record_create' %}?patient_id={{ patient.pk }}&next={{ request.path }}" class="btn btn-primary">
                         <i class="bi bi-clipboard-plus"></i> 新增診療記錄
                     </a>
                     {% endif %}
                     
                     {% if can_add_rehab_plan %}
-                    <a href="{% url 'clinical:rehab_plan_create' %}?patient_id={{ patient.pk }}" class="btn btn-success">
+                    <a href="{% url 'clinical:rehab_plan_create' %}?patient_id={{ patient.pk }}&next={{ request.path }}" class="btn btn-success">
                         <i class="bi bi-activity"></i> 建立復健計畫
                     </a>
                     {% endif %}
                     
                     {% if can_record_vitals %}
-                    <a href="{% url 'clinical:vital_signs_create' %}?patient_id={{ patient.pk }}" class="btn btn-info">
+                    <a href="{% url 'clinical:vital_signs_create' %}?patient_id={{ patient.pk }}&next={{ request.path }}" class="btn btn-info">
                         <i class="bi bi-heart-pulse"></i> 記錄生命徵象
                     </a>
                     {% endif %}
                     
                     {% if can_manage_medication %}
-                    <a href="{% url 'clinical:medication_create' %}?patient_id={{ patient.pk }}" class="btn btn-warning">
+                    <a href="{% url 'clinical:medication_create' %}?patient_id={{ patient.pk }}&next={{ request.path }}" class="btn btn-warning">
                         <i class="bi bi-capsule"></i> 開立藥物
                     </a>
                     {% endif %}
                     
                     {% if can_add_nursing_note %}
-                    <a href="{% url 'clinical:nursing_note_create' %}?patient_id={{ patient.pk }}" class="btn btn-secondary">
+                    <a href="{% url 'clinical:nursing_note_create' %}?patient_id={{ patient.pk }}&next={{ request.path }}" class="btn btn-secondary">
                         <i class="bi bi-clipboard-heart"></i> 護理紀錄
                     </a>
                     {% endif %}
                     
                     {% if can_manage_care_plan %}
-                    <a href="{% url 'clinical:care_plan_create' %}?patient_id={{ patient.pk }}" class="btn btn-primary">
+                    <a href="{% url 'clinical:care_plan_create' %}?patient_id={{ patient.pk }}&next={{ request.path }}" class="btn btn-primary">
                         <i class="bi bi-file-medical"></i> 建立照護計畫
                     </a>
                     {% endif %}
                     
                     {% if can_add_care_record %}
-                    <a href="{% url 'clinical:care_record_create' %}?patient_id={{ patient.pk }}" class="btn btn-success">
+                    <a href="{% url 'clinical:care_record_create' %}?patient_id={{ patient.pk }}&next={{ request.path }}" class="btn btn-success">
                         <i class="bi bi-clipboard-check"></i> 新增照護記錄
                     </a>
                     {% endif %}
                     
                     {% if can_report_incident %}
-                    <a href="{% url 'clinical:incident_report_create' %}?patient_id={{ patient.pk }}" class="btn btn-danger">
+                    <a href="{% url 'clinical:incident_report_create' %}?patient_id={{ patient.pk }}&next={{ request.path }}" class="btn btn-danger">
                         <i class="bi bi-exclamation-triangle"></i> 通報異常
                     </a>
                     {% endif %}
@@ -226,7 +226,6 @@
                             </tbody>
                         </table>
                     </div>
-                    <a href="{% url 'clinical:medical_record_list_by_patient' patient.pk %}" class="btn btn-sm btn-outline-primary">查看全部</a>
                     {% else %}
                     <p class="text-muted">暫無診療記錄</p>
                     {% endif %}
@@ -262,7 +261,7 @@
                             <thead>
                                 <tr>
                                     <th>時間</th>
-                                    <th>血壓</th>
+                                    <th>收縮壓/舒張壓</th>
                                     <th>心率</th>
                                     <th>體溫</th>
                                     <th>血氧</th>
@@ -273,7 +272,7 @@
                                 {% for vital in recent_vitals %}
                                 <tr>
                                     <td>{{ vital.recorded_at|date:"Y-m-d H:i" }}</td>
-                                    <td>{{ vital.blood_pressure }}</td>
+                                    <td>{{ vital.systolic_bp|default:"-" }}/{{ vital.diastolic_bp|default:"-" }}</td>
                                     <td>{{ vital.heart_rate|default:"-" }}</td>
                                     <td>{{ vital.temperature|default:"-" }}</td>
                                     <td>{{ vital.spo2|default:"-" }}</td>
@@ -283,7 +282,6 @@
                             </tbody>
                         </table>
                     </div>
-                    <a href="{% url 'clinical:vital_signs_list_by_patient' patient.pk %}" class="btn btn-sm btn-outline-primary">查看全部</a>
                     {% else %}
                     <p class="text-muted">暫無生命徵象記錄</p>
                     {% endif %}
@@ -303,7 +301,6 @@
                         </div>
                     </div>
                     {% endfor %}
-                    <a href="{% url 'clinical:medication_list_by_patient' patient.pk %}" class="btn btn-sm btn-outline-primary">查看全部</a>
                     {% else %}
                     <p class="text-muted">暫無用藥記錄</p>
                     {% endif %}
@@ -325,7 +322,6 @@
                         </div>
                     </div>
                     {% endfor %}
-                    <a href="{% url 'clinical:nursing_note_list_by_patient' patient.pk %}" class="btn btn-sm btn-outline-primary">查看全部</a>
                     {% else %}
                     <p class="text-muted">暫無護理記錄</p>
                     {% endif %}
@@ -379,7 +375,6 @@
                             </tbody>
                         </table>
                     </div>
-                    <a href="{% url 'clinical:care_record_list_by_patient' patient.pk %}" class="btn btn-sm btn-outline-primary">查看全部</a>
                     {% else %}
                     <p class="text-muted">暫無照護記錄</p>
                     {% endif %}
@@ -403,7 +398,6 @@
                         </div>
                     </div>
                     {% endfor %}
-                    <a href="{% url 'clinical:incident_report_list_by_patient' patient.pk %}" class="btn btn-sm btn-outline-primary">查看全部</a>
                     {% else %}
                     <p class="text-muted">暫無異常事件</p>
                     {% endif %}

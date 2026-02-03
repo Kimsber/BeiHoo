@@ -1,5 +1,63 @@
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
+from django.urls import reverse
+
+
+class ReturnURLMixin:
+    """
+    Mixin to handle return URL logic for forms
+    Allows forms to redirect back to the referring page
+    """
+    
+    def get_return_url(self):
+        """Get the URL to return to after form submission"""
+        # Check for 'next' parameter in POST or GET
+        next_url = self.request.POST.get('next') or self.request.GET.get('next')
+        
+        if next_url:
+            return next_url
+        
+        # Check HTTP_REFERER
+        referer = self.request.META.get('HTTP_REFERER')
+        if referer:
+            # Only use referer if it's from the same domain
+            request_host = self.request.get_host()
+            if request_host in referer:
+                return referer
+        
+        # Default fallback
+        return self.get_default_return_url()
+    
+    def get_default_return_url(self):
+        """Override this to provide a default return URL"""
+        return reverse('clinical:patient_list')
+    
+    def get_success_url(self):
+        """Override get_success_url to use return URL logic"""
+        return self.get_return_url()
+    
+    def get_context_data(self, **kwargs):
+        """Add return URL to context for use in templates"""
+        context = super().get_context_data(**kwargs)
+        
+        # Get return URL from GET parameter or referer
+        next_url = self.request.GET.get('next')
+        if not next_url:
+            referer = self.request.META.get('HTTP_REFERER')
+            if referer and self.request.get_host() in referer:
+                next_url = referer
+        
+        # If we have patient_id in GET, build patient detail URL as fallback
+        if not next_url:
+            patient_id = self.request.GET.get('patient_id')
+            if patient_id:
+                try:
+                    next_url = reverse('clinical:patient_detail', kwargs={'pk': patient_id})
+                except:
+                    pass
+        
+        context['return_url'] = next_url or self.get_default_return_url()
+        return context
 
 
 class ClinicalPermissionMixin:

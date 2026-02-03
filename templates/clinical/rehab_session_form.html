@@ -102,9 +102,13 @@
                         </div>
 
                         <div class="d-flex justify-content-between">
-                            <a href="{% url 'clinical:rehab_plan_detail' rehab_plan.pk %}" class="btn btn-secondary">
+                            <a href="{{ return_url }}" class="btn btn-secondary">
                                 <i class="bi bi-x-circle"></i> 取消
                             </a>
+                            <!-- Hidden field to preserve return URL on form submission -->
+                            {% if return_url %}
+                            <input type="hidden" name="next" value="{{ return_url }}">
+                            {% endif %}
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-save"></i> 儲存記錄
                             </button>

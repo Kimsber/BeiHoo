@@ -23,6 +23,7 @@ from .forms import (
     EquipmentForm, EquipmentReservationForm, PatientFilterForm
 )
 from .permissions import ClinicalPermissionMixin
+from .permissions import ClinicalPermissionMixin, ReturnURLMixin
 
 
 # ==================== Patient Management ====================
@@ -159,7 +160,7 @@ class PatientDetailView(LoginRequiredMixin, ClinicalPermissionMixin, DetailView)
         return context
 
 
-class PatientRecordCreateView(LoginRequiredMixin, ClinicalPermissionMixin, CreateView):
+class PatientRecordCreateView(LoginRequiredMixin, ReturnURLMixin, ClinicalPermissionMixin, CreateView):
     """Create patient record"""
     model = PatientRecord
     form_class = PatientRecordForm
@@ -177,7 +178,7 @@ class PatientRecordCreateView(LoginRequiredMixin, ClinicalPermissionMixin, Creat
         return reverse_lazy('clinical:patient_detail', kwargs={'pk': self.object.patient.pk})
 
 
-class PatientRecordUpdateView(LoginRequiredMixin, ClinicalPermissionMixin, UpdateView):
+class PatientRecordUpdateView(LoginRequiredMixin, ReturnURLMixin, ClinicalPermissionMixin, UpdateView):
     """Update patient record"""
     model = PatientRecord
     form_class = PatientRecordForm
@@ -233,7 +234,7 @@ class MedicalRecordListView(LoginRequiredMixin, ClinicalPermissionMixin, ListVie
         return context
 
 
-class MedicalRecordCreateView(LoginRequiredMixin, ClinicalPermissionMixin, CreateView):
+class MedicalRecordCreateView(LoginRequiredMixin, ReturnURLMixin, ClinicalPermissionMixin, CreateView):
     """Create medical record"""
     model = MedicalRecord
     form_class = MedicalRecordForm
@@ -278,7 +279,7 @@ class MedicalRecordDetailView(LoginRequiredMixin, ClinicalPermissionMixin, Detai
         return obj
 
 
-class MedicalRecordUpdateView(LoginRequiredMixin, ClinicalPermissionMixin, UpdateView):
+class MedicalRecordUpdateView(LoginRequiredMixin, ReturnURLMixin, ClinicalPermissionMixin, UpdateView):
     """Update medical record"""
     model = MedicalRecord
     form_class = MedicalRecordForm
@@ -338,7 +339,7 @@ class RehabPlanListView(LoginRequiredMixin, ClinicalPermissionMixin, ListView):
         return context
 
 
-class RehabPlanCreateView(LoginRequiredMixin, ClinicalPermissionMixin, CreateView):
+class RehabPlanCreateView(LoginRequiredMixin, ReturnURLMixin, ClinicalPermissionMixin, CreateView):
     """Create rehab plan"""
     model = RehabPlan
     form_class = RehabPlanForm
@@ -386,7 +387,7 @@ class RehabPlanDetailView(LoginRequiredMixin, ClinicalPermissionMixin, DetailVie
         return context
 
 
-class RehabPlanUpdateView(LoginRequiredMixin, ClinicalPermissionMixin, UpdateView):
+class RehabPlanUpdateView(LoginRequiredMixin, ReturnURLMixin, ClinicalPermissionMixin, UpdateView):
     """Update rehab plan"""
     model = RehabPlan
     form_class = RehabPlanForm
@@ -409,7 +410,7 @@ class RehabPlanUpdateView(LoginRequiredMixin, ClinicalPermissionMixin, UpdateVie
 
 # ==================== Rehab Sessions ====================
 
-class RehabSessionCreateView(LoginRequiredMixin, ClinicalPermissionMixin, CreateView):
+class RehabSessionCreateView(LoginRequiredMixin, ReturnURLMixin, ClinicalPermissionMixin, CreateView):
     """Create rehab session"""
     model = RehabSession
     form_class = RehabSessionForm
@@ -472,7 +473,7 @@ class VitalSignsListView(LoginRequiredMixin, ClinicalPermissionMixin, ListView):
         return context
 
 
-class VitalSignsCreateView(LoginRequiredMixin, ClinicalPermissionMixin, CreateView):
+class VitalSignsCreateView(LoginRequiredMixin, ReturnURLMixin, ClinicalPermissionMixin, CreateView):
     """Record vital signs"""
     model = VitalSigns
     form_class = VitalSignsForm
@@ -535,7 +536,7 @@ class MedicationListView(LoginRequiredMixin, ClinicalPermissionMixin, ListView):
         return context
 
 
-class MedicationCreateView(LoginRequiredMixin, ClinicalPermissionMixin, CreateView):
+class MedicationCreateView(LoginRequiredMixin, ReturnURLMixin, ClinicalPermissionMixin, CreateView):
     """Create medication order"""
     model = Medication
     form_class = MedicationForm
@@ -563,7 +564,7 @@ class MedicationCreateView(LoginRequiredMixin, ClinicalPermissionMixin, CreateVi
         return reverse_lazy('clinical:patient_detail', kwargs={'pk': self.object.patient.pk})
 
 
-class MedicationUpdateView(LoginRequiredMixin, ClinicalPermissionMixin, UpdateView):
+class MedicationUpdateView(LoginRequiredMixin, ReturnURLMixin, ClinicalPermissionMixin, UpdateView):
     """Update medication"""
     model = Medication
     form_class = MedicationForm
@@ -617,7 +618,7 @@ class NursingNoteListView(LoginRequiredMixin, ClinicalPermissionMixin, ListView)
         return context
 
 
-class NursingNoteCreateView(LoginRequiredMixin, ClinicalPermissionMixin, CreateView):
+class NursingNoteCreateView(LoginRequiredMixin, ReturnURLMixin, ClinicalPermissionMixin, CreateView):
     """Create nursing note"""
     model = NursingNote
     form_class = NursingNoteForm
@@ -684,7 +685,7 @@ class CarePlanListView(LoginRequiredMixin, ClinicalPermissionMixin, ListView):
         return context
 
 
-class CarePlanCreateView(LoginRequiredMixin, ClinicalPermissionMixin, CreateView):
+class CarePlanCreateView(LoginRequiredMixin, ReturnURLMixin, ClinicalPermissionMixin, CreateView):
     """Create care plan"""
     model = CarePlan
     form_class = CarePlanForm
@@ -727,7 +728,7 @@ class CarePlanDetailView(LoginRequiredMixin, ClinicalPermissionMixin, DetailView
         return context
 
 
-class CarePlanUpdateView(LoginRequiredMixin, ClinicalPermissionMixin, UpdateView):
+class CarePlanUpdateView(LoginRequiredMixin, ReturnURLMixin, ClinicalPermissionMixin, UpdateView):
     """Update care plan"""
     model = CarePlan
     form_class = CarePlanForm
@@ -750,7 +751,7 @@ class CarePlanUpdateView(LoginRequiredMixin, ClinicalPermissionMixin, UpdateView
 
 # ==================== Care Plan Goals ====================
 
-class CarePlanGoalCreateView(LoginRequiredMixin, ClinicalPermissionMixin, CreateView):
+class CarePlanGoalCreateView(LoginRequiredMixin, ReturnURLMixin, ClinicalPermissionMixin, CreateView):
     """Add goal to care plan"""
     model = CarePlanGoal
     form_class = CarePlanGoalForm
@@ -779,7 +780,7 @@ class CarePlanGoalCreateView(LoginRequiredMixin, ClinicalPermissionMixin, Create
         return reverse_lazy('clinical:care_plan_detail', kwargs={'pk': self.care_plan.pk})
 
 
-class CarePlanGoalUpdateView(LoginRequiredMixin, ClinicalPermissionMixin, UpdateView):
+class CarePlanGoalUpdateView(LoginRequiredMixin, ReturnURLMixin, ClinicalPermissionMixin, UpdateView):
     """Update care plan goal"""
     model = CarePlanGoal
     form_class = CarePlanGoalForm
@@ -837,7 +838,7 @@ class CareRecordListView(LoginRequiredMixin, ClinicalPermissionMixin, ListView):
         return context
 
 
-class CareRecordCreateView(LoginRequiredMixin, ClinicalPermissionMixin, CreateView):
+class CareRecordCreateView(LoginRequiredMixin, ReturnURLMixin, ClinicalPermissionMixin, CreateView):
     """Create care record"""
     model = CareRecord
     form_class = CareRecordForm
@@ -912,7 +913,7 @@ class IncidentReportListView(LoginRequiredMixin, ClinicalPermissionMixin, ListVi
         return context
 
 
-class IncidentReportCreateView(LoginRequiredMixin, ClinicalPermissionMixin, CreateView):
+class IncidentReportCreateView(LoginRequiredMixin, ReturnURLMixin, ClinicalPermissionMixin, CreateView):
     """Create incident report"""
     model = IncidentReport
     form_class = IncidentReportForm
@@ -953,7 +954,7 @@ class IncidentReportDetailView(LoginRequiredMixin, ClinicalPermissionMixin, Deta
         return context
 
 
-class IncidentReportUpdateView(LoginRequiredMixin, ClinicalPermissionMixin, UpdateView):
+class IncidentReportUpdateView(LoginRequiredMixin, ReturnURLMixin, ClinicalPermissionMixin, UpdateView):
     """Update incident report (follow-up)"""
     model = IncidentReport
     form_class = IncidentReportForm
@@ -1009,7 +1010,7 @@ class EquipmentListView(LoginRequiredMixin, ClinicalPermissionMixin, ListView):
         return context
 
 
-class EquipmentCreateView(LoginRequiredMixin, ClinicalPermissionMixin, CreateView):
+class EquipmentCreateView(LoginRequiredMixin, ReturnURLMixin, ClinicalPermissionMixin, CreateView):
     """Create equipment"""
     model = Equipment
     form_class = EquipmentForm
@@ -1029,7 +1030,7 @@ class EquipmentCreateView(LoginRequiredMixin, ClinicalPermissionMixin, CreateVie
         return reverse_lazy('clinical:equipment_list')
 
 
-class EquipmentUpdateView(LoginRequiredMixin, ClinicalPermissionMixin, UpdateView):
+class EquipmentUpdateView(LoginRequiredMixin, ReturnURLMixin, ClinicalPermissionMixin, UpdateView):
     """Update equipment"""
     model = Equipment
     form_class = EquipmentForm
@@ -1108,7 +1109,7 @@ class EquipmentReservationListView(LoginRequiredMixin, ClinicalPermissionMixin, 
         return context
 
 
-class EquipmentReservationCreateView(LoginRequiredMixin, ClinicalPermissionMixin, CreateView):
+class EquipmentReservationCreateView(LoginRequiredMixin, ReturnURLMixin, ClinicalPermissionMixin, CreateView):
     """Create equipment reservation"""
     model = EquipmentReservation
     form_class = EquipmentReservationForm
@@ -1136,7 +1137,7 @@ class EquipmentReservationCreateView(LoginRequiredMixin, ClinicalPermissionMixin
         return reverse_lazy('clinical:equipment_reservation_list')
 
 
-class EquipmentReservationUpdateView(LoginRequiredMixin, ClinicalPermissionMixin, UpdateView):
+class EquipmentReservationUpdateView(LoginRequiredMixin, ReturnURLMixin, ClinicalPermissionMixin, UpdateView):
     """Update equipment reservation"""
     model = EquipmentReservation
     form_class = EquipmentReservationForm

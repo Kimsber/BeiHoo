@@ -102,9 +102,13 @@
                         </div>
 
                         <div class="d-flex justify-content-between">
-                            <a href="{% url 'clinical:incident_report_list' %}" class="btn btn-secondary">
+                            <a href="{{ return_url }}" class="btn btn-secondary">
                                 <i class="bi bi-x-circle"></i> 取消
                             </a>
+                            <!-- Hidden field to preserve return URL on form submission -->
+                            {% if return_url %}
+                            <input type="hidden" name="next" value="{{ return_url }}">
+                            {% endif %}
                             <button type="submit" class="btn btn-danger">
                                 <i class="bi bi-exclamation-triangle"></i> 提交通報
                             </button>

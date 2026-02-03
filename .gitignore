@@ -3,7 +3,7 @@ __pycache__/
 .git/
 media/
 log.txt
-CASE_MANAGER_CAREGIVER_TEST_DATA.md
+*.md
 create_test_shifts.py
 create_test_users.py
 setup_all_test_data.py

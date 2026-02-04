@@ -29,13 +29,13 @@
                         {% csrf_token %}
                         {{ form|crispy }}
                         
-                        <div class="mt-3">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-upload"></i> 上傳並匯入
-                            </button>
+                        <div class="d-flex justify-content-between mt-3">
                             <a href="{% url 'dashboard:shift_management' %}" class="btn btn-secondary">
                                 <i class="bi bi-x-circle"></i> 取消
                             </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-upload"></i> 上傳並匯入
+                            </button>
                         </div>
                     </form>
                 </div>

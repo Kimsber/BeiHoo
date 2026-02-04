@@ -1,0 +1,211 @@
+{% extends 'base_dashboard.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}病患評估列表{% endblock %}
+
+{% block page_header %}
+<div class="d-flex justify-content-between align-items-center">
+    <div>
+        <h2>
+            <i class="fas fa-clipboard-check text-primary"></i>
+            {% if patient %}
+                {{ patient.get_full_name }} - 評估記錄
+            {% else %}
+                病患評估列表
+            {% endif %}
+        </h2>
+        <p class="text-muted mb-0">查看與管理病患評估記錄</p>
+    </div>
+    <div>
+        {% if can_create %}
+        <a href="{% url 'assessments:assessment_create' %}{% if patient %}?patient={{ patient.id }}{% endif %}" 
+           class="btn btn-primary">
+            <i class="fas fa-plus"></i> 新增評估
+        </a>
+        {% endif %}
+        <a href="{% url 'assessments:template_list' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-list-alt"></i> 評估範本
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Filter Sidebar -->
+    <div class="col-md-3">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-filter"></i> 篩選條件</h5>
+            </div>
+            <div class="card-body">
+                <form method="get" id="filterForm">
+                    <div class="mb-3">
+                        <label class="form-label">病患</label>
+                        {{ filter_form.patient }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">評估類型</label>
+                        {{ filter_form.template }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">評估類別</label>
+                        {{ filter_form.category }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">狀態</label>
+                        {{ filter_form.status }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">日期範圍</label>
+                        {{ filter_form.date_from }}
+                        <span class="text-muted small">至</span>
+                        {{ filter_form.date_to }}
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search"></i> 搜尋
+                        </button>
+                        <a href="{% url 'assessments:assessment_list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-undo"></i> 清除
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Assessment List -->
+    <div class="col-md-9">
+        {% if assessments %}
+        <div class="card">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>病患</th>
+                                <th>評估類型</th>
+                                <th>評估日期</th>
+                                <th>總分</th>
+                                <th>判讀結果</th>
+                                <th>狀態</th>
+                                <th>評估者</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for assessment in assessments %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'clinical:patient_detail' assessment.patient.id %}">
+                                        {{ assessment.patient.get_full_name }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">{{ assessment.template.get_category_display }}</span>
+                                    <br>
+                                    <small>{{ assessment.template.name }}</small>
+                                </td>
+                                <td>{{ assessment.assessment_date|date:"Y-m-d H:i" }}</td>
+                                <td>
+                                    {% if assessment.total_score is not None %}
+                                        <strong>{{ assessment.total_score }}</strong>
+                                        {% if assessment.template.max_score %}
+                                            <small class="text-muted">/ {{ assessment.template.max_score }}</small>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if assessment.interpretation %}
+                                        <span class="badge bg-secondary">{{ assessment.interpretation }}</span>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if assessment.status == 'completed' %}
+                                        <span class="badge bg-success">已完成</span>
+                                    {% elif assessment.status == 'in_progress' %}
+                                        <span class="badge bg-warning">進行中</span>
+                                    {% elif assessment.status == 'amended' %}
+                                        <span class="badge bg-info">已修正</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">已取消</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ assessment.assessed_by.get_full_name }}</td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{% url 'assessments:assessment_detail' assessment.id %}" 
+                                           class="btn btn-outline-primary" title="查看">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        {% if assessment.status != 'completed' and assessment.status != 'cancelled' %}
+                                        <a href="{% url 'assessments:assessment_edit' assessment.id %}" 
+                                           class="btn btn-outline-secondary" title="編輯">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                </li>
+                {% endif %}
+                
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ num }}</a>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+        
+        {% else %}
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-clipboard-list fa-4x text-muted mb-3"></i>
+                <h4>尚無評估記錄</h4>
+                <p class="text-muted">目前沒有符合條件的評估記錄</p>
+                {% if can_create %}
+                <a href="{% url 'assessments:assessment_create' %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> 建立第一筆評估
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

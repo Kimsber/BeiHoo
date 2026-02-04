@@ -1,0 +1,86 @@
+{% comment %}
+Quick Actions Buttons - Horizontal inline layout for dashboard top
+{% endcomment %}
+
+{% if user.role == 'admin' %}
+    <a href="{% url 'dashboard:shift_create' %}" class="btn btn-sm btn-outline-dark">
+        <i class="bi bi-calendar-plus"></i> 新增班表
+    </a>
+    <a href="{% url 'appointments:create' %}" class="btn btn-sm btn-outline-dark">
+        <i class="bi bi-calendar-event"></i> 新增預約
+    </a>
+    <a href="{% url 'dashboard:user_create' %}" class="btn btn-sm btn-outline-dark">
+        <i class="bi bi-person-plus"></i> 新增使用者
+    </a>
+    <a href="{% url 'clinical:patient_record_create' %}" class="btn btn-sm btn-outline-dark">
+        <i class="bi bi-person-add"></i> 新增病患
+    </a>
+    <a href="{% url 'assessments:assessment_create' %}" class="btn btn-sm btn-outline-dark">
+        <i class="bi bi-clipboard-plus"></i> 新增評估
+    </a>
+    <a href="/admin/" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-terminal"></i> Django Admin
+    </a>
+
+{% elif user.role == 'doctor' %}
+    <a href="{% url 'appointments:create' %}" class="btn btn-sm btn-outline-dark">
+        <i class="bi bi-calendar-event"></i> 新增預約
+    </a>
+    <a href="{% url 'clinical:medical_record_create' %}" class="btn btn-sm btn-outline-dark">
+        <i class="bi bi-file-medical"></i> 新增診療紀錄
+    </a>
+    <a href="{% url 'assessments:assessment_create' %}" class="btn btn-sm btn-outline-dark">
+        <i class="bi bi-clipboard-plus"></i> 新增評估
+    </a>
+
+{% elif user.role == 'therapist' %}
+    <a href="{% url 'clinical:rehab_plan_create' %}" class="btn btn-sm btn-outline-dark">
+        <i class="bi bi-activity"></i> 新增復健計畫
+    </a>
+    <a href="{% url 'assessments:assessment_create' %}" class="btn btn-sm btn-outline-dark">
+        <i class="bi bi-clipboard-plus"></i> 新增評估
+    </a>
+
+{% elif user.role == 'nurse' %}
+    <a href="{% url 'clinical:vital_signs_create' %}" class="btn btn-sm btn-outline-dark">
+        <i class="bi bi-heart-pulse"></i> 記錄生命徵象
+    </a>
+    <a href="{% url 'clinical:medication_create' %}" class="btn btn-sm btn-outline-dark">
+        <i class="bi bi-capsule"></i> 給藥紀錄
+    </a>
+    <a href="{% url 'clinical:nursing_note_create' %}" class="btn btn-sm btn-outline-dark">
+        <i class="bi bi-journal-text"></i> 護理紀錄
+    </a>
+
+{% elif user.role == 'case_manager' %}
+    <a href="{% url 'clinical:care_plan_create' %}" class="btn btn-sm btn-outline-dark">
+        <i class="bi bi-file-medical"></i> 新增照護計畫
+    </a>
+    <a href="{% url 'clinical:care_record_create' %}" class="btn btn-sm btn-outline-dark">
+        <i class="bi bi-journal-text"></i> 新增照護記錄
+    </a>
+    <a href="{% url 'assessments:assessment_create' %}" class="btn btn-sm btn-outline-dark">
+        <i class="bi bi-clipboard-plus"></i> 新增評估
+    </a>
+
+{% elif user.role == 'caregiver' %}
+    <a href="{% url 'clinical:care_record_create' %}" class="btn btn-sm btn-outline-dark">
+        <i class="bi bi-journal-text"></i> 新增照護記錄
+    </a>
+    <a href="{% url 'clinical:incident_report_create' %}" class="btn btn-sm btn-outline-dark">
+        <i class="bi bi-exclamation-triangle"></i> 異常通報
+    </a>
+
+{% elif user.role == 'patient' %}
+    <a href="{% url 'appointments:create' %}" class="btn btn-sm btn-outline-dark">
+        <i class="bi bi-calendar-plus"></i> 預約掛號
+    </a>
+
+{% elif user.role == 'researcher' %}
+    <a href="#" class="btn btn-sm btn-outline-dark">
+        <i class="bi bi-file-earmark-plus"></i> 建立研究報告
+    </a>
+    <a href="#" class="btn btn-sm btn-outline-dark">
+        <i class="bi bi-database-add"></i> 匯出數據
+    </a>
+{% endif %}

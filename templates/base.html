@@ -8,6 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_css %}{% endblock %}
 </head>
 <body>
     <!-- Dynamic Navigation Bar -->
@@ -29,8 +30,10 @@
                             </a>
                         </li>
                         
-                        <!-- Admin Menu -->
+                        <!-- ==================== Admin Menu ==================== -->
                         {% if user.role == 'admin' %}
+
+                         <!-- System Management -->
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                                 <i class="bi bi-gear"></i> 系統管理
@@ -65,34 +68,23 @@
                                 <i class="bi bi-clipboard2-pulse"></i> 臨床管理
                             </a>
                             <ul class="dropdown-menu">
-                                <li><h6 class="dropdown-header">病患管理</h6></li>
+                                <li><h6 class="dropdown-header">病患資料</h6></li>
                                 <li><a class="dropdown-item" href="{% url 'clinical:patient_list' %}">
                                     <i class="bi bi-person-lines-fill"></i> 病患清單
                                 </a></li>
-                                <li><a class="dropdown-item" href="{% url 'clinical:patient_record_create' %}">
-                                    <i class="bi bi-person-plus"></i> 建立病患記錄
-                                </a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><h6 class="dropdown-header">醫師功能</h6></li>
                                 <li><a class="dropdown-item" href="{% url 'clinical:medical_record_list' %}">
                                     <i class="bi bi-clipboard-data"></i> 診療記錄
                                 </a></li>
-                                <li><a class="dropdown-item" href="{% url 'clinical:medical_record_create' %}">
-                                    <i class="bi bi-clipboard-plus"></i> 新增診療記錄
-                                </a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><h6 class="dropdown-header">治療師功能</h6></li>
+                                <li><h6 class="dropdown-header">治療與復健</h6></li>
                                 <li><a class="dropdown-item" href="{% url 'clinical:rehab_plan_list' %}">
                                     <i class="bi bi-activity"></i> 復健計畫
-                                </a></li>
-                                <li><a class="dropdown-item" href="{% url 'clinical:rehab_plan_create' %}">
-                                    <i class="bi bi-clipboard-plus"></i> 建立復健計畫
                                 </a></li>
                                 <li><a class="dropdown-item" href="{% url 'clinical:equipment_list' %}">
                                     <i class="bi bi-robot"></i> 設備管理
                                 </a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><h6 class="dropdown-header">護理功能</h6></li>
+                                <li><h6 class="dropdown-header">護理照護</h6></li>
                                 <li><a class="dropdown-item" href="{% url 'clinical:vital_signs_list' %}">
                                     <i class="bi bi-heart-pulse"></i> 生命徵象
                                 </a></li>
@@ -102,16 +94,36 @@
                                 <li><a class="dropdown-item" href="{% url 'clinical:nursing_note_list' %}">
                                     <i class="bi bi-clipboard-heart"></i> 護理紀錄
                                 </a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><h6 class="dropdown-header">個管與照護</h6></li>
                                 <li><a class="dropdown-item" href="{% url 'clinical:care_plan_list' %}">
                                     <i class="bi bi-file-medical"></i> 照護計畫
                                 </a></li>
                                 <li><a class="dropdown-item" href="{% url 'clinical:care_record_list' %}">
-                                    <i class="bi bi-clipboard-check"></i> 照護記錄
+                                    <i class="bi bi-journal-text"></i> 照護記錄
                                 </a></li>
                                 <li><a class="dropdown-item" href="{% url 'clinical:incident_report_list' %}">
                                     <i class="bi bi-exclamation-triangle"></i> 異常通報
+                                </a></li>
+                            </ul>
+                        </li>
+
+                        <!-- Assessment Center -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-clipboard-check"></i> 評估中心
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'assessments:assessment_list' %}">
+                                    <i class="bi bi-list-check"></i> 評估記錄
+                                </a></li>
+                                <li><a class="dropdown-item" href="{% url 'assessments:assessment_create' %}">
+                                    <i class="bi bi-plus-circle"></i> 新增評估
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'assessments:template_list' %}">
+                                    <i class="bi bi-file-earmark-ruled"></i> 評估範本
+                                </a></li>
+                                <li><a class="dropdown-item" href="{% url 'assessments:template_create' %}">
+                                    <i class="bi bi-file-earmark-plus"></i> 新增範本
                                 </a></li>
                             </ul>
                         </li>
@@ -161,6 +173,12 @@
                                     <i class="bi bi-clipboard-data"></i> 診療記錄
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'assessments:assessment_list' %}">
+                                    <i class="bi bi-clipboard-check"></i> 病患評估
+                                </a>
+                            </li>
+                            {% include 'components/quick_actions.html' with display_mode='navbar' %}
                         {% endif %}
                         
                         <!-- Therapist Menu -->
@@ -176,15 +194,16 @@
                                 </a>
                             </li>
                             <li class="nav-item">
+                                <a class="nav-link" href="{% url 'assessments:assessment_list' %}">
+                                    <i class="bi bi-clipboard-check"></i> 病患評估
+                                </a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link" href="{% url 'clinical:equipment_list' %}">
                                     <i class="bi bi-robot"></i> 設備管理
                                 </a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'clinical:rehab_plan_list' %}">
-                                    <i class="bi bi-graph-up"></i> 進度追蹤
-                                </a>
-                            </li>
+                            {% include 'components/quick_actions.html' with display_mode='navbar' %}
                         {% endif %}
                         
                         <!-- Nurse Menu -->
@@ -195,20 +214,21 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{% url 'clinical:medication_list' %}">
-                                    <i class="bi bi-capsule"></i> 用藥管理
-                                </a>
-                            </li>
-                            <li class="nav-item">
                                 <a class="nav-link" href="{% url 'clinical:vital_signs_list' %}">
                                     <i class="bi bi-heart-pulse"></i> 生命徵象
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{% url 'clinical:nursing_note_list' %}">
-                                    <i class="bi bi-clipboard-heart"></i> 護理紀錄
+                                <a class="nav-link" href="{% url 'clinical:medication_list' %}">
+                                    <i class="bi bi-capsule"></i> 用藥管理
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'assessments:assessment_list' %}">
+                                    <i class="bi bi-clipboard-check"></i> 病患評估
+                                </a>
+                            </li>
+                            {% include 'components/quick_actions.html' with display_mode='navbar' %}
                         {% endif %}
 
                         <!-- Case Manager Menu -->
@@ -224,29 +244,26 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{% url 'clinical:care_plan_list' %}">
-                                    <i class="bi bi-graph-up"></i> 追蹤評估
+                                <a class="nav-link" href="{% url 'assessments:assessment_list' %}">
+                                    <i class="bi bi-clipboard-check"></i> 病患評估
                                 </a>
                             </li>
+                            {% include 'components/quick_actions.html' with display_mode='navbar' %}
                         {% endif %}
                         
                         <!-- Caregiver Menu -->
                         {% if user.role == 'caregiver' %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'clinical:care_record_list' %}">
-                                    <i class="bi bi-heart"></i> 照護紀錄
-                                </a>
-                            </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="{% url 'clinical:patient_list' %}">
                                     <i class="bi bi-clipboard-pulse"></i> 照護對象
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{% url 'clinical:incident_report_list' %}">
-                                    <i class="bi bi-bell"></i> 異常通報
+                                <a class="nav-link" href="{% url 'clinical:care_record_list' %}">
+                                    <i class="bi bi-heart"></i> 照護紀錄
                                 </a>
                             </li>
+                            {% include 'components/quick_actions.html' with display_mode='navbar' %}
                         {% endif %}
                         
                         <!-- Patient Menu -->
@@ -347,4 +364,4 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     {% block extra_js %}{% endblock %}
 </body>
-</html> 
+</html>

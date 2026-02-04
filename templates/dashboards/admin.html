@@ -2,6 +2,13 @@
 
 {% block dashboard_content %}
 
+<!-- Quick Actions at TOP - Using Reusable Component -->
+<div class="row mb-4">
+    <div class="col-12">
+        {% include 'components/quick_actions.html' with display_mode='dashboard' %}
+    </div>
+</div>
+
 <!-- Admin's Own Shift & Quick Stats -->
 <div class="row mb-3">
     <div class="col-md-3">
@@ -275,31 +282,6 @@
                     <li class="list-group-item">暫無紀錄</li>
                     {% endfor %}
                 </ul>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Quick Actions -->
-<div class="row mt-4">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-body">
-                <h5><i class="bi bi-gear"></i> 快速操作</h5>
-                <div class="btn-group" role="group">
-                    <a href="/admin/dashboard/shift/" class="btn btn-primary">
-                        <i class="bi bi-calendar-plus"></i> 管理班表
-                    </a>
-                    <a href="{% url 'appointments:schedule_grid' %}" class="btn btn-success">
-                        <i class="bi bi-calendar-week"></i> 預約排程表
-                    </a>
-                    <a href="/admin/account/user/" class="btn btn-info">
-                        <i class="bi bi-person-plus"></i> 管理使用者
-                    </a>
-                    <a href="/admin/" class="btn btn-secondary">
-                        <i class="bi bi-speedometer"></i> Django Admin
-                    </a>
-                </div>
             </div>
         </div>
     </div>

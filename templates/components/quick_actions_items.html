@@ -1,0 +1,107 @@
+{% comment %}
+Quick Actions Menu Items - Used in navbar dropdowns
+Role-based menu items for creating new records
+{% endcomment %}
+
+{# ==================== Admin Quick Actions ==================== #}
+{% if user.role == 'admin' %}
+    <li><h6 class="dropdown-header">新增資料</h6></li>
+    <li><a class="dropdown-item" href="{% url 'clinical:patient_record_create' %}">
+        <i class="bi bi-person-plus"></i> 新增病患
+    </a></li>
+    <li><a class="dropdown-item" href="{% url 'clinical:medical_record_create' %}">
+        <i class="bi bi-clipboard-plus"></i> 新增診療記錄
+    </a></li>
+    <li><a class="dropdown-item" href="{% url 'clinical:rehab_plan_create' %}">
+        <i class="bi bi-activity"></i> 新增復健計畫
+    </a></li>
+    <li><a class="dropdown-item" href="{% url 'assessments:assessment_create' %}">
+        <i class="bi bi-clipboard-check"></i> 新增評估
+    </a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header">護理照護</h6></li>
+    <li><a class="dropdown-item" href="{% url 'clinical:vital_signs_create' %}">
+        <i class="bi bi-heart-pulse"></i> 記錄生命徵象
+    </a></li>
+    <li><a class="dropdown-item" href="{% url 'clinical:nursing_note_create' %}">
+        <i class="bi bi-clipboard-heart"></i> 新增護理紀錄
+    </a></li>
+    <li><a class="dropdown-item" href="{% url 'clinical:care_plan_create' %}">
+        <i class="bi bi-file-medical"></i> 新增照護計畫
+    </a></li>
+    <li><a class="dropdown-item" href="{% url 'clinical:care_record_create' %}">
+        <i class="bi bi-journal-plus"></i> 新增照護記錄
+    </a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item text-danger" href="{% url 'clinical:incident_report_create' %}">
+        <i class="bi bi-exclamation-triangle"></i> 異常通報
+    </a></li>
+{% endif %}
+
+{# ==================== Doctor Quick Actions ==================== #}
+{% if user.role == 'doctor' %}
+    <li><a class="dropdown-item" href="{% url 'clinical:medical_record_create' %}">
+        <i class="bi bi-clipboard-plus"></i> 新增診療記錄
+    </a></li>
+    <li><a class="dropdown-item" href="{% url 'assessments:assessment_create' %}">
+        <i class="bi bi-clipboard-check"></i> 新增評估
+    </a></li>
+    <li><a class="dropdown-item" href="{% url 'clinical:medication_create' %}">
+        <i class="bi bi-capsule"></i> 開立處方
+    </a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="{% url 'appointments:create' %}">
+        <i class="bi bi-calendar-plus"></i> 建立預約
+    </a></li>
+{% endif %}
+
+{# ==================== Therapist Quick Actions ==================== #}
+{% if user.role == 'therapist' %}
+    <li><a class="dropdown-item" href="{% url 'clinical:rehab_plan_create' %}">
+        <i class="bi bi-clipboard-plus"></i> 新增復健計畫
+    </a></li>
+    <li><a class="dropdown-item" href="{% url 'assessments:assessment_create' %}">
+        <i class="bi bi-clipboard-check"></i> 新增評估
+    </a></li>
+    <li><a class="dropdown-item" href="{% url 'clinical:equipment_reservation_create' %}">
+        <i class="bi bi-calendar-plus"></i> 預約設備
+    </a></li>
+{% endif %}
+
+{# ==================== Nurse Quick Actions ==================== #}
+{% if user.role == 'nurse' %}
+    <li><a class="dropdown-item" href="{% url 'clinical:vital_signs_create' %}">
+        <i class="bi bi-heart-pulse"></i> 記錄生命徵象
+    </a></li>
+    <li><a class="dropdown-item" href="{% url 'clinical:nursing_note_create' %}">
+        <i class="bi bi-clipboard-heart"></i> 新增護理紀錄
+    </a></li>
+    <li><a class="dropdown-item" href="{% url 'assessments:assessment_create' %}">
+        <i class="bi bi-clipboard-check"></i> 新增評估
+    </a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item text-danger" href="{% url 'clinical:incident_report_create' %}">
+        <i class="bi bi-exclamation-triangle"></i> 異常通報
+    </a></li>
+{% endif %}
+
+{# ==================== Case Manager Quick Actions ==================== #}
+{% if user.role == 'case_manager' %}
+    <li><a class="dropdown-item" href="{% url 'clinical:care_plan_create' %}">
+        <i class="bi bi-file-medical"></i> 新增照護計畫
+    </a></li>
+    <li><a class="dropdown-item" href="{% url 'assessments:assessment_create' %}">
+        <i class="bi bi-clipboard-check"></i> 新增評估
+    </a></li>
+{% endif %}
+
+{# ==================== Caregiver Quick Actions ==================== #}
+{% if user.role == 'caregiver' %}
+    <li><a class="dropdown-item" href="{% url 'clinical:care_record_create' %}">
+        <i class="bi bi-journal-plus"></i> 新增照護記錄
+    </a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item text-danger" href="{% url 'clinical:incident_report_create' %}">
+        <i class="bi bi-exclamation-triangle"></i> 異常通報
+    </a></li>
+{% endif %}

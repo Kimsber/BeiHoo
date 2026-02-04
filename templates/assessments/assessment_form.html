@@ -1,0 +1,419 @@
+{% extends 'base_dashboard.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{% if object %}編輯評估{% else %}新增評估{% endif %}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .assessment-item {
+        border: 1px solid #dee2e6;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        background: #f8f9fa;
+    }
+    .assessment-item.answered {
+        background: #e8f5e9;
+        border-color: #4caf50;
+    }
+    .score-option {
+        cursor: pointer;
+        padding: 0.5rem 1rem;
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem;
+        margin: 0.25rem;
+        display: inline-block;
+        transition: all 0.2s;
+    }
+    .score-option:hover {
+        background: #e3f2fd;
+        border-color: #2196f3;
+    }
+    .score-option.selected {
+        background: #2196f3;
+        color: white;
+        border-color: #1976d2;
+    }
+    .template-selector {
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .template-selector:hover {
+        background: #f5f5f5;
+    }
+    .template-selector.selected {
+        border-color: #2196f3;
+        background: #e3f2fd;
+    }
+</style>
+{% endblock %}
+
+{% block page_header %}
+<div class="d-flex justify-content-between align-items-center">
+    <div>
+        <h2>
+            <i class="fas fa-clipboard-check text-primary"></i>
+            {% if object %}編輯評估{% else %}新增病患評估{% endif %}
+        </h2>
+        <p class="text-muted mb-0">
+            {% if selected_patient %}
+                病患：{{ selected_patient.get_full_name }}
+            {% else %}
+                請選擇病患並填寫評估內容
+            {% endif %}
+        </p>
+    </div>
+    <div>
+        <a href="{% url 'assessments:assessment_list' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> 返回列表
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<form method="post" id="assessmentForm">
+    {% csrf_token %}
+    
+    <div class="row">
+        <!-- Left Column: Basic Info -->
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-user"></i> 基本資訊</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">病患 <span class="text-danger">*</span></label>
+                        {{ form.patient }}
+                        {% if form.patient.errors %}
+                            <div class="text-danger small">{{ form.patient.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">評估範本 <span class="text-danger">*</span></label>
+                        {{ form.template }}
+                        {% if form.template.errors %}
+                            <div class="text-danger small">{{ form.template.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">評估日期時間</label>
+                        {{ form.assessment_date }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">狀態</label>
+                        {{ form.status }}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Related Records -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-link"></i> 關聯記錄 (選填)</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">相關照護計畫</label>
+                        {{ form.related_care_plan }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">相關復健計畫</label>
+                        {{ form.related_rehab_plan }}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Score Summary -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-calculator"></i> 分數統計</h5>
+                </div>
+                <div class="card-body text-center">
+                    <h1 id="totalScoreDisplay" class="display-4 mb-0">0</h1>
+                    <p class="text-muted" id="maxScoreDisplay">/ -</p>
+                    <div id="interpretationDisplay" class="badge bg-secondary fs-6 mt-2">-</div>
+                    {{ form.total_score }}
+                    {{ form.interpretation }}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Column: Assessment Items -->
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-list-ol"></i> 評估項目</h5>
+                    <span class="badge bg-primary" id="progressBadge">0 / 0 已完成</span>
+                </div>
+                <div class="card-body">
+                    <div id="assessmentItemsContainer">
+                        <div class="text-center text-muted py-5">
+                            <i class="fas fa-hand-pointer fa-3x mb-3"></i>
+                            <p>請先選擇評估範本</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Clinical Notes -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-notes-medical"></i> 臨床備註</h5>
+                </div>
+                <div class="card-body">
+                    {{ form.clinical_notes }}
+                </div>
+            </div>
+            
+            <!-- Hidden field for responses -->
+            {{ form.responses }}
+            
+            <!-- Submit Buttons -->
+            <div class="d-flex justify-content-end gap-2">
+                <a href="{% url 'assessments:assessment_list' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-times"></i> 取消
+                </a>
+                <button type="submit" name="save_draft" class="btn btn-outline-primary">
+                    <i class="fas fa-save"></i> 儲存草稿
+                </button>
+                <button type="submit" name="save_complete" class="btn btn-primary">
+                    <i class="fas fa-check"></i> 完成評估
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const templateSelect = document.getElementById('id_template');
+    const itemsContainer = document.getElementById('assessmentItemsContainer');
+    const responsesInput = document.getElementById('id_responses');
+    const totalScoreDisplay = document.getElementById('totalScoreDisplay');
+    const maxScoreDisplay = document.getElementById('maxScoreDisplay');
+    const interpretationDisplay = document.getElementById('interpretationDisplay');
+    const progressBadge = document.getElementById('progressBadge');
+    const totalScoreInput = document.getElementById('id_total_score');
+    const interpretationInput = document.getElementById('id_interpretation');
+    
+    let currentTemplate = null;
+    let responses = {};
+    
+    // Load existing responses if editing
+    try {
+        const existingResponses = responsesInput.value;
+        if (existingResponses) {
+            responses = JSON.parse(existingResponses);
+        }
+    } catch (e) {
+        responses = {};
+    }
+    
+    // Template selection change handler
+    templateSelect.addEventListener('change', function() {
+        const templateId = this.value;
+        if (!templateId) {
+            itemsContainer.innerHTML = `
+                <div class="text-center text-muted py-5">
+                    <i class="fas fa-hand-pointer fa-3x mb-3"></i>
+                    <p>請先選擇評估範本</p>
+                </div>
+            `;
+            return;
+        }
+        
+        // Fetch template items
+        fetch(`/assessments/api/templates/${templateId}/items/`)
+            .then(response => response.json())
+            .then(data => {
+                currentTemplate = data;
+                renderAssessmentItems(data);
+                updateScoreDisplay();
+            })
+            .catch(error => {
+                console.error('Error loading template:', error);
+                itemsContainer.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle"></i> 載入評估範本失敗
+                    </div>
+                `;
+            });
+    });
+    
+    function renderAssessmentItems(template) {
+        if (!template.items || template.items.length === 0) {
+            itemsContainer.innerHTML = `
+                <div class="alert alert-warning">
+                    <i class="fas fa-info-circle"></i> 此評估範本尚未設定評估項目
+                </div>
+            `;
+            return;
+        }
+        
+        maxScoreDisplay.textContent = `/ ${template.max_score || '-'}`;
+        
+        let html = '';
+        template.items.forEach((item, index) => {
+            const itemId = item.id || `item_${index}`;
+            const isAnswered = responses[itemId] !== undefined;
+            
+            html += `
+                <div class="assessment-item ${isAnswered ? 'answered' : ''}" data-item-id="${itemId}">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h6 class="mb-0">${index + 1}. ${item.text || item.question}</h6>
+                        <span class="badge bg-secondary item-score">
+                            ${isAnswered ? responses[itemId].score || responses[itemId] : '-'}
+                        </span>
+                    </div>
+            `;
+            
+            if (item.options) {
+                html += '<div class="score-options">';
+                item.options.forEach(option => {
+                    const isSelected = responses[itemId] && 
+                        (responses[itemId].score === option.score || responses[itemId] === option.score);
+                    html += `
+                        <span class="score-option ${isSelected ? 'selected' : ''}" 
+                              data-item-id="${itemId}"
+                              data-score="${option.score}"
+                              data-answer="${option.text || option.label}">
+                            ${option.text || option.label} (${option.score}分)
+                        </span>
+                    `;
+                });
+                html += '</div>';
+            } else if (item.type === 'number') {
+                const value = responses[itemId] ? (responses[itemId].score || responses[itemId]) : '';
+                html += `
+                    <input type="number" class="form-control score-input" 
+                           data-item-id="${itemId}"
+                           min="${item.min || 0}" 
+                           max="${item.max || 100}"
+                           value="${value}"
+                           placeholder="請輸入分數">
+                `;
+            }
+            
+            if (item.description) {
+                html += `<small class="text-muted d-block mt-2">${item.description}</small>`;
+            }
+            
+            html += '</div>';
+        });
+        
+        itemsContainer.innerHTML = html;
+        
+        // Bind click events to score options
+        document.querySelectorAll('.score-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const itemId = this.dataset.itemId;
+                const score = parseInt(this.dataset.score);
+                const answer = this.dataset.answer;
+                
+                // Update UI
+                this.closest('.assessment-item').querySelectorAll('.score-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                this.classList.add('selected');
+                this.closest('.assessment-item').classList.add('answered');
+                this.closest('.assessment-item').querySelector('.item-score').textContent = score;
+                
+                // Update responses
+                responses[itemId] = { score: score, answer: answer };
+                updateScoreDisplay();
+            });
+        });
+        
+        // Bind input events to number inputs
+        document.querySelectorAll('.score-input').forEach(input => {
+            input.addEventListener('input', function() {
+                const itemId = this.dataset.itemId;
+                const score = parseInt(this.value) || 0;
+                
+                this.closest('.assessment-item').classList.add('answered');
+                this.closest('.assessment-item').querySelector('.item-score').textContent = score;
+                
+                responses[itemId] = { score: score };
+                updateScoreDisplay();
+            });
+        });
+        
+        updateProgress();
+    }
+    
+    function updateScoreDisplay() {
+        let total = 0;
+        for (const itemId in responses) {
+            const response = responses[itemId];
+            if (typeof response === 'object' && response.score !== undefined) {
+                total += response.score;
+            } else if (typeof response === 'number') {
+                total += response;
+            }
+        }
+        
+        totalScoreDisplay.textContent = total;
+        totalScoreInput.value = total;
+        
+        // Update interpretation
+        if (currentTemplate && currentTemplate.score_interpretation) {
+            let interpretation = '-';
+            for (const range in currentTemplate.score_interpretation) {
+                const [min, max] = range.split('-').map(Number);
+                if (total >= min && total <= max) {
+                    interpretation = currentTemplate.score_interpretation[range];
+                    break;
+                }
+            }
+            interpretationDisplay.textContent = interpretation;
+            interpretationInput.value = interpretation;
+        }
+        
+        // Update responses hidden input
+        responsesInput.value = JSON.stringify(responses);
+        
+        updateProgress();
+    }
+    
+    function updateProgress() {
+        if (!currentTemplate || !currentTemplate.items) {
+            progressBadge.textContent = '0 / 0 已完成';
+            return;
+        }
+        
+        const total = currentTemplate.items.length;
+        const completed = Object.keys(responses).length;
+        progressBadge.textContent = `${completed} / ${total} 已完成`;
+        
+        if (completed === total && total > 0) {
+            progressBadge.classList.remove('bg-primary');
+            progressBadge.classList.add('bg-success');
+        } else {
+            progressBadge.classList.remove('bg-success');
+            progressBadge.classList.add('bg-primary');
+        }
+    }
+    
+    // Trigger template load if already selected (for edit mode)
+    if (templateSelect.value) {
+        templateSelect.dispatchEvent(new Event('change'));
+    }
+    
+    // Form submission - update status based on button clicked
+    document.querySelector('button[name="save_complete"]').addEventListener('click', function() {
+        document.getElementById('id_status').value = 'completed';
+    });
+    
+    document.querySelector('button[name="save_draft"]').addEventListener('click', function() {
+        document.getElementById('id_status').value = 'in_progress';
+    });
+});
+</script>
+{% endblock %}

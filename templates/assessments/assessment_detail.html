@@ -1,0 +1,338 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}評估詳情 - {{ assessment.template.name }}{% endblock %}
+
+{% block page_header %}
+<div class="d-flex justify-content-between align-items-center">
+    <div>
+        <h2>
+            <i class="fas fa-clipboard-check text-primary"></i>
+            {{ assessment.template.name }}
+        </h2>
+        <p class="text-muted mb-0">
+            {{ assessment.patient.get_full_name }} | 
+            {{ assessment.assessment_date|date:"Y年m月d日 H:i" }}
+        </p>
+    </div>
+    <div>
+        <a href="{% url 'assessments:assessment_list_by_patient' assessment.patient.id %}" class="btn btn-outline-secondary">
+            <i class="fas fa-list"></i> 病患評估列表
+        </a>
+        {% if assessment.status != 'completed' and assessment.status != 'cancelled' %}
+        <a href="{% url 'assessments:assessment_edit' assessment.id %}" class="btn btn-primary">
+            <i class="fas fa-edit"></i> 編輯
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Main Content -->
+    <div class="col-md-8">
+        <!-- Assessment Info Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-info-circle"></i> 評估資訊</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <th class="text-muted" style="width: 40%;">病患</th>
+                                <td>
+                                    <a href="{% url 'clinical:patient_detail' assessment.patient.id %}">
+                                        {{ assessment.patient.get_full_name }}
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">評估類型</th>
+                                <td>{{ assessment.template.name }}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">評估類別</th>
+                                <td>
+                                    <span class="badge bg-info">
+                                        {{ assessment.template.get_category_display }}
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">評估日期</th>
+                                <td>{{ assessment.assessment_date|date:"Y-m-d H:i" }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <th class="text-muted" style="width: 40%;">評估者</th>
+                                <td>{{ assessment.assessed_by.get_full_name }}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">狀態</th>
+                                <td>
+                                    {% if assessment.status == 'completed' %}
+                                        <span class="badge bg-success">已完成</span>
+                                    {% elif assessment.status == 'in_progress' %}
+                                        <span class="badge bg-warning">進行中</span>
+                                    {% elif assessment.status == 'amended' %}
+                                        <span class="badge bg-info">已修正</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">已取消</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">同步狀態</th>
+                                <td>
+                                    {% if assessment.sync_status == 'synced' %}
+                                        <span class="badge bg-success"><i class="fas fa-check"></i> 已同步</span>
+                                    {% elif assessment.sync_status == 'pending' %}
+                                        <span class="badge bg-warning"><i class="fas fa-clock"></i> 待同步</span>
+                                    {% else %}
+                                        <span class="badge bg-danger"><i class="fas fa-exclamation"></i> 錯誤</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">建立時間</th>
+                                <td>{{ assessment.created_at|date:"Y-m-d H:i" }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Score Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-chart-line"></i> 評估結果</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <div class="border rounded p-3">
+                            <h6 class="text-muted">總分</h6>
+                            <h2 class="mb-0">
+                                {% if assessment.total_score is not None %}
+                                    {{ assessment.total_score }}
+                                    {% if assessment.template.max_score %}
+                                        <small class="text-muted">/ {{ assessment.template.max_score }}</small>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </h2>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="border rounded p-3">
+                            <h6 class="text-muted">判讀結果</h6>
+                            <h4 class="mb-0">
+                                {% if assessment.interpretation %}
+                                    <span class="badge bg-primary fs-6">{{ assessment.interpretation }}</span>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </h4>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="border rounded p-3">
+                            <h6 class="text-muted">分數方向</h6>
+                            <h4 class="mb-0">
+                                {% if assessment.template.higher_is_better %}
+                                    <i class="fas fa-arrow-up text-success"></i> 越高越好
+                                {% else %}
+                                    <i class="fas fa-arrow-down text-info"></i> 越低越好
+                                {% endif %}
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if assessment.template.score_interpretation %}
+                <hr>
+                <h6>分數解釋對照表</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>分數範圍</th>
+                                <th>判讀</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for range, interpretation in assessment.template.score_interpretation.items %}
+                            <tr {% if assessment.interpretation == interpretation %}class="table-primary"{% endif %}>
+                                <td>{{ range }}</td>
+                                <td>{{ interpretation }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Responses Detail -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-list-ol"></i> 評估項目回應</h5>
+            </div>
+            <div class="card-body">
+                {% if assessment.responses %}
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead class="table-light">
+                            <tr>
+                                <th>項目</th>
+                                <th>回應</th>
+                                <th>分數</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item_id, response in assessment.responses.items %}
+                            <tr>
+                                <td>{{ item_id }}</td>
+                                <td>
+                                    {% if response.answer is defined %}
+                                        {{ response.answer }}
+                                    {% else %}
+                                        {{ response }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if response.score is defined %}
+                                        {{ response.score }}
+                                    {% elif response|add:"0" == response %}
+                                        {{ response }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted text-center">尚無評估回應資料</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Clinical Notes -->
+        {% if assessment.clinical_notes %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-notes-medical"></i> 臨床備註</h5>
+            </div>
+            <div class="card-body">
+                <p class="mb-0" style="white-space: pre-wrap;">{{ assessment.clinical_notes }}</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="col-md-4">
+        <!-- Related Records -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-link"></i> 相關記錄</h5>
+            </div>
+            <div class="card-body">
+                {% if assessment.related_care_plan %}
+                <div class="mb-3">
+                    <strong>照護計畫：</strong>
+                    <a href="{% url 'clinical:care_plan_detail' assessment.related_care_plan.id %}">
+                        {{ assessment.related_care_plan.title }}
+                    </a>
+                </div>
+                {% endif %}
+                
+                {% if assessment.related_rehab_plan %}
+                <div class="mb-3">
+                    <strong>復健計畫：</strong>
+                    <a href="{% url 'clinical:rehab_plan_detail' assessment.related_rehab_plan.id %}">
+                        {{ assessment.related_rehab_plan.plan_name }}
+                    </a>
+                </div>
+                {% endif %}
+                
+                {% if not assessment.related_care_plan and not assessment.related_rehab_plan %}
+                <p class="text-muted mb-0">無相關記錄連結</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Previous Assessments -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-history"></i> 歷史評估 (同類型)</h5>
+            </div>
+            <div class="card-body">
+                {% if previous_assessments %}
+                <ul class="list-group list-group-flush">
+                    {% for prev in previous_assessments %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <div>
+                            <a href="{% url 'assessments:assessment_detail' prev.id %}">
+                                {{ prev.assessment_date|date:"Y-m-d" }}
+                            </a>
+                            <br>
+                            <small class="text-muted">{{ prev.assessed_by.get_full_name }}</small>
+                        </div>
+                        <div class="text-end">
+                            <strong>{{ prev.total_score|default:"-" }}</strong>
+                            {% if prev.total_score is not None and assessment.total_score is not None %}
+                                {% if prev.total_score < assessment.total_score %}
+                                    <i class="fas fa-arrow-up text-success"></i>
+                                {% elif prev.total_score > assessment.total_score %}
+                                    <i class="fas fa-arrow-down text-danger"></i>
+                                {% else %}
+                                    <i class="fas fa-minus text-muted"></i>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <a href="{% url 'assessments:assessment_list_by_patient' assessment.patient.id %}?template={{ assessment.template.id }}" 
+                   class="btn btn-sm btn-outline-primary w-100 mt-3">
+                    查看所有歷史記錄
+                </a>
+                {% else %}
+                <p class="text-muted mb-0">無歷史評估記錄</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-bolt"></i> 快速操作</h5>
+            </div>
+            <div class="card-body d-grid gap-2">
+                <a href="{% url 'assessments:assessment_create' %}?patient={{ assessment.patient.id }}&template={{ assessment.template.id }}" 
+                   class="btn btn-outline-primary">
+                    <i class="fas fa-redo"></i> 重新評估
+                </a>
+                <a href="{% url 'clinical:patient_detail' assessment.patient.id %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-user"></i> 病患資料
+                </a>
+                <a href="{% url 'assessments:assessment_list' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> 返回列表
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

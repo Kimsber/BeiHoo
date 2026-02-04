@@ -1,0 +1,70 @@
+{% comment %}
+Patient-specific Quick Actions - Used when viewing a specific patient
+Requires: patient variable to be passed
+{% endcomment %}
+
+{% if patient %}
+{# ==================== Admin/Doctor - Full Access ==================== #}
+{% if user.role == 'admin' or user.role == 'doctor' %}
+    <a href="{% url 'clinical:medical_record_create' %}?patient={{ patient.id }}" class="btn btn-outline-primary btn-sm">
+        <i class="bi bi-clipboard-plus"></i> 診療記錄
+    </a>
+    <a href="{% url 'assessments:assessment_create' %}?patient={{ patient.id }}" class="btn btn-outline-info btn-sm">
+        <i class="bi bi-clipboard-check"></i> 新增評估
+    </a>
+    <a href="{% url 'clinical:medication_create' %}?patient={{ patient.id }}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-capsule"></i> 開立處方
+    </a>
+    <a href="{% url 'clinical:vital_signs_create' %}?patient={{ patient.id }}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-heart-pulse"></i> 生命徵象
+    </a>
+{% endif %}
+
+{# ==================== Therapist ==================== #}
+{% if user.role == 'therapist' %}
+    <a href="{% url 'clinical:rehab_plan_create' %}?patient={{ patient.id }}" class="btn btn-outline-primary btn-sm">
+        <i class="bi bi-clipboard-plus"></i> 復健計畫
+    </a>
+    <a href="{% url 'assessments:assessment_create' %}?patient={{ patient.id }}" class="btn btn-outline-info btn-sm">
+        <i class="bi bi-clipboard-check"></i> 新增評估
+    </a>
+{% endif %}
+
+{# ==================== Nurse ==================== #}
+{% if user.role == 'nurse' %}
+    <a href="{% url 'clinical:vital_signs_create' %}?patient={{ patient.id }}" class="btn btn-outline-primary btn-sm">
+        <i class="bi bi-heart-pulse"></i> 生命徵象
+    </a>
+    <a href="{% url 'clinical:nursing_note_create' %}?patient={{ patient.id }}" class="btn btn-outline-primary btn-sm">
+        <i class="bi bi-clipboard-heart"></i> 護理紀錄
+    </a>
+    <a href="{% url 'assessments:assessment_create' %}?patient={{ patient.id }}" class="btn btn-outline-info btn-sm">
+        <i class="bi bi-clipboard-check"></i> 新增評估
+    </a>
+{% endif %}
+
+{# ==================== Case Manager ==================== #}
+{% if user.role == 'case_manager' %}
+    <a href="{% url 'clinical:care_plan_create' %}?patient={{ patient.id }}" class="btn btn-outline-primary btn-sm">
+        <i class="bi bi-file-medical"></i> 照護計畫
+    </a>
+    <a href="{% url 'assessments:assessment_create' %}?patient={{ patient.id }}" class="btn btn-outline-info btn-sm">
+        <i class="bi bi-clipboard-check"></i> 新增評估
+    </a>
+{% endif %}
+
+{# ==================== Caregiver ==================== #}
+{% if user.role == 'caregiver' %}
+    <a href="{% url 'clinical:care_record_create' %}?patient={{ patient.id }}" class="btn btn-outline-primary btn-sm">
+        <i class="bi bi-journal-plus"></i> 照護記錄
+    </a>
+{% endif %}
+
+{# ==================== Common - Incident Report ==================== #}
+{% if user.role in 'admin,doctor,nurse,caregiver' %}
+    <a href="{% url 'clinical:incident_report_create' %}?patient={{ patient.id }}" class="btn btn-outline-danger btn-sm">
+        <i class="bi bi-exclamation-triangle"></i> 異常通報
+    </a>
+{% endif %}
+
+{% endif %}

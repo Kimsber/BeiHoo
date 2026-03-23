@@ -1,9 +1,14 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}編輯個人資料 - BeiHoo{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/account/profile_edit.css' %}">
+{% endblock %}
+
 {% block content %}
-<div class="row">
+<div class="row account-page">
     <div class="col-md-8 mx-auto">
         <div class="card shadow">
             <div class="card-header bg-primary text-white">
@@ -16,7 +21,7 @@
                     <!-- Avatar Preview -->
                     {% if user.avatar %}
                     <div class="mb-3 text-center">
-                        <img src="{{ user.avatar.url }}" alt="目前頭像" class="img-thumbnail" style="max-width: 200px; max-height: 200px;">
+                        <img src="{{ user.avatar.url }}" alt="目前頭像" class="img-thumbnail account-avatar-preview">
                         <p class="text-muted mt-2">目前頭像</p>
                     </div>
                     {% endif %}

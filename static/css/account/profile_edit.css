@@ -1,0 +1,6 @@
+/* Styles scoped to templates/account/profile_edit.html */
+
+.account-avatar-preview {
+    max-width: 200px;
+    max-height: 200px;
+}

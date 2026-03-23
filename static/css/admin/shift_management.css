@@ -1,0 +1,43 @@
+/* Styles scoped to templates/admin/shift_management.html */
+
+.shift-selection-toolbar {
+    border: 1px solid rgba(61, 77, 92, 0.12);
+}
+
+.shift-bulk-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.shift-bulk-btn {
+    min-width: 120px;
+    font-weight: 600;
+    border-width: 2px;
+}
+
+.shift-bulk-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+#selectedCount {
+    font-size: 1.05rem;
+}
+
+.shift-empty-icon {
+    font-size: 3rem;
+}
+
+@media (max-width: 767.98px) {
+    .shift-bulk-actions {
+        justify-content: flex-start;
+        margin-top: 0.75rem;
+    }
+
+    .shift-bulk-btn {
+        flex: 1 1 calc(50% - 0.5rem);
+        min-width: 0;
+    }
+}

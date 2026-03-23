@@ -1,0 +1,52 @@
+/* BeiHoo Platform Base Styles */
+
+/* WCAG AAA contrast overrides */
+:root {
+    /* Brand backgrounds */
+    --bs-primary:                #0047c0;
+    --bs-primary-rgb:            0, 71, 192;
+    --bs-primary-bg-subtle:      #dce8ff;
+    --bs-primary-text-emphasis:  #002b73;
+
+    --bs-info:                   #005b7f;
+    --bs-info-rgb:               0, 91, 127;
+    --bs-info-bg-subtle:         #d0ecf7;
+    --bs-info-text-emphasis:     #00374d;
+
+    --bs-success:                #158043;
+    --bs-success-rgb:            20, 90, 50;
+    --bs-success-bg-subtle:      #d2f0df;
+    --bs-success-text-emphasis:  #0a3320;
+
+    --bs-warning:                #7c4f00;
+    --bs-warning-rgb:            124, 79, 0;
+    --bs-warning-bg-subtle:      #fff0cc;
+    --bs-warning-text-emphasis:  #5e3800;
+
+    --bs-danger:                 #a01020;
+    --bs-danger-rgb:             160, 16, 32;
+    --bs-danger-bg-subtle:       #fcd7dc;
+    --bs-danger-text-emphasis:   #5c0910;
+
+    --bs-secondary-color:        #3d4d5c;
+    --bs-secondary:              #3d4d5c;
+    --bs-secondary-rgb:          61, 77, 92;
+
+    --bs-link-color:             #0047c0;
+    --bs-link-hover-color:       #003490;
+}
+
+body {
+    font-family: 'Microsoft JhengHei', 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+.navbar-brand {
+    font-weight: bold;
+}

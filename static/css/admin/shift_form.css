@@ -1,0 +1,22 @@
+/* Styles scoped to templates/admin/shift_form.html */
+
+/* Keep generated Django form widgets aligned in the two-column form rows */
+.col-md-9 .form-control,
+.col-md-9 .form-select,
+.col-md-9 textarea {
+    width: 100%;
+}
+
+.col-md-9 textarea {
+    min-height: 110px;
+}
+
+.col-form-label {
+    font-weight: 600;
+}
+
+@media (max-width: 767.98px) {
+    .col-form-label {
+        margin-bottom: 0.35rem;
+    }
+}

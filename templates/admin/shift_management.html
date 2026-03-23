@@ -4,6 +4,10 @@
 
 {% block title %}班表管理 - BeiHoo{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/shift_management.css' %}">
+{% endblock %}
+
 {% block content %}
 <div class="container-fluid">
     <!-- Header -->
@@ -91,7 +95,7 @@
     </div>
 
     <!-- Bulk Actions -->
-    <div class="card mb-4">
+    <div class="card mb-4 shift-selection-toolbar">
         <div class="card-body">
             <div class="row">
                 <div class="col-md-6">
@@ -105,14 +109,14 @@
                     </div>
                     <span class="ms-3 text-muted">已選擇: <strong id="selectedCount">0</strong> 個班表</span>
                 </div>
-                <div class="col-md-6 text-end">
-                    <button type="button" class="btn btn-success" id="bulkConfirm" disabled>
+                <div class="col-md-6 text-end shift-bulk-actions">
+                    <button type="button" class="btn btn-success shift-bulk-btn" id="bulkConfirm" disabled>
                         <i class="bi bi-check-circle"></i> 批次確認
                     </button>
-                    <button type="button" class="btn btn-warning" id="bulkCancel" disabled>
+                    <button type="button" class="btn btn-warning shift-bulk-btn" id="bulkCancel" disabled>
                         <i class="bi bi-x-circle"></i> 批次取消
                     </button>
-                    <button type="button" class="btn btn-danger" id="bulkDelete" disabled>
+                    <button type="button" class="btn btn-danger shift-bulk-btn" id="bulkDelete" disabled>
                         <i class="bi bi-trash"></i> 批次刪除
                     </button>
                 </div>
@@ -131,7 +135,7 @@
                     <thead class="table-light">
                         <tr>
                             <th width="50">
-                                <input type="checkbox" id="selectAllCheckbox" class="form-check-input">
+                                <input type="checkbox" id="selectAllCheckbox" class="form-check-input" aria-label="全選班表" title="全選班表">
                             </th>
                             <th width="100">日期</th>
                             <th>員工</th>
@@ -147,7 +151,7 @@
                         {% for shift in shifts %}
                         <tr>
                             <td>
-                                <input type="checkbox" class="form-check-input shift-checkbox" 
+                                    <input type="checkbox" class="form-check-input shift-checkbox" aria-label="選擇班表 {{ shift.id }}" title="選擇班表" 
                                        data-shift-id="{{ shift.id }}" value="{{ shift.id }}">
                             </td>
                             <td>
@@ -197,7 +201,7 @@
                         {% empty %}
                         <tr>
                             <td colspan="9" class="text-center py-5">
-                                <i class="bi bi-inbox" style="font-size: 3rem; color: #ccc;"></i>
+                                <i class="bi bi-inbox text-muted shift-empty-icon"></i>
                                 <p class="text-muted mt-2">沒有符合條件的班表</p>
                             </td>
                         </tr>

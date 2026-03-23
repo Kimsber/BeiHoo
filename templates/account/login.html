@@ -1,10 +1,15 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
+{% load static %}
 
 {% block title %}登入 - BeiHoo{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/account/login.css' %}">
+{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center">
+<div class="row justify-content-center account-page">
     <div class="col-md-6 col-lg-5">
         <div class="card shadow">
             <div class="card-body p-5">

@@ -3,6 +3,10 @@
 
 {% block title %}使用者管理 - BeiHoo{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/user_management.css' %}">
+{% endblock %}
+
 {% block content %}
 <div class="container-fluid">
     <div class="row mb-4">
@@ -166,7 +170,7 @@
                         {% empty %}
                         <tr>
                             <td colspan="9" class="text-center py-5">
-                                <i class="bi bi-inbox" style="font-size: 3rem; color: #ccc;"></i>
+                                <i class="bi bi-inbox text-muted admin-users-empty-icon"></i>
                                 <p class="text-muted mt-2">沒有符合條件的使用者</p>
                             </td>
                         </tr>

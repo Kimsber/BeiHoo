@@ -1,0 +1,14 @@
+/* Styles scoped to templates/admin/user_management.html */
+
+.row + .card,
+.row + .row {
+    margin-top: 1.5rem;
+}
+
+.card + .card {
+    margin-top: 1.5rem;
+}
+
+.admin-users-empty-icon {
+    font-size: 3rem;
+}

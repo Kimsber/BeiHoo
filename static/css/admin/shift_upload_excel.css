@@ -1,0 +1,26 @@
+/* Styles scoped to templates/admin/shift_upload_excel.html */
+
+/* Slightly tighter card rhythm for upload/instruction side panel */
+.card-header h5 {
+    font-weight: 600;
+}
+
+.breadcrumb {
+    margin-bottom: 0;
+}
+
+ol.small,
+ul.small {
+    padding-left: 1.25rem;
+}
+
+.alert.alert-warning small {
+    display: inline-block;
+    line-height: 1.5;
+}
+
+@media (max-width: 991.98px) {
+    .card .btn.w-100 {
+        margin-top: 0.25rem;
+    }
+}

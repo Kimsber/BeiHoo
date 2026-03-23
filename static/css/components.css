@@ -1,0 +1,173 @@
+/* Shared reusable component styles */
+
+/* Quick actions on dark warning background */
+.bg-warning,
+.bg-warning h1, .bg-warning h2, .bg-warning h3,
+.bg-warning h4, .bg-warning h5, .bg-warning h6 {
+    color: #fff !important;
+}
+
+.bg-warning .btn-outline-dark,
+.bg-warning .btn-outline-secondary {
+    --bs-btn-color:               #fff;
+    --bs-btn-border-color:        rgba(255, 255, 255, 0.75);
+    --bs-btn-hover-color:         #7c4f00;
+    --bs-btn-hover-bg:            #fff;
+    --bs-btn-hover-border-color:  #fff;
+    --bs-btn-active-color:        #7c4f00;
+    --bs-btn-active-bg:           #fff;
+    --bs-btn-active-border-color: #fff;
+}
+
+/* Button color overrides */
+.btn-primary {
+    --bs-btn-bg:                    #0047c0;
+    --bs-btn-border-color:          #0047c0;
+    --bs-btn-hover-bg:              #003490;
+    --bs-btn-hover-border-color:    #003490;
+    --bs-btn-active-bg:             #002b73;
+    --bs-btn-active-border-color:   #002b73;
+    --bs-btn-disabled-bg:           #0047c0;
+    --bs-btn-disabled-border-color: #0047c0;
+}
+
+.btn-outline-primary {
+    --bs-btn-color:               #0047c0;
+    --bs-btn-border-color:        #0047c0;
+    --bs-btn-hover-bg:            #0047c0;
+    --bs-btn-hover-border-color:  #0047c0;
+    --bs-btn-active-bg:           #0047c0;
+    --bs-btn-active-border-color: #0047c0;
+}
+
+.btn-info {
+    --bs-btn-color:                 #fff;
+    --bs-btn-bg:                    #005b7f;
+    --bs-btn-border-color:          #005b7f;
+    --bs-btn-hover-color:           #fff;
+    --bs-btn-hover-bg:              #004a68;
+    --bs-btn-hover-border-color:    #004a68;
+    --bs-btn-active-color:          #fff;
+    --bs-btn-active-bg:             #003a52;
+    --bs-btn-active-border-color:   #003a52;
+    --bs-btn-disabled-bg:           #005b7f;
+    --bs-btn-disabled-border-color: #005b7f;
+}
+
+.btn-outline-info {
+    --bs-btn-color:               #005b7f;
+    --bs-btn-border-color:        #005b7f;
+    --bs-btn-hover-bg:            #005b7f;
+    --bs-btn-hover-color:         #fff;
+    --bs-btn-hover-border-color:  #005b7f;
+    --bs-btn-active-bg:           #005b7f;
+    --bs-btn-active-border-color: #005b7f;
+}
+
+.btn-success {
+    --bs-btn-bg:                    #158043;
+    --bs-btn-border-color:          #158043;
+    --bs-btn-hover-bg:              #106635;
+    --bs-btn-hover-border-color:    #106635;
+    --bs-btn-active-bg:             #0a4d28;
+    --bs-btn-active-border-color:   #0a4d28;
+    --bs-btn-disabled-bg:           #158043;
+    --bs-btn-disabled-border-color: #158043;
+}
+
+.btn-outline-success {
+    --bs-btn-color:               #158043;
+    --bs-btn-border-color:        #158043;
+    --bs-btn-hover-bg:            #158043;
+    --bs-btn-hover-color:         #fff;
+    --bs-btn-hover-border-color:  #158043;
+    --bs-btn-active-bg:           #158043;
+    --bs-btn-active-border-color: #158043;
+}
+
+.btn-warning {
+    --bs-btn-color:                 #fff;
+    --bs-btn-bg:                    #7c4f00;
+    --bs-btn-border-color:          #7c4f00;
+    --bs-btn-hover-color:           #fff;
+    --bs-btn-hover-bg:              #6a4300;
+    --bs-btn-hover-border-color:    #6a4300;
+    --bs-btn-active-color:          #fff;
+    --bs-btn-active-bg:             #593800;
+    --bs-btn-active-border-color:   #593800;
+    --bs-btn-disabled-bg:           #7c4f00;
+    --bs-btn-disabled-border-color: #7c4f00;
+}
+
+.btn-outline-warning {
+    --bs-btn-color:               #7c4f00;
+    --bs-btn-border-color:        #7c4f00;
+    --bs-btn-hover-color:         #fff;
+    --bs-btn-hover-bg:            #7c4f00;
+    --bs-btn-hover-border-color:  #7c4f00;
+    --bs-btn-active-color:        #fff;
+    --bs-btn-active-bg:           #7c4f00;
+    --bs-btn-active-border-color: #7c4f00;
+}
+
+.btn-danger {
+    --bs-btn-bg:                    #a01020;
+    --bs-btn-border-color:          #a01020;
+    --bs-btn-hover-bg:              #850d1a;
+    --bs-btn-hover-border-color:    #850d1a;
+    --bs-btn-active-bg:             #6b0a15;
+    --bs-btn-active-border-color:   #6b0a15;
+    --bs-btn-disabled-bg:           #a01020;
+    --bs-btn-disabled-border-color: #a01020;
+}
+
+.btn-outline-danger {
+    --bs-btn-color:               #a01020;
+    --bs-btn-border-color:        #a01020;
+    --bs-btn-hover-bg:            #a01020;
+    --bs-btn-hover-color:         #fff;
+    --bs-btn-hover-border-color:  #a01020;
+    --bs-btn-active-bg:           #a01020;
+    --bs-btn-active-border-color: #a01020;
+}
+
+.btn-secondary {
+    --bs-btn-bg:                    #3d4d5c;
+    --bs-btn-border-color:          #3d4d5c;
+    --bs-btn-hover-bg:              #2f3c49;
+    --bs-btn-hover-border-color:    #2f3c49;
+    --bs-btn-active-bg:             #222c35;
+    --bs-btn-active-border-color:   #222c35;
+    --bs-btn-disabled-bg:           #3d4d5c;
+    --bs-btn-disabled-border-color: #3d4d5c;
+}
+
+.btn-outline-secondary {
+    --bs-btn-color:               #3d4d5c;
+    --bs-btn-border-color:        #3d4d5c;
+    --bs-btn-hover-bg:            #3d4d5c;
+    --bs-btn-hover-color:         #fff;
+    --bs-btn-hover-border-color:  #3d4d5c;
+    --bs-btn-active-bg:           #3d4d5c;
+    --bs-btn-active-border-color: #3d4d5c;
+}
+
+/* Card component */
+.card {
+    transition: transform 0.2s;
+    margin-bottom: 1.5rem;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Reusable utility-like shared selectors */
+.account-page .card .card-body {
+    line-height: 1.5;
+}
+
+.account-page .badge.bg-info {
+    color: #fff;
+}

@@ -1,0 +1,27 @@
+/* Styles scoped to clinical/medical_record_*.html templates */
+
+/* SOAP section labels */
+.soap-section-label {
+    font-size: 0.95rem;
+    margin-bottom: 0.25rem;
+}
+
+/* SOAP content blocks */
+.soap-content {
+    background-color: #f8f9fa;
+    border-radius: 0.25rem;
+    padding: 0.75rem 1rem;
+    min-height: 3rem;
+}
+
+/* Info table label column */
+.record-info-label {
+    width: 35%;
+    font-weight: 600;
+}
+
+/* SOAP hint text */
+.soap-hint {
+    font-size: 0.8rem;
+    color: #6c757d;
+}

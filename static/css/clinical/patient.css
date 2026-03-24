@@ -1,0 +1,36 @@
+/* Styles scoped to clinical/patient_*.html templates */
+
+/* Patient List */
+.patient-filter-card .card-body {
+    background-color: #f8f9fa;
+}
+
+/* Patient Detail Header */
+.patient-detail-header {
+    border-bottom: 2px solid #dee2e6;
+    padding-bottom: 1rem;
+}
+
+/* Info table label column */
+.patient-info-label {
+    width: 35%;
+    font-weight: 600;
+}
+
+/* Quick-action button group wrapping */
+.patient-quick-actions .btn {
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Tabbed content area */
+.patient-tab-content {
+    border: 1px solid #dee2e6;
+    border-top: none;
+    border-radius: 0 0 0.375rem 0.375rem;
+}
+
+/* Status badges — fallback colour for unknown status values */
+.badge.bg-active    { background-color: #198754 !important; }
+.badge.bg-inactive  { background-color: #6c757d !important; }
+.badge.bg-discharged { background-color: #0d6efd !important; }

@@ -1,4 +1,9 @@
 {% extends 'base_dashboard.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/appointments/appointment_timeline.css' %}">
+{% endblock %}
 
 {% block dashboard_content %}
 

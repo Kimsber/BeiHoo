@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/clinical/incident_report.css' %}">
+{% endblock %}
+
 {% block title %}{% if form.instance.pk %}編輯{% else %}通報{% endif %}異常事件 - BeiHoo{% endblock %}
 
 {% block content %}

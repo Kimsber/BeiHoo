@@ -1,0 +1,40 @@
+/* Styles scoped to templates/appointments/schedule_grid.html */
+
+.appointment-slot-card {
+    border-color: #d0d7de;
+}
+
+.schedule-date-col {
+    width: 10%;
+    min-width: 90px;
+}
+
+.schedule-practitioner-col {
+    min-width: 180px;
+}
+
+.appointment-legend {
+    color: #fff;
+}
+
+.appointment-legend-outpatient {
+    background-color: #005b7f;
+}
+
+.appointment-legend-rehab {
+    background-color: #158043;
+}
+
+.appointment-legend-robot {
+    background-color: #5e3b8f;
+}
+
+.appointment-legend-followup {
+    background-color: #9a5100;
+}
+
+@media (max-width: 991.98px) {
+    .appointment-slot-card .btn {
+        width: 100%;
+    }
+}

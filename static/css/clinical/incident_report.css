@@ -1,0 +1,19 @@
+/* Styles scoped to clinical/incident_report_*.html */
+
+/* Incident card severity border reuse */
+.incident-card-critical { border-color: #dc3545 !important; }
+.incident-card-severe   { border-color: #ffc107 !important; }
+.incident-card-moderate { border-color: #0dcaf0 !important; }
+.incident-card-minor    { border-color: #6c757d !important; }
+
+/* Info table label column */
+.incident-info-label {
+    width: 35%;
+    font-weight: 600;
+}
+
+/* Incident card meta row */
+.incident-meta-label {
+    font-weight: 600;
+    font-size: 0.875rem;
+}

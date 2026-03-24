@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/clinical/care_plan.css' %}">
+{% endblock %}
+
 {% block title %}照護記錄 - BeiHoo{% endblock %}
 
 {% block content %}

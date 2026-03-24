@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/clinical/patient.css' %}">
+{% endblock %}
+
 {% block title %}病患清單 - BeiHoo{% endblock %}
 
 {% block content %}

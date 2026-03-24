@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/clinical/vital_signs.css' %}">
+{% endblock %}
+
 {% block title %}生命徵象記錄 - BeiHoo{% endblock %}
 
 {% block content %}

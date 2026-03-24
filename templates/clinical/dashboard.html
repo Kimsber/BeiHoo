@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/clinical/dashboard.css' %}">
+{% endblock %}
+
 {% block title %}臨床管理 - BeiHoo{% endblock %}
 
 {% block content %}

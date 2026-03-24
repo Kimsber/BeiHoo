@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/clinical/rehab.css' %}">
+{% endblock %}
+
 {% block title %}復健計畫 - BeiHoo{% endblock %}
 
 {% block content %}

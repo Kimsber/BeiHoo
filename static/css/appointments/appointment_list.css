@@ -1,0 +1,25 @@
+/* Styles scoped to templates/appointments/appointment_list.html */
+
+/* Keep filter/search section spacing clear in dense admin list pages */
+.row + .card,
+.row + .row {
+    margin-top: 1.5rem;
+}
+
+.card + .card {
+    margin-top: 1.5rem;
+}
+
+.appointment-empty-icon {
+    font-size: 3rem;
+}
+
+.service-color-badge {
+    color: #fff;
+}
+
+@media (max-width: 767.98px) {
+    .btn-group.btn-group-sm {
+        flex-wrap: wrap;
+    }
+}

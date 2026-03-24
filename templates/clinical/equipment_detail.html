@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/clinical/equipment.css' %}">
+{% endblock %}
+
 {% block title %}{{ equipment.equipment_name }} - 設備詳情 - BeiHoo{% endblock %}
 
 {% block content %}
@@ -35,7 +39,7 @@
                 <div class="card-body">
                     <table class="table table-sm">
                         <tr>
-                            <th width="35%">設備名稱：</th>
+                            <th class="equipment-info-label">設備名稱：</th>
                             <td>{{ equipment.equipment_name }}</td>
                         </tr>
                         <tr>

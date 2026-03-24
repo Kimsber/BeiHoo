@@ -1,0 +1,17 @@
+/* Styles scoped to clinical/nursing_note_*.html */
+
+/* Note card hover */
+.nursing-note-card {
+    transition: box-shadow 0.2s ease;
+}
+
+.nursing-note-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* AIE section labels (Assessment / Intervention / Evaluation) */
+.nursing-section-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}

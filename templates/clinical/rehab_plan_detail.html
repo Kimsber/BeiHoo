@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/clinical/rehab.css' %}">
+{% endblock %}
+
 {% block title %}{{ rehab_plan.plan_name }} - 復健計畫 - BeiHoo{% endblock %}
 
 {% block content %}
@@ -37,7 +41,7 @@
                 <div class="card-body">
                     <table class="table table-sm">
                         <tr>
-                            <th width="35%">病患：</th>
+                            <th class="rehab-info-label">病患：</th>
                             <td>
                                 <a href="{% url 'clinical:patient_detail' rehab_plan.patient.pk %}" class="text-decoration-none">
                                     {{ rehab_plan.patient.get_full_name }}

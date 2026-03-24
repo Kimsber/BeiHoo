@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/clinical/nursing_note.css' %}">
+{% endblock %}
+
 {% block title %}護理紀錄 - BeiHoo{% endblock %}
 
 {% block content %}

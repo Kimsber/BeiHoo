@@ -1,4 +1,9 @@
 {% extends 'base_dashboard.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/appointments/appointment_timeline.css' %}">
+{% endblock %}
 
 {% block dashboard_content %}
 
@@ -40,7 +45,7 @@
                 <div class="row">
                     <div class="col-md-4">
                         <div class="d-flex align-items-center">
-                            <i class="bi bi-robot text-success" style="font-size: 24px;"></i>
+                            <i class="bi bi-robot text-success robot-status-icon"></i>
                             <div class="ms-2">
                                 <div class="small">復健機器人 #1</div>
                                 <span class="badge bg-success">可用</span>
@@ -49,7 +54,7 @@
                     </div>
                     <div class="col-md-4">
                         <div class="d-flex align-items-center">
-                            <i class="bi bi-robot text-success" style="font-size: 24px;"></i>
+                            <i class="bi bi-robot text-success robot-status-icon"></i>
                             <div class="ms-2">
                                 <div class="small">復健機器人 #2</div>
                                 <span class="badge bg-success">可用</span>
@@ -58,7 +63,7 @@
                     </div>
                     <div class="col-md-4">
                         <div class="d-flex align-items-center">
-                            <i class="bi bi-robot text-warning" style="font-size: 24px;"></i>
+                            <i class="bi bi-robot text-warning robot-status-icon"></i>
                             <div class="ms-2">
                                 <div class="small">復健機器人 #3</div>
                                 <span class="badge bg-warning">維護中</span>

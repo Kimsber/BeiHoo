@@ -1,0 +1,7 @@
+/* Styles scoped to assessments/template_*.html */
+
+/* JSON editor monospace font */
+.json-editor {
+    font-family: 'Courier New', monospace;
+    font-size: 0.875rem;
+}

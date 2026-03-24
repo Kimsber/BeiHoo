@@ -1,5 +1,10 @@
 {% extends 'base_dashboard.html' %}
+{% load static %}
 {% load crispy_forms_tags %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/assessments/assessment.css' %}">
+{% endblock %}
 
 {% block title %}病患評估列表{% endblock %}
 

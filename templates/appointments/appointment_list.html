@@ -3,6 +3,10 @@
 
 {% block title %}預約列表 - BeiHoo{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/appointments/appointment_list.css' %}">
+{% endblock %}
+
 {% block content %}
 <div class="container-fluid">
     <div class="row mb-4">
@@ -134,7 +138,7 @@
                                 <small class="text-muted">{{ appt.practitioner.get_role_display }}</small>
                             </td>
                             <td>
-                                <span class="badge" style="background-color: {{ appt.service_type.color }};">
+                                <span class="badge service-color-badge" data-service-color="{{ appt.service_type.color }}">
                                     {{ appt.service_type.display_name_zh }}
                                 </span>
                             </td>
@@ -180,7 +184,7 @@
                         {% empty %}
                         <tr>
                             <td colspan="7" class="text-center py-5">
-                                <i class="bi bi-inbox" style="font-size: 3rem; color: #ccc;"></i>
+                                <i class="bi bi-inbox text-muted appointment-empty-icon"></i>
                                 <p class="text-muted mt-2">沒有符合條件的預約</p>
                             </td>
                         </tr>
@@ -207,6 +211,15 @@ function getCookie(name) {
     }
     return cookieValue;
 }
+
+// Apply dynamic service colors without inline styles.
+document.querySelectorAll('.service-color-badge').forEach(el => {
+    const color = el.dataset.serviceColor;
+    if (color) {
+        el.style.backgroundColor = color;
+        el.style.color = '#fff';
+    }
+});
 
 // Delete appointment
 document.querySelectorAll('.delete-appointment').forEach(btn => {

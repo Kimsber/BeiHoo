@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/clinical/patient.css' %}">
+{% endblock %}
+
 {% block title %}{% if form.instance.pk %}編輯{% else %}建立{% endif %}病患記錄 - BeiHoo{% endblock %}
 
 {% block content %}

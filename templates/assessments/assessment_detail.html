@@ -1,4 +1,9 @@
 {% extends 'base_dashboard.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/assessments/assessment.css' %}">
+{% endblock %}
 
 {% block title %}評估詳情 - {{ assessment.template.name }}{% endblock %}
 
@@ -41,7 +46,7 @@
                     <div class="col-md-6">
                         <table class="table table-borderless">
                             <tr>
-                                <th class="text-muted" style="width: 40%;">病患</th>
+                                <th class="text-muted assessment-info-label">病患</th>
                                 <td>
                                     <a href="{% url 'clinical:patient_detail' assessment.patient.id %}">
                                         {{ assessment.patient.get_full_name }}
@@ -69,7 +74,7 @@
                     <div class="col-md-6">
                         <table class="table table-borderless">
                             <tr>
-                                <th class="text-muted" style="width: 40%;">評估者</th>
+                                <th class="text-muted assessment-info-label">評估者</th>
                                 <td>{{ assessment.assessed_by.get_full_name }}</td>
                             </tr>
                             <tr>

@@ -1,0 +1,58 @@
+/* Styles scoped to assessments/assessment_*.html */
+
+/* Assessment item container */
+.assessment-item {
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: #f8f9fa;
+}
+
+.assessment-item.answered {
+    background: #e8f5e9;
+    border-color: #4caf50;
+}
+
+/* Score option buttons */
+.score-option {
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    margin: 0.25rem;
+    display: inline-block;
+    transition: all 0.2s;
+}
+
+.score-option:hover {
+    background: #e3f2fd;
+    border-color: #2196f3;
+}
+
+.score-option.selected {
+    background: #2196f3;
+    color: white;
+    border-color: #1976d2;
+}
+
+/* Template selector cards */
+.template-selector {
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.template-selector:hover {
+    background: #f5f5f5;
+}
+
+.template-selector.selected {
+    border-color: #2196f3;
+    background: #e3f2fd;
+}
+
+/* Info table label column */
+.assessment-info-label {
+    width: 40%;
+    font-weight: 600;
+}

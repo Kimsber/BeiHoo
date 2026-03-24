@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/clinical/medical_record.css' %}">
+{% endblock %}
+
 {% block title %}診療記錄詳情 - BeiHoo{% endblock %}
 
 {% block content %}
@@ -33,7 +37,7 @@
                 <div class="card-body">
                     <table class="table table-sm">
                         <tr>
-                            <th width="35%">病患：</th>
+                            <th class="record-info-label">病患：</th>
                             <td>
                                 <a href="{% url 'clinical:patient_detail' medical_record.patient.pk %}" class="text-decoration-none">
                                     {{ medical_record.patient.get_full_name }}

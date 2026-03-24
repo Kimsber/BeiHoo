@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/clinical/care_plan.css' %}">
+{% endblock %}
+
 {% block title %}{% if form.instance.pk %}編輯{% else %}新增{% endif %}照護目標 - BeiHoo{% endblock %}
 
 {% block content %}

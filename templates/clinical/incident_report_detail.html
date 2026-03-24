@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/clinical/incident_report.css' %}">
+{% endblock %}
+
 {% block title %}異常事件詳情 - BeiHoo{% endblock %}
 
 {% block content %}
@@ -32,7 +36,7 @@
                 <div class="card-body">
                     <table class="table table-sm">
                         <tr>
-                            <th width="35%">病患：</th>
+                            <th class="incident-info-label">病患：</th>
                             <td>{{ incident.patient.get_full_name }}</td>
                         </tr>
                         <tr>

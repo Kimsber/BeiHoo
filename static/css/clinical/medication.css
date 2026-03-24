@@ -1,0 +1,12 @@
+/* Styles scoped to clinical/medication_*.html */
+
+/* Status badge variants */
+.badge.bg-active       { background-color: #198754 !important; }
+.badge.bg-completed    { background-color: #6c757d !important; }
+.badge.bg-discontinued { background-color: #dc3545 !important; }
+.badge.bg-on-hold      { background-color: #ffc107 !important; color: #212529; }
+
+/* Medication name emphasis */
+.medication-name {
+    font-weight: 600;
+}

@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/clinical/patient.css' %}">
+{% endblock %}
+
 {% block title %}{{ patient.get_full_name }} - 病患詳情 - BeiHoo{% endblock %}
 
 {% block content %}
@@ -41,7 +45,7 @@
                 <div class="card-body">
                     <table class="table table-sm">
                         <tr>
-                            <th width="35%">主要診斷：</th>
+                            <th class="patient-info-label">主要診斷：</th>
                             <td>{{ patient_record.primary_diagnosis }}</td>
                         </tr>
                         <tr>

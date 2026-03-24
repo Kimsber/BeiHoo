@@ -1,4 +1,9 @@
 {% extends 'base_dashboard.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/assessments/template.css' %}">
+{% endblock %}
 
 {% block title %}評估範本管理{% endblock %}
 

@@ -1,0 +1,14 @@
+/* Styles scoped to clinical/dashboard.html */
+
+/* Stat card text sizing */
+.clinical-stat-card h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+/* Quick-link nav section */
+.clinical-nav-section {
+    border-top: 2px solid #dee2e6;
+    padding-top: 1rem;
+}

@@ -1,0 +1,22 @@
+/* Styles scoped to clinical/equipment_*.html and equipment_reservation_*.html */
+
+/* Equipment card grid */
+.equipment-card {
+    transition: box-shadow 0.2s ease;
+}
+
+.equipment-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Info table label column */
+.equipment-info-label {
+    width: 35%;
+    font-weight: 600;
+}
+
+/* Status badge helpers */
+.badge.bg-available   { background-color: #198754 !important; }
+.badge.bg-in_use      { background-color: #0dcaf0 !important; color: #212529; }
+.badge.bg-maintenance { background-color: #ffc107 !important; color: #212529; }
+.badge.bg-retired     { background-color: #dc3545 !important; }

@@ -1,0 +1,41 @@
+/* Styles scoped to templates/appointments/widgets/appointment_timeline.html */
+
+.timeline-container {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.appointment-item {
+    position: relative;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.appointment-item:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: translateX(5px);
+}
+
+.timeline-empty-icon {
+    font-size: 48px;
+}
+
+.service-color-badge {
+    color: #fff;
+}
+
+.robot-status-icon {
+    font-size: 24px;
+}
+
+@media (max-width: 767.98px) {
+    .appointment-item .btn-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+    }
+
+    .appointment-item .btn-group .btn {
+        flex: 1 1 auto;
+    }
+}

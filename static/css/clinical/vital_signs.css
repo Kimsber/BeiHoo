@@ -1,0 +1,15 @@
+/* Styles scoped to clinical/vital_signs_*.html */
+
+/* Status badge coloured by reading level — matches Django template logic */
+.vital-badge-danger  { background-color: #dc3545 !important; color: #fff; }
+.vital-badge-warning { background-color: #ffc107 !important; color: #212529; }
+.vital-badge-normal  { background-color: #198754 !important; color: #fff; }
+
+/* Section divider in the form */
+.vital-section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 0.4rem;
+    margin-bottom: 1rem;
+}

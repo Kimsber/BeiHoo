@@ -1,0 +1,27 @@
+/* Styles scoped to clinical/rehab_plan_*.html and rehab_session_form.html */
+
+/* Plan card grid */
+.rehab-plan-card {
+    transition: box-shadow 0.2s ease;
+}
+
+.rehab-plan-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Info table label column */
+.rehab-info-label {
+    width: 35%;
+    font-weight: 600;
+}
+
+/* Session table progress score column */
+.rehab-progress-score {
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+/* Progress score rating colours */
+.score-high  { color: #198754; }
+.score-mid   { color: #ffc107; }
+.score-low   { color: #dc3545; }

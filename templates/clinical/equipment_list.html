@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/clinical/equipment.css' %}">
+{% endblock %}
+
 {% block title %}設備管理 - BeiHoo{% endblock %}
 
 {% block content %}

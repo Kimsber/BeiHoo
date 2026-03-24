@@ -3,6 +3,10 @@
 
 {% block title %}{% if action == 'create' %}新增預約{% else %}編輯預約{% endif %} - BeiHoo{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/appointments/appointment_form.css' %}">
+{% endblock %}
+
 {% block content %}
 <div class="container">
     <div class="row justify-content-center">

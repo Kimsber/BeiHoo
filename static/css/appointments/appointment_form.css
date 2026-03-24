@@ -1,0 +1,22 @@
+/* Styles scoped to templates/appointments/appointment_form.html */
+
+/* Ensure generated Django form controls fill available width consistently */
+.col-md-6 .form-control,
+.col-md-6 .form-select,
+.col-md-6 textarea {
+    width: 100%;
+}
+
+.col-md-6 textarea {
+    min-height: 110px;
+}
+
+.form-label {
+    font-weight: 600;
+}
+
+@media (max-width: 767.98px) {
+    .col-md-6 h5 {
+        margin-top: 0.5rem;
+    }
+}

@@ -1,0 +1,12 @@
+/* Styles scoped to components/role_badge.html */
+
+/* Role badge colour overrides — for roles not covered by Bootstrap utility classes */
+.role-badge-case-manager {
+    background-color: #6f42c1;
+    color: white;
+}
+
+.role-badge-caregiver {
+    background-color: #20c997;
+    color: white;
+}

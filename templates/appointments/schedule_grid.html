@@ -3,6 +3,10 @@
 
 {% block title %}預約排程表 - BeiHoo{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/appointments/schedule_grid.css' %}">
+{% endblock %}
+
 {% block content %}
 <div class="container-fluid">
     <!-- Header -->
@@ -102,9 +106,9 @@
                 <table class="table table-bordered table-hover mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th style="width: 10%;">日期</th>
+                            <th class="schedule-date-col">日期</th>
                             {% for practitioner in practitioners %}
-                            <th style="width: {% widthratio 90 practitioners.count 1 %}%;">
+                            <th class="schedule-practitioner-col">
                                 {{ practitioner.get_full_name }}<br>
                                 <small class="text-muted">{{ practitioner.get_role_display }}</small>
                             </th>
@@ -126,8 +130,7 @@
                             {% for prac_schedule in day.practitioners_schedule %}
                             <td class="align-top p-2">
                                 {% for appt in prac_schedule.appointments %}
-                                <div class="mb-2 p-2 border-start border-3 bg-light" 
-                                     style="border-color: {{ appt.service_type.color }} !important;">
+                                <div class="mb-2 p-2 border-start border-3 bg-light appointment-slot-card" data-service-color="{{ appt.service_type.color }}">
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div class="flex-grow-1">
                                             <strong>{{ appt.patient.get_full_name }}</strong>
@@ -217,10 +220,10 @@
                     顯示 {{ practitioners.count }} 位醫師/治療師的預約
                 </small>
                 <div>
-                    <span class="badge" style="background-color: #007bff;">門診</span>
-                    <span class="badge" style="background-color: #28a745;">復健</span>
-                    <span class="badge" style="background-color: #6f42c1;">機器人</span>
-                    <span class="badge" style="background-color: #fd7e14;">追蹤</span>
+                    <span class="badge appointment-legend appointment-legend-outpatient">門診</span>
+                    <span class="badge appointment-legend appointment-legend-rehab">復健</span>
+                    <span class="badge appointment-legend appointment-legend-robot">機器人</span>
+                    <span class="badge appointment-legend appointment-legend-followup">追蹤</span>
                 </div>
             </div>
         </div>
@@ -282,6 +285,14 @@ function getCookie(name) {
     }
     return cookieValue;
 }
+
+// Apply dynamic service colors without inline styles.
+document.querySelectorAll('.appointment-slot-card').forEach(el => {
+    const color = el.dataset.serviceColor;
+    if (color) {
+        el.style.borderColor = color;
+    }
+});
 
 // Delete appointment
 document.querySelectorAll('.delete-appointment').forEach(btn => {

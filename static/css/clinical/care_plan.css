@@ -1,0 +1,21 @@
+/* Styles scoped to clinical/care_plan_*.html and care_record_*.html */
+
+/* Plan card grid (shared with rehab_plan cards) */
+.care-plan-card {
+    transition: box-shadow 0.2s ease;
+}
+
+.care-plan-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Info table label column */
+.care-plan-info-label {
+    width: 35%;
+    font-weight: 600;
+}
+
+/* Goal priority indicator */
+.goal-priority-high   { border-left: 4px solid #dc3545; }
+.goal-priority-medium { border-left: 4px solid #ffc107; }
+.goal-priority-low    { border-left: 4px solid #198754; }

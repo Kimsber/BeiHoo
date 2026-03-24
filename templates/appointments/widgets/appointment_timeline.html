@@ -13,8 +13,7 @@
         <div class="timeline-container p-3">
             {% for appt in today_appointments %}
             <div class="appointment-item mb-3 p-3 border-start border-4 
-                {% if appt.status == 'fulfilled' %}bg-light border-secondary{% elif appt.status == 'arrived' %}bg-success-subtle border-success{% elif appt.status == 'booked' %}bg-info-subtle border-info{% else %}bg-light border-secondary{% endif %}"
-                 style="position: relative;">
+                {% if appt.status == 'fulfilled' %}bg-light border-secondary{% elif appt.status == 'arrived' %}bg-success-subtle border-success{% elif appt.status == 'booked' %}bg-info-subtle border-info{% else %}bg-light border-secondary{% endif %}">
                 
                 <!-- Time Badge -->
                 <div class="d-flex justify-content-between align-items-start mb-2">
@@ -22,7 +21,7 @@
                         <span class="badge bg-dark">
                             {{ appt.start_time|time:"H:i" }} - {{ appt.end_time|time:"H:i" }}
                         </span>
-                        <span class="badge" style="background-color: {{ appt.service_type.color }};">
+                        <span class="badge service-color-badge" data-service-color="{{ appt.service_type.color }}">
                             {{ appt.service_type.display_name_zh }}
                         </span>
                     </div>
@@ -81,13 +80,11 @@
                 <div class="mt-2">
                     <div class="btn-group btn-group-sm" role="group">
                         {% if appt.status == 'booked' %}
-                        <button type="button" class="btn btn-success" 
-                                onclick="checkInAppointment({{ appt.id }})">
+                        <button type="button" class="btn btn-success timeline-action-checkin" data-appointment-id="{{ appt.id }}">
                             <i class="bi bi-check"></i> 報到
                         </button>
                         {% elif appt.status == 'arrived' %}
-                        <button type="button" class="btn btn-primary" 
-                                onclick="completeAppointment({{ appt.id }})">
+                        <button type="button" class="btn btn-primary timeline-action-complete" data-appointment-id="{{ appt.id }}">
                             <i class="bi bi-check-all"></i> 完成看診
                         </button>
                         {% endif %}
@@ -97,8 +94,7 @@
                         </a>
                         
                         {% if appt.status not in 'fulfilled,cancelled' %}
-                        <button type="button" class="btn btn-outline-danger" 
-                                onclick="cancelAppointment({{ appt.id }})">
+                        <button type="button" class="btn btn-outline-danger timeline-action-cancel" data-appointment-id="{{ appt.id }}">
                             <i class="bi bi-x-circle"></i> 取消
                         </button>
                         {% endif %}
@@ -117,7 +113,7 @@
         </div>
         {% else %}
         <div class="p-4 text-center text-muted">
-            <i class="bi bi-calendar-x" style="font-size: 48px;"></i>
+            <i class="bi bi-calendar-x timeline-empty-icon"></i>
             <p class="mt-2">今日無預約</p>
         </div>
         {% endif %}
@@ -162,7 +158,7 @@
                             <strong>{{ appt.patient.get_full_name }}</strong>
                         </td>
                         <td>
-                            <span class="badge" style="background-color: {{ appt.service_type.color }};">
+                            <span class="badge service-color-badge" data-service-color="{{ appt.service_type.color }}">
                                 {{ appt.service_type.display_name_zh }}
                             </span>
                         </td>
@@ -187,24 +183,33 @@
 </div>
 {% endif %}
 
-<style>
-.timeline-container {
-    max-height: 600px;
-    overflow-y: auto;
-}
-
-.appointment-item {
-    border-radius: 8px;
-    transition: all 0.3s ease;
-}
-
-.appointment-item:hover {
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    transform: translateX(5px);
-}
-</style>
-
 <script>
+document.querySelectorAll('.service-color-badge').forEach(el => {
+    const color = el.dataset.serviceColor;
+    if (color) {
+        el.style.backgroundColor = color;
+        el.style.color = '#fff';
+    }
+});
+
+document.querySelectorAll('.timeline-action-checkin').forEach(btn => {
+    btn.addEventListener('click', function () {
+        checkInAppointment(this.dataset.appointmentId);
+    });
+});
+
+document.querySelectorAll('.timeline-action-complete').forEach(btn => {
+    btn.addEventListener('click', function () {
+        completeAppointment(this.dataset.appointmentId);
+    });
+});
+
+document.querySelectorAll('.timeline-action-cancel').forEach(btn => {
+    btn.addEventListener('click', function () {
+        cancelAppointment(this.dataset.appointmentId);
+    });
+});
+
 function checkInAppointment(appointmentId) {
     if (confirm('確認病患報到？')) {
         fetch(`/appointments/${appointmentId}/checkin/`, {

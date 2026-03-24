@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/clinical/incident_report.css' %}">
+{% endblock %}
+
 {% block title %}異常通報 - BeiHoo{% endblock %}
 
 {% block content %}

@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/clinical/medication.css' %}">
+{% endblock %}
+
 {% block title %}{% if form.instance.pk %}編輯{% else %}開立{% endif %}藥物 - BeiHoo{% endblock %}
 
 {% block content %}

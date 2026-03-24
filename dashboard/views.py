@@ -440,7 +440,7 @@ def shift_management(request):
         'nurses_count': nurses_count,
     }
     
-    return render(request, 'admin/shift_management.html', context)
+    return render(request, 'shift/shift_management.html', context)
 
 
 @login_required
@@ -472,7 +472,7 @@ def shift_create(request):
     else:
         form = ShiftForm()
     
-    return render(request, 'admin/shift_form.html', {'form': form, 'action': 'create'})
+    return render(request, 'shift/shift_form.html', {'form': form, 'action': 'create'})
 
 
 @login_required
@@ -506,7 +506,7 @@ def shift_edit(request, shift_id):
     else:
         form = ShiftForm(instance=shift)
     
-    return render(request, 'admin/shift_form.html', {'form': form, 'action': 'edit', 'shift': shift})
+    return render(request, 'shift/shift_form.html', {'form': form, 'action': 'edit', 'shift': shift})
 
 
 @login_required
@@ -626,7 +626,7 @@ def user_management(request):
         'users_by_role': {item['role']: item['count'] for item in users_by_role},
     }
     
-    return render(request, 'admin/user_management.html', context)
+    return render(request, 'user/user_management.html', context)
 
 
 @login_required
@@ -659,7 +659,7 @@ def user_create(request):
     else:
         form = UserCreateForm()
     
-    return render(request, 'admin/user_form.html', {'form': form, 'action': 'create'})
+    return render(request, 'user/user_form.html', {'form': form, 'action': 'create'})
 
 
 @login_required
@@ -694,7 +694,7 @@ def user_edit(request, user_id):
     else:
         form = UserManagementForm(instance=user)
     
-    return render(request, 'admin/user_form.html', {
+    return render(request, 'user/user_form.html', {
         'form': form, 
         'action': 'edit', 
         'edit_user': user
@@ -802,7 +802,7 @@ def user_reset_password(request, user_id):
     else:
         form = PasswordResetFormAdmin()
     
-    return render(request, 'admin/user_reset_password.html', {
+    return render(request, 'user/user_reset_password.html', {
         'form': form,
         'reset_user': user
     })
@@ -977,7 +977,7 @@ def shift_upload_excel(request):
     else:
         form = ShiftExcelUploadForm()
     
-    return render(request, 'admin/shift_upload_excel.html', {
+    return render(request, 'shift/shift_upload_excel.html', {
         'form': form,
         'title': '匯入班表 Excel'
     })

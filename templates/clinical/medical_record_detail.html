@@ -14,10 +14,9 @@
             <div class="d-flex justify-content-between align-items-center">
                 <h2><i class="bi bi-clipboard-data"></i> 診療記錄詳情</h2>
                 <div>
-                    <!-- Smart back button with fallback -->
-                    <button onclick="smartBack()" class="btn btn-secondary">
+                    <a href="{% url 'clinical:patient_detail' medical_record.patient.pk %}" class="btn btn-secondary">
                         <i class="bi bi-arrow-left"></i> 返回
-                    </button>
+                    </a>
                     {% if user == medical_record.practitioner or user.role == 'admin' %}
                     <a href="{% url 'clinical:medical_record_edit' medical_record.pk %}?next={{ request.path }}" class="btn btn-warning">
                         <i class="bi bi-pencil"></i> 編輯
@@ -92,41 +91,38 @@
                     <h5 class="mb-0">SOAP 記錄</h5>
                 </div>
                 <div class="card-body">
-                    <div class="mb-4">
-                        <h6 class="text-primary"><strong>S - Subjective (主訴)</strong></h6>
-                        <p class="border-start border-primary border-3 ps-3">{{ medical_record.chief_complaint }}</p>
-                    </div>
+                    <div class="soap-flow-list" role="list" aria-label="SOAP notes">
+                        <div class="soap-flow-item soap-flow-item-s" role="listitem">
+                            <span class="soap-flow-tag">S</span>
+                            <p class="soap-flow-content mb-0">
+                                <strong>Subjective (主訴)</strong>：{{ medical_record.chief_complaint }}
+                            </p>
+                        </div>
 
-                    <div class="mb-4">
-                        <h6 class="text-success"><strong>O - Objective (客觀發現)</strong></h6>
-                        <p class="border-start border-success border-3 ps-3">{{ medical_record.objective_findings|default:"未填寫" }}</p>
-                    </div>
+                        <div class="soap-flow-item soap-flow-item-o" role="listitem">
+                            <span class="soap-flow-tag">O</span>
+                            <p class="soap-flow-content mb-0">
+                                <strong>Objective (客觀發現)</strong>：{{ medical_record.objective_findings|default:"未填寫" }}
+                            </p>
+                        </div>
 
-                    <div class="mb-4">
-                        <h6 class="text-warning"><strong>A - Assessment (評估)</strong></h6>
-                        <p class="border-start border-warning border-3 ps-3">{{ medical_record.assessment }}</p>
-                    </div>
+                        <div class="soap-flow-item soap-flow-item-a" role="listitem">
+                            <span class="soap-flow-tag">A</span>
+                            <p class="soap-flow-content mb-0">
+                                <strong>Assessment (評估)</strong>：{{ medical_record.assessment }}
+                            </p>
+                        </div>
 
-                    <div class="mb-0">
-                        <h6 class="text-danger"><strong>P - Plan (計畫)</strong></h6>
-                        <p class="border-start border-danger border-3 ps-3">{{ medical_record.plan }}</p>
+                        <div class="soap-flow-item soap-flow-item-p" role="listitem">
+                            <span class="soap-flow-tag">P</span>
+                            <p class="soap-flow-content mb-0">
+                                <strong>Plan (計畫)</strong>：{{ medical_record.plan }}
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-<script>
-function smartBack() {
-    // Check if there's history to go back to
-    if (document.referrer && document.referrer.indexOf(window.location.host) !== -1) {
-        // If referrer is from same site, go back
-        window.history.back();
-    } else {
-        // Otherwise, go to patient detail page
-        window.location.href = "{% url 'clinical:patient_detail' medical_record.patient.pk %}";
-    }
-}
-</script>
 {% endblock %}

@@ -14,3 +14,10 @@ create_case_manager_caregiver_shifts.py
 setup_test_data.bat
 setup_case_manager_caregiver_data.bat
 .gitignore
+data_*.json
+db.sqlite3.backup_*
+
+# Local environment secrets
+.env
+.env.*
+!.env.example

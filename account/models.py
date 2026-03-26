@@ -101,7 +101,7 @@ class AuditLog(models.Model):
         verbose_name='使用者'
     )
     action = models.CharField(
-        max_length=10, 
+        max_length=30, 
         choices=ACTION_CHOICES, 
         verbose_name='動作'
     )

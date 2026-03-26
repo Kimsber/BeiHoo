@@ -3,8 +3,35 @@ Django settings for BeiHoo project - FHIR EHR Platform
 """
 
 from pathlib import Path
+import os
+from django.core.exceptions import ImproperlyConfigured
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+def load_dotenv(dotenv_path):
+    if not dotenv_path.exists():
+        return
+
+    for raw_line in dotenv_path.read_text(encoding='utf-8').splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith('#') or '=' not in line:
+            continue
+
+        key, value = line.split('=', 1)
+        key = key.strip()
+        value = value.strip().strip('"').strip("'")
+        os.environ.setdefault(key, value)
+
+
+load_dotenv(BASE_DIR / '.env')
+
+
+def get_env(name, default=None, required=False):
+    value = os.getenv(name, default)
+    if required and (value is None or value == ''):
+        raise ImproperlyConfigured(f"Missing required environment variable: {name}")
+    return value
 
 SECRET_KEY = 'django-insecure-0pm&npso=#=5ghkhr%r64t_7$m_ymsuh!@^c_imz!1)by#t^zo'
 DEBUG = True
@@ -62,8 +89,12 @@ WSGI_APPLICATION = 'BeiHoo.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': get_env('DB_NAME', required=True),
+        'USER': get_env('DB_USER', required=True),
+        'PASSWORD': get_env('DB_PASSWORD', required=True),
+        'HOST': get_env('DB_HOST', default='localhost'),
+        'PORT': get_env('DB_PORT', default='5432'),
     }
 }
 

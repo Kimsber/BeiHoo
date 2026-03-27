@@ -33,9 +33,9 @@ def get_env(name, default=None, required=False):
         raise ImproperlyConfigured(f"Missing required environment variable: {name}")
     return value
 
-SECRET_KEY = 'django-insecure-0pm&npso=#=5ghkhr%r64t_7$m_ymsuh!@^c_imz!1)by#t^zo'
-DEBUG = True
-ALLOWED_HOSTS = []
+SECRET_KEY = get_env('SECRET_KEY', required=True)
+DEBUG = get_env('DEBUG', default='False') == 'True'
+ALLOWED_HOSTS = [h.strip() for h in get_env('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',') if h.strip()]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -119,6 +119,7 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
 MEDIA_URL = 'media/'

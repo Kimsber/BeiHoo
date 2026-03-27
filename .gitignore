@@ -16,6 +16,11 @@ setup_case_manager_caregiver_data.bat
 .gitignore
 data_*.json
 db.sqlite3.backup_*
+staticfiles/
+locustfile.py
+run_locust_stages.ps1
+run_locust_stages.py
+loadtest-results/
 
 # Local environment secrets
 .env

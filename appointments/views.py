@@ -132,10 +132,10 @@ def get_time_slots(start_hour=8, end_hour=18, interval_minutes=30):
 @login_required
 def appointment_schedule_grid(request):
     """
-    Full appointment schedule grid view for admin
+    Full appointment schedule grid view for admin, nurses, and doctors
     Shows all appointments in a time-slot based grid
     """
-    if request.user.role not in ['admin', 'nurse']:
+    if request.user.role not in ['admin', 'nurse', 'doctor', 'therapist']:
         raise PermissionDenied
     
     # Get date range (default: today + 6 days)
@@ -217,7 +217,7 @@ def appointment_schedule_grid(request):
 @login_required
 def appointment_list(request):
     """List all appointments with filtering"""
-    if request.user.role not in ['admin', 'nurse']:
+    if request.user.role not in ['admin', 'nurse', 'doctor', 'therapist']:
         raise PermissionDenied
     
     filter_form = AppointmentFilterForm(request.GET or None)

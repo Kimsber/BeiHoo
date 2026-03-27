@@ -4,3 +4,5 @@ crispy-bootstrap5==2025.6
 Pillow==12.1.0
 openpyxl==3.1.5
 psycopg2-binary==2.9.9
+gunicorn==23.0.0
+locust==2.32.8

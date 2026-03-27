@@ -3,10 +3,12 @@ Django settings for BeiHoo project - FHIR EHR Platform
 """
 
 from pathlib import Path
+import os
+from django.core.exceptions import ImproperlyConfigured
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-0pm&npso=#=5ghkhr%r64t_7$m_ymsuh!@^c_imz!1)by#t^zo'
+SECRET_KEY = get_env('SECRET_KEY', required=True)
 DEBUG = True
 ALLOWED_HOSTS = []
 

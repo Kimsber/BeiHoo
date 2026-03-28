@@ -8,6 +8,14 @@ from django.core.exceptions import ImproperlyConfigured
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
+def get_env(var, required=False, default=None):
+    value = os.environ.get(var, default)
+    if required and value is None:
+        raise ImproperlyConfigured(f"Environment variable '{var}' is required but not set.")
+    return value
+
+
 SECRET_KEY = get_env('SECRET_KEY', required=True)
 DEBUG = True
 ALLOWED_HOSTS = []

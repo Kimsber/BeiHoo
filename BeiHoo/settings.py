@@ -64,6 +64,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'account.middleware.LoadtestSessionGateMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
@@ -130,6 +131,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Crispy Forms
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+# Load-test lockdown activation control
+LOADTEST_LOCKDOWN_ENABLED = get_env('LOADTEST_LOCKDOWN_ENABLED', default='False') == 'True'
+LOADTEST_USERNAME_PREFIX = get_env('LOADTEST_USERNAME_PREFIX', default='loadtest_').strip()
+LOADTEST_ALLOWED_ROLES = [
+    role.strip()
+    for role in get_env('LOADTEST_ALLOWED_ROLES', default='admin,doctor,case_manager,caregiver').split(',')
+    if role.strip()
+]
 
 # Role-based Dashboard Configuration
 ROLE_DASHBOARD_MAP = {

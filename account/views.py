@@ -2,8 +2,20 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.conf import settings
 from .forms import UserRegistrationForm, UserLoginForm, UserProfileForm
 from .models import AuditLog
+
+
+def _is_allowed_under_loadtest_lockdown(user):
+    username_prefix = getattr(settings, 'LOADTEST_USERNAME_PREFIX', 'loadtest_')
+    allowed_roles = set(getattr(settings, 'LOADTEST_ALLOWED_ROLES', []))
+
+    if not user.username.startswith(username_prefix):
+        return False
+    if user.role not in allowed_roles:
+        return False
+    return True
 
 def get_client_ip(request):
     """取得客戶端 IP"""
@@ -56,6 +68,11 @@ def login_view(request):
         form = UserLoginForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
+
+            if settings.LOADTEST_LOCKDOWN_ENABLED and not _is_allowed_under_loadtest_lockdown(user):
+                messages.error(request, '登入失敗，請檢查使用者名稱和密碼。')
+                return render(request, 'account/login.html', {'form': form})
+
             login(request, user)
             
             # 記錄登入
